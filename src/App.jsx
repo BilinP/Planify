@@ -1,10 +1,12 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
+import reactLogo from './assets/icon/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import  supabase  from './utils/supabase.js'
 
 function App() {
   const [count, setCount] = useState(0)
+  console.log(supabase)
 
   return (
     <>
