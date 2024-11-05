@@ -4,8 +4,9 @@
     box-sizing: border-box;
 }
 
-body, html {
+html, body {
     height: 100%;
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -19,23 +20,33 @@ body, html {
     text-align: center;
 }
 
-h1 {
+.error-title {
     font-size: 100px;
     margin-bottom: 20px;
 }
 
-/* Default cursor style (for the smaller text) */
+.error-message {
+    font-size: 24px;
+}
+
+.cursor-large {
+    height: 100px;
+    width: 15px;
+    background-color: yellow;
+    vertical-align: bottom;
+    animation: blink 0.7s infinite step-end;
+}
+
 .cursor {
     display: inline-block;
     width: 10px;
-    height: 24px; /* Default cursor height for small text */
+    height: 24px;
     background-color: yellow;
     vertical-align: bottom;
     margin-left: 5px;
     animation: blink 0.7s infinite step-end;
 }
 
-/* Blinking effect for the cursor */
 @keyframes blink {
     0%, 100% {
         opacity: 1;
@@ -43,10 +54,4 @@ h1 {
     50% {
         opacity: 0;
     }
-}
-
-/* Larger cursor size when following the "404" */
-.cursor-large {
-    height: 100px; /* Match the size of the "404" text */
-     width: 15px;
 }
