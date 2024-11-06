@@ -1,37 +1,71 @@
-import  { useState } from 'react';
-import TypingEffect from 'react-typing-effect';
-import '../css/NotFoundPage.css';
+import "../css/NotFoundPage.css";
+import Typewriter from "typewriter-effect";
 
 const NotFoundPage = () => {
-    return (
-        <div className="backdrop">
-            <h1 className="error-title">
-                <TypingEffect
-                    text={["404"]}
-                    speed={300}
-                    eraseSpeed={50}
-                    eraseDelay={4000}
-                    cursorRenderer={(cursor) => <span className="cursor-large">{cursor}</span>}
-                    displayTextRenderer={(text) => (
-                        <span>
-                            {text.split("").map((char, i) => (
-                                <span key={i}>{char}</span>
-                            ))}
-                        </span>
-                    )}
-                />
-            </h1>
-            <p className="error-message">
-                <TypingEffect
-                    text={["You're not supposed to be here. Go back to safety."]}
-                    speed={200}
-                    eraseSpeed={30}
-                    eraseDelay={4000}
-                    cursorRenderer={(cursor) => <span className="cursor">{cursor}</span>}
-                />
-            </p>
-        </div>
-    );
+  return (
+    <div className="backdrop">
+      <h1 className="error-title cursor-large">
+        <Typewriter
+          options={{
+            loop: true,
+            delay: 500,
+            cursor: "|"
+          }}
+          onInit={(typewriter) => {
+            typewriter
+                .typeString("404")
+                .callFunction(() => {
+                    // Change the cursor character to a space
+                    const cursorElement = document.querySelector(".cursor-large .Typewriter__cursor");
+                    if (cursorElement) {
+                        cursorElement.textContent = " "; // Set cursor to a blank space
+                    }
+                })
+                .pauseFor(12500)
+                .callFunction(() => {
+                    // Optionally restore the cursor back to "|" after the pause
+                    const cursorElement = document.querySelector(".cursor-large .Typewriter__cursor");
+                    if (cursorElement) {
+                        cursorElement.textContent = "|"; // Restore cursor
+                    }
+                })
+                .deleteAll(300)
+                .start() 
+          }}
+        />
+      </h1>
+      <div className="error-message cursor">
+        <Typewriter
+          options={{
+            loop: true,
+            delay: 100,
+            cursor: " "
+          }}
+          onInit={(typewriter) => {
+            typewriter
+              .pauseFor(2700)
+              .callFunction(() => {
+                const cursorElement = document.querySelector(".cursor .Typewriter__cursor");
+                if (cursorElement) {
+                    cursorElement.textContent = "|"; // Restore cursor
+                }
+              })
+              .typeString("You're not suppose to be here. Go back to safety.")
+              .pauseFor(2000)
+              .deleteAll(100)
+              .callFunction(() => {
+                const cursorElement = document.querySelector(".cursor .Typewriter__cursor");
+                if (cursorElement) {
+                    cursorElement.textContent = " "; // Restore cursor
+                }
+              })
+              .pauseFor(3000)
+              .start();
+          }}
+        />
+      </div>
+    </div>
+  );
 };
 
 export default NotFoundPage;
