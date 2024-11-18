@@ -1,19 +1,18 @@
 
 import { useState } from 'react';
-import {BrowserRouter, Routes,Route} from 'react-router-dom'
 import  supabase  from './utils/supabase.js'
 import './App.css';
-import Create from './Components/Create/Create';
+
 import Footer from './Components/Footer/Footer';
+import Navbar from './Components/Navbar/Navbar.jsx';
 
 function App() {
-  const [count, setCount] = useState(0);
-
+  const [cartItems, setCartItems] = useState(1);    
+  const toggleCartItem = () => {
+    setCartItems(cartItems => (cartItems === 0 ? 1 : 0)); 
+  };
   return (
-    <>
-      <Create />
-      <Footer />
-    </>
+    < Navbar cartItems={cartItems} toggleCartItem={toggleCartItem}/>
   );
 }
   export default App;
