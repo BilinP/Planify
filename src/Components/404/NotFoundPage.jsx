@@ -1,9 +1,9 @@
-import "../css/NotFoundPage.css";
+import "./NotFoundPage.css";
 import Typewriter from "typewriter-effect";
 
 const NotFoundPage = () => {
   return (
-    <div className="backdrop">
+    <div className="not-found-page">
       <h1 className="error-title cursor-large">
         <Typewriter
           options={{

@@ -27,7 +27,7 @@ export const Navbar = ({ cartItems }) => {
             </ul>
             <div className="nav-actions">
                 <button className="login-button">Login/Sign Up</button>
-                <Link to ="/cart">
+                <Link to ="/Cart">
                 <FontAwesomeIcon 
                 icon={faCartShopping} 
                 className="cart-icon"
