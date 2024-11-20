@@ -1,10 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Delius&family=Ultra&display=swap');
 
+
+
 nav{
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: green;
+    background-color: transparent;
     position: sticky;
     top:0;
     
@@ -20,13 +22,15 @@ nav .title{
     font-style: normal;
     font-size: 2.5rem;
     margin: 1rem;
+    padding-left: 1rem;
     text-decoration: none;
     color: white;
-    transition: color 0.3s ease-in-out;
+    transition: color 0.3s ease-in-out, transform 0.3s ease-in-out; 
 }
 
 nav .title:hover{
     color: #FFD700;
+    transform: scale(1.1); 
 }
 
 nav ul{
@@ -36,8 +40,6 @@ nav ul{
     list-style: none;
     flex:1;
 }
-
-
 
 nav ul li a{
     display: inline-block;
@@ -49,7 +51,7 @@ nav ul li a{
     font-family: "Delius";
     font-weight: bold;
     font-style: normal;
-    transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out, color 0.3s ease-in-out; 
+    transition: transform 0.3s ease-in-out; 
 }
 
 
@@ -58,7 +60,13 @@ nav .cart-icon{
     width: 30px;
     height: 30px;
     cursor: pointer;
+    transition: transform 0.3s ease-in-out; 
 }
+
+nav .cart-icon:hover{
+    transform: scale(1.3); 
+}
+
 
 nav ul li a:hover {
     background-color: white;
@@ -73,7 +81,7 @@ nav ul li a:hover {
     font-family: "Delius";
     font-weight: bold;
     font-size: 0.9rem;
-    margin-right: 1.7rem;
+    margin-right: 2rem;
     width: 100px;
     height: 50px;
     border: none;
@@ -84,6 +92,7 @@ nav ul li a:hover {
     position: relative;
     z-index: 0;
     border-radius: 10px;
+    transition: transform 0.3s ease-in-out;
 }
 
 .login-button:before {
@@ -117,10 +126,13 @@ nav ul li a:hover {
     position: absolute;
     width: 100%;
     height: 100%;
-    background: rgb(0, 60, 0);;
+    background: black;
     left: 0;
     top: 0;
     border-radius: 10px;
+}
+.login-button:hover{
+    transform: scale(1.1); 
 }
 
 @keyframes glowing {
@@ -148,6 +160,9 @@ nav .menu{
     justify-content: space-between;
     width: 2.25rem;
     height: 2rem;
+    margin-right: 0.8rem;
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out;
 }
 
 nav .menu span {
@@ -155,6 +170,10 @@ nav .menu span {
     width: 100%;
     background-color: white;
     border-radius: 0.2rem;
+}
+
+nav .menu:hover {
+    transform: scale(1.3); 
 }
 
 nav ul.open{
@@ -175,7 +194,10 @@ nav ul.open{
         color: white;  
         width: 100%;
         height: 100%;
-        margin-right: 4rem;
+        margin-right: 5rem;
+    }
+    .login-button {
+       margin-right: 1.2rem;
     }
 
 }

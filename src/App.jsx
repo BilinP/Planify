@@ -1,7 +1,7 @@
 import { Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import supabase from './utils/supabase.js';
-import './App.css';
+import './App.css'
 
 import Footer from './Components/Footer/Footer.jsx';
 import Navbar from './Components/Navbar/Navbar.jsx';
@@ -16,6 +16,7 @@ import ForgotPassword from './Components/Login_SignUp/ForgotPassword.jsx';
 import Login from './Components/Login_SignUp/Login.jsx';
 import SignUp from './Components/Login_SignUp/SignUp.jsx';
 import About from './Components/About/About.jsx';
+import Home from './Components/Home/Home.jsx';
 
 function App() {
   const [cartItems, setCartItems] = useState(1);
@@ -26,7 +27,8 @@ function App() {
   const location = useLocation();
   const validPaths = [
     '/',
-    '/host',
+    '/Home',
+    '/Host',
     '/Event',
     '/About',
     '/Account',
@@ -43,8 +45,9 @@ function App() {
     <>
       {showNavbarAndFooter && <Navbar cartItems={cartItems} toggleCartItem={toggleCartItem} />}
       <Routes>
-        <Route path="/" element={<Navigate to="/host" />} />
-        <Route path="/host" element={<Create />} />
+        <Route path="/" element={<Navigate to="/Home" />} />
+        <Route path="/Home" element={<Home />} />
+        <Route path="/Host" element={<Create />} />
         <Route path="/Event" element={<FindEvent />} />
         <Route path="/About" element={<About />} />
         <Route path="/Account" element={<Account />} />

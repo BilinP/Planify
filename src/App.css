@@ -1,7 +1,9 @@
-.App{
-  background: url('background.jpg') no-repeat;
+body {
+  background-image: url("/src/background.jpg");
   background-size: cover;
   background-position: center;
-  height: 100%;
-  width: 100%;
+  background-repeat: no-repeat;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
 }
