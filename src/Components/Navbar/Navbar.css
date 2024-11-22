@@ -180,7 +180,7 @@ nav ul.open{
     display: flex;
 }
 
-@media (max-width: 947px){
+@media (max-width: 984px){
     nav .menu{
         display: flex;
     }
@@ -197,7 +197,7 @@ nav ul.open{
         margin-right: 5rem;
     }
     .login-button {
-       margin-right: 1.2rem;
+        margin-right: 1.2rem;
     }
 
 }

@@ -39,7 +39,7 @@ function App() {
     '/Login',
     '/SignUp'
   ];
-  const showNavbarAndFooter = validPaths.includes(location.pathname);
+  const showNavbarAndFooter = validPaths.some(path => location.pathname.startsWith(path));
 
   return (
     <>
@@ -48,7 +48,7 @@ function App() {
         <Route path="/" element={<Navigate to="/Home" />} />
         <Route path="/Home" element={<Home />} />
         <Route path="/Host" element={<Create />} />
-        <Route path="/Event" element={<FindEvent />} />
+        <Route path="/Event/*" element={<FindEvent />} />
         <Route path="/About" element={<About />} />
         <Route path="/Account" element={<Account />} />
         <Route path="/Cart" element={<Cart />} />
