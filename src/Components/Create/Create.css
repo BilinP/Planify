@@ -1,142 +1,258 @@
-body {
-    margin: 0;
-    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    height: 100vh;
+.create-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    overflow-y: auto; 
+}
+
+.event-name-box{
+    display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+    background-color: #ffffff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.container {
-    height: auto; /* Set to auto so it adjusts based on content */
-    width: 700px;
-    display: flex;
-    flex-direction: column; /* Corrected the typo */
-    padding: 30px 40px; /* Add padding for better spacing */
-    background: #a9a9a9;
-    border-radius: 12px; /* Add border-radius for better aesthetics */
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Add shadow to create depth */
+.header-image, .date-image, .about-image {
+    width: 1000px;
+    height: 500px;
+    margin-bottom: 20px;
+    border-radius: 8px; 
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
 }
 
-.header {
+.event-name-header {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    gap: 9px;
-    width: 100%;
-    margin-top: 0;
 }
 
-.text {
-    color: #ffffff;
-    font-size: 48px;
-    font-weight: 700;
+.event-name-header h3 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+    text-align: center;
 }
+
+.event-title-input{
+    border: none;
+    outline: none;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.event-date-box, .event-location-box, .about-event-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background-color: #ffffff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.event-date-time, .event-location {
+    flex: 1;
+    padding: 0 10px;
+}
+
+.event-date-time h3, .event-location h3 {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.event-date{
+    display: flex;
+    align-items: center;
+}
+
+.location-info {
+    display: flex;
+    flex-direction: column; 
+    gap: 10px; 
+    margin-top: 10px; 
+}
+
+.location-dropdown {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.event-location-input {
+    width: 90px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+span {
+    font-size: 16px;
+    color: #333;
+}
+
+.about-event-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #ffffff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.event-about {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.event-about h3 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.event-about-input {
+    padding: 15px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    outline: none;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.event-about-input:focus {
+    border-color: #4CAF50;
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+}
+
+/* Create Button Container */
+.create-button-container {
+    text-align: center;
+    margin-top: 30px;
+}
+
+/* Create Button */
+.create-button {
+    display: inline-block;
+    padding: 15px 30px;
+    font-size: 20px;
+    color: #ffffff;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.create-button:hover {
+    background-color: #45a049;
+    transform: translateY(-3px);
+}
+
+
+@media (max-width: 600px) {
+    .about-event-box {
+        padding: 15px;
+    }
+
+    .event-about h3 {
+        font-size: 20px;
+    }
+
+    .event-about-input {
+        padding: 12px;
+    }
+}
+
 
 .underline {
-    width: 61px;
-    height: 6px;
-    background-color: #ffffff;
-    border-radius: 9px;
+    width: 60px;
+    height: 4px;
+    background-color: #4CAF50;
+    margin: 10px auto;
 }
 
 .inputs {
-    margin-top: 40px; /* Reduced margin for better spacing */
     display: flex;
     flex-direction: column;
-    gap: 20px; /* Reduced gap for tighter alignment */
+    gap: 20px;
+    flex-grow: 1;
 }
 
 .input {
     display: flex;
-    align-items: center;
-    width: 95%;
-    height: 70px;
-    background: #eaeaea;
-    border-radius: 6px;
-    padding: 0 20px; /* Add padding for consistency */
+    flex-direction: column;
+    position: relative;
 }
 
-.input img {
-    margin-right: 20px; /* Adjust margin to improve spacing */
-}
-
-.input input {
-    height: 50px;
-    width: 100%; /* Adjust width to take remaining space */
-    background: transparent;
-    border: none;
+input[type="text"],
+input[type="email"],
+input[type="date"],
+input[type="number"], 
+textarea,
+select {
+    padding: 15px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
     outline: none;
-    color: #797979;
-    font-size: 19px;
-}
-
-.agreement-checkbox {
-    margin: 20px auto; /* Center it with auto left/right margin */
-    display: flex;
-    align-items: center;
-    color: white;
-    font-size: 0.9em; /* Adjust font size for better proportion */
-}
-
-.agreement-checkbox input[type="checkbox"] {
-    margin-right: 10px;
-}
-
-.createButton {
-    display: flex;
-    justify-content: center; /* Center the button horizontally */
-    margin: 30px auto 0; /* Adjust margin for better alignment */
-}
-
-.createBut {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 220px;
-    height: 59px;
-    color: black;
-    background: wheat;
-    border-radius: 50px;
-    font-size: 19px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.3s ease; /* Add a transition for hover effect */
-}
-
-.createBut:hover {
-    background: #f0e68c; /* Change background color on hover */
-    transform: scale(1.05); /* Slightly enlarge button on hover */
-}
-
-.person, .email, .date1, .capacity {
-    width: 30px; /* Consistent icon sizing for better alignment */
-    height: 30px;
-}
-
-.event-dropdown, #customEvent {
-    height: 70px;
+    background-color: #ffffff; 
+    color: #333; 
+    transition: all 0.3s ease;
     width: 100%;
-    padding: 10px;
-    border-radius: 6px;
-    border: none;
-    outline: none;
-    font-size: 19px;
-    color: #797979;
-    background: #eaeaea;
-}
-
-#otherEventInput {
-    display: flex; /* Align input box properly */
-    align-items: center;
 }
 
 
+@media (max-width: 600px) {
+    .container {
+        padding: 15px;
+    }
 
-/* Additional Improvements */
-.container {
-    max-width: 100%;
-    box-sizing: border-box; /* Ensures padding is included in width/height */
+    .text {
+        font-size: 22px;
+    }
+
+    .createBut {
+        font-size: 16px;
+        padding: 12px 24px;
+    }
+
 }
+
