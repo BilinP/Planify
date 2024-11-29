@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Delius&family=Rubik+Glitch&family=Ultra&display=swap');
+
+.home-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding-bottom: 15rem;
+}
+
+.container {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: transparent;
+}
+
+.container h1 {
+    font-size: 5rem;
+    font-family: "Rubik Glitch";
+    font-weight: 400;
+    font-style: normal;
+    color: white;
+    margin: 1rem;
+}
+
+.input-wrapper {
+    margin-top: 20px;
+    background-color: white;
+    border-radius: 50px;
+    padding: 10px 20px;
+}
+
+.input-wrapper input {
+    border: none;
+    outline: none;
+    padding: 10px;
+    font-size: 1rem;
+    margin-left: 10px;
+    width: 400px;
+}
+
+.input-wrapper input::placeholder {
+    color: #aaa;
+}
