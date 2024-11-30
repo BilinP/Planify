@@ -11,7 +11,7 @@ import Account from './Components/Account/Account.jsx';
 import OrderHistory from './Components/Account/OrderHistory.jsx';
 import Cart from './Components/Cart/Cart.jsx';
 import Contact from './Components/Contact/Contact.jsx';
-import FindEvent from './Components/FindEvent/FindEvent.jsx';
+import FindEvent from './Components/Event/FindEvent.jsx';
 import ForgotPassword from './Components/Login_SignUp/ForgotPassword.jsx';
 import Login from './Components/Login_SignUp/Login.jsx';
 import SignUp from './Components/Login_SignUp/SignUp.jsx';
@@ -23,6 +23,21 @@ function App() {
   const toggleCartItem = () => {
     setCartItems(cartItems => (cartItems === 0 ? 1 : 0));
   };
+
+
+  const events = [
+    {
+      id: 1,
+      image: 'path-to-image.jpg', // Use the image file path
+      title: 'Work, Bitch',
+      price: 12.51,
+      date: 'Saturday, January 25 • 7:00 PM',
+      host: 'Elissa Marcus',
+      description: 'Join us for a spectacular collection of spooky, hilarious sketches...',
+      reviews: 'Great event! Fun and spooky.',
+    }
+  ];
+
 
   const location = useLocation();
   const validPaths = [
