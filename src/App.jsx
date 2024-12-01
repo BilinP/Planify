@@ -17,6 +17,7 @@ import Login from './Components/Login_SignUp/Login.jsx';
 import SignUp from './Components/Login_SignUp/SignUp.jsx';
 import About from './Components/About/About.jsx';
 import Home from './Components/Home/Home.jsx';
+import EventPage from './Components/Event/EventPage';
 
 function App() {
   const [cartItems, setCartItems] = useState(1);
@@ -64,7 +65,7 @@ function App() {
         <Route path="/Home" element={<Home />} />
         <Route path="/Host" element={<Create />} />
         <Route path="/Event/*" element={<FindEvent />} />
-        <Route path="/About" element={<About />} />
+        <Route path="/About" element={<EventPage />} />
         <Route path="/Account" element={<Account />} />
         <Route path="/Cart" element={<Cart />} />
         <Route path="/OrderHistory" element={<OrderHistory />} />
