@@ -16,6 +16,9 @@ import LoginPopup from "./Components/Login_SignUp/Login.jsx";
 import SignUpPopup from "./Components/Login_SignUp/SignUp.jsx";
 import About from "./Components/About/About.jsx";
 import Home from "./Components/Home/Home.jsx";
+import EventPage from './Components/Event/EventPage';
+
+
 
 function App() {
   // States
@@ -49,7 +52,21 @@ function App() {
     setIsForgotPasswordVisible(false);
   };
 
-  // Navbar and Footer Logic
+
+
+  const events = [
+    {
+      id: 1,
+      image: 'path-to-image.jpg', // Use the image file path
+      title: 'Work, Bitch',
+      price: 12.51,
+      date: 'Saturday, January 25 • 7:00 PM',
+      host: 'Elissa Marcus',
+      description: 'Join us for a spectacular collection of spooky, hilarious sketches...',
+      reviews: 'Great event! Fun and spooky.',
+    }
+  ];
+
   const location = useLocation();
   const validPaths = [
     "/",
@@ -82,7 +99,7 @@ function App() {
         <Route path="/Home" element={<Home />} />
         <Route path="/Host" element={<Create />} />
         <Route path="/Event/*" element={<FindEvent />} />
-        <Route path="/About" element={<About />} />
+        <Route path="/About" element={<EventPage />} />
         <Route path="/Account" element={<Account />} />
         <Route path="/Cart" element={<Cart />} />
         <Route path="/OrderHistory" element={<OrderHistory />} />
