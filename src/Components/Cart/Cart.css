@@ -1,0 +1,286 @@
+/* Checkout Container */
+.checkout-container {
+    display: flex;
+    flex-wrap: nowrap; /* Keep left and right sections side by side */
+    width: 100%;
+    height: 100vh; 
+    background-color: #f9f9f9;
+    box-sizing: border-box;
+  }
+  
+  /* Left Section */
+  .checkout-left {
+    width: 40%; 
+    padding: 20px;
+    border-right: 1px solid #ddd;
+    background-color: #fafafa;
+    box-sizing: border-box;
+  }
+  
+  .store-name {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .order-summary {
+    margin-top: 20px;
+  }
+  
+  .order-item,
+  .order-subtotal,
+  .order-shipping,
+  .order-total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 16px;
+    margin: 10px 0;
+  }
+  
+  .order-price {
+    text-align: right;
+    font-size: 16px;
+  }
+  
+  .quantity-price {
+    display: flex;
+    align-items: center; /* Align quantity dropdown and price vertically */
+    gap: 10px; /* Space between quantity dropdown and price */
+  }
+  
+  .order-total {
+    font-weight: bold;
+    font-size: 18px;
+  }
+  
+  .powered-by {
+    margin-top: 40px;
+    font-size: 14px;
+    text-align: center;
+    color: #888;
+  }
+  
+  /* Right Section */
+  .checkout-right {
+    flex: 1; 
+    padding: 20px;
+    background-color: #ffffff;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; 
+    position: relative; /* Ensure suggestions are inside this container */
+  }
+  
+  /* Apple Pay Button */
+  .apple-pay {
+    background-color: black;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    width: 100%;
+    height: 50px;
+    margin-bottom: 20px;
+  
+    /* Apple Pay Logo as background */
+    background-image: url("./applepay.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    cursor: pointer;
+  }
+  
+  /* Manual Address Link */
+  .manual-address {
+    font-size: 14px;
+    color: #007bff; /* Similar to a link color */
+    text-decoration: underline;
+    cursor: pointer;
+    margin-top: 10px;
+    display: inline-block;
+  }
+  
+  .manual-address:hover {
+    color: #0056b3; /* Darker blue on hover */
+  }
+  
+  /* Autocomplete Wrapper */
+  .autocomplete-wrapper {
+    position: relative; 
+    width: 100%;
+    margin-bottom: 16px; 
+    z-index: 1; 
+  }
+  
+  /* Suggestions List Styling */
+  .suggestions-list {
+    position: absolute; 
+    top: 100%; 
+    left: 0;
+    width: 100%; 
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); 
+    z-index: 10; 
+    max-height: 200px; 
+    overflow-y: auto;
+    list-style: none; 
+    padding: 0;
+    margin: 0;
+  }
+  
+  /* Suggestions List Item */
+  .suggestions-list li {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #ddd; 
+    transition: background-color 0.3s ease-in-out;
+    word-wrap: break-word; 
+  }
+  
+  .suggestions-list li:last-child {
+    border-bottom: none; 
+  }
+  
+  .suggestions-list li:hover {
+    background-color: #f0f0f0; 
+  }
+  
+  /* Autocomplete Input */
+  .autocomplete-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    box-sizing: border-box;
+  }
+  
+  /* Form Group Spacing */
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .checkout-form label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    display: block;
+    margin-bottom: 8px;
+  }
+  
+  .checkout-form input,
+  .checkout-form select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    box-sizing: border-box;
+  }
+  
+  /* Payment Details */
+  .card-input {
+    position: relative;
+  }
+  
+  .card-icons {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 5px;
+  }
+  
+  .card-icons img {
+    width: 30px;
+    height: auto;
+  }
+  
+  .card-input input {
+    width: 100%;
+    padding: 10px 10px 10px 100px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    box-sizing: border-box;
+  }
+  
+  .card-extra {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  .card-extra input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    box-sizing: border-box;
+  }
+  
+  /* Billing Checkbox */
+  .billing {
+    display: flex;
+    align-items: center; 
+    gap: 10px; 
+    font-size: 15px;
+    margin-top: 20px;
+  }
+  
+  .billing input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    margin: 0;
+  }
+  
+  /* Submit Button */
+  .checkout-btn {
+    background-color: #4f46e5;
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 5px;
+    width: 100%;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+  }
+  
+  .checkout-btn:hover {
+    background-color: #4338ca;
+  }
+  
+  /* Divider Styling */
+  .or-divider {
+    text-align: center;
+    margin: 20px 0;
+    font-size: 14px;
+    color: #888;
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 768px) {
+    .checkout-container {
+      flex-direction: column; 
+    }
+  
+    .checkout-left,
+    .checkout-right {
+      width: 100%;
+      padding: 10px;
+      border: none;
+    }
+  
+    .checkout-right {
+      border-top: 1px solid #ddd;
+      margin-top: 20px;
+    }
+  }
+  
