@@ -36,18 +36,17 @@
 
 .event-box {
     width: 1000px;
-    background-color: #ffffff;
-    border: 1px solid #e5e5e5;
     border-radius: 8px;
     padding: 20px;
     margin-bottom: 20px;
+    background: linear-gradient(to right, #4b0082, #ff00ff);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
 .event-box h3 {
-    font-size: 24px;
+    font-size: 32px;
     font-weight: bold;
-    color: #333;
+    color: #ffd905;
     margin: 0 0 10px 0;
     text-align: left;
 }
@@ -61,6 +60,9 @@
 
 .event-box input[type="text"],
 .event-box input[type="date"],
+
+.event-box input[type="time"],
+
 .event-box input[type="checkbox"] {
     width: calc(100% - 20px);
     padding: 10px;
@@ -87,5 +89,44 @@
 }
 
 .online-checkbox {
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    font-size: 22px;
+    color: #ffffff;
     margin-left: 10px;
+}
+.online-checkbox input[type="checkbox"] {
+    margin-bottom: 5px;
+}
+
+
+.create-button-box{
+    text-align: center;
+    margin-top: 30px;
+}
+
+.create-button{
+    display: inline-block;
+    padding: 15px 30px;
+    font-size: 20px;
+    color: #ffffff;
+    background-color: #ffd095;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color .3s ease transform .3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.create-button:hoover{
+    background-color: #ffcf95c6;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.create-button:active{
+    transform: translateY(0);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background-color: #ffcf95c6;
 }

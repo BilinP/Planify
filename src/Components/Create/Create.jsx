@@ -3,11 +3,10 @@ import './Create.css';
 import headerImage from '../../assets/header-image.webp';
 
 const Create = () => {
-    const [showOtherInput, setShowOtherInput] = useState(false);
-    const [eventType, setEventType] = useState('');
     const [eventDate, setEventDate] = useState('');
     const [eventTitle, setEventTitle] = useState('');
     const [eventSummary, setEventSummary] = useState('');
+    const [price, setPrice] = useState('');
     const [eventLocation, setEventLocation] = useState('');
     const [isOnline, setIsOnline] = useState(false);
     const fileInputRef = useRef(null);
@@ -23,7 +22,6 @@ const Create = () => {
     }
 
     useEffect(() => {
-        // Set the min attribute to today's date for the date input
         const today = new Date().toISOString().split('T')[0];
         setEventDate(today);
     }, []);
@@ -32,8 +30,38 @@ const Create = () => {
         setEventDate(e.target.value);
     }
 
+    const handlePriceChange = (e) => {
+        let value = e.target.value;
+
+        value = value.replace(/[^0-9.]/g, '');
+
+        const parts = value.split('.');
+        if (parts.length > 2) {
+            return;
+        }
+
+        if (parts.length === 2 && parts[1].length > 2) {
+            return;
+        }
+
+        setPrice(value ? `$${value}` : '');
+    };
+
+    const handleFocus = () => {
+        if (price.startsWith('$')) {
+            setPrice(price.slice(1));
+        }
+    };
+
+    const handleBlur = () => {
+        if (price !== '' && !isNaN(price)) {
+            const formattedValue = parseFloat(price).toFixed(2);
+            setPrice(`$${formattedValue}`);
+        }
+    };
+
     const handleSubmit = () => {
-        // Add form submission logic here (e.g., validation, API calls)
+        // Add form submission logic here
         alert('Event created successfully!');
     }
 
@@ -97,6 +125,26 @@ const Create = () => {
                         onChange={handleDateChange} 
                         placeholder="Date" 
                     />
+
+                    <input
+                    id="timeInput"
+                    type="time"
+                    placeholder='Time'
+                    />
+                </div>
+
+                <div className='event-price-box'>
+                    <h3>Ticket Price</h3>
+                    <div className='underline'></div>
+                    <input
+                        id='priceInput'
+                        type="text"
+                        placeholder='Price'
+                        value={price}
+                        onChange={handlePriceChange}
+                        onFocus={handleFocus}
+                        onBlur={handleBlur}
+                    />                   
                 </div>
 
                 <div className="event-location-box">
@@ -112,14 +160,20 @@ const Create = () => {
                             disabled={isOnline}
                             style={{ backgroundColor: isOnline ? '#e0e0e0' : 'white' }}
                         />
-                        <label className="online-checkbox">
+
+                        <div className="online-checkbox">
+
+
                             <input 
                                 type="checkbox" 
                                 checked={isOnline} 
                                 onChange={handleLocationChange} 
                             />
-                            Online?
-                        </label>
+
+                            <label>Online?</label>
+                        </div>
+
+
                     </div>
                 </div>
 
