@@ -1,24 +1,24 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { initializeApp } from "firebase/app";
 import ForgotPasswordPopup from "./ForgotPassword"; 
-import SignUpPopup from "./SignUp"; 
 import "./Login.css";
+import PropTypes from 'prop-types';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyByO2LXArpKjg6NG5HyJRJVrdNRh0G_vsw",
-  authDomain: "planify-a83a9.firebaseapp.com",
-  projectId: "planify-a83a9",
-  storageBucket: "planify-a83a9.firebasestorage.app",
-  messagingSenderId: "957538892334",
-  appId: "1:957538892334:web:4afae113103bb9d68abdbf"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-const LoginPopup = ({ isOpen, togglePopup, setShowSignUpPopup }) => {
+const LoginPopup = ({ isOpen, togglePopup }) => {
   const [rememberMe, setRememberMe] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -153,7 +153,7 @@ const LoginPopup = ({ isOpen, togglePopup, setShowSignUpPopup }) => {
               </p>
             ) : (
               <p>
-                Don't have an account?{" "}
+                Don&apos;t have an account?{" "}
                 <button type="button" onClick={handleSignUpClick}>
                   Sign Up
                 </button>
@@ -167,6 +167,11 @@ const LoginPopup = ({ isOpen, togglePopup, setShowSignUpPopup }) => {
       </div>
     )
   );
+};
+LoginPopup.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  togglePopup: PropTypes.func.isRequired,
+  setShowSignUpPopup: PropTypes.func.isRequired,
 };
 
 export default LoginPopup;

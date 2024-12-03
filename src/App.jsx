@@ -10,7 +10,7 @@ import Account from "./Components/Account/Account.jsx";
 import OrderHistory from "./Components/Account/OrderHistory.jsx";
 import Cart from "./Components/Cart/Cart.jsx";
 import Contact from "./Components/Contact/Contact.jsx";
-import FindEvent from "./Components/FindEvent/FindEvent.jsx";
+import FindEvent from "./Components/Event/EventPage.jsx";
 import ForgotPasswordPopup from "./Components/Login_SignUp/ForgotPassword.jsx";
 import LoginPopup from "./Components/Login_SignUp/Login.jsx";
 import SignUpPopup from "./Components/Login_SignUp/SignUp.jsx";

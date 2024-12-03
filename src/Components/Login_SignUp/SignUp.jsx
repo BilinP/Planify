@@ -1,22 +1,23 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { initializeApp } from "firebase/app";
 import "./SignUp.css";
+import PropTypes from 'prop-types';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyByO2LXArpKjg6NG5HyJRJVrdNRh0G_vsw",
-  authDomain: "planify-a83a9.firebaseapp.com",
-  projectId: "planify-a83a9",
-  storageBucket: "planify-a83a9.firebasestorage.app",
-  messagingSenderId: "957538892334",
-  appId: "1:957538892334:web:4afae113103bb9d68abdbf"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-const SignUpPopup = ({ closePopup, toggleForm }) => {
+const SignUpPopup = ({ closePopup }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -132,7 +133,7 @@ const SignUpPopup = ({ closePopup, toggleForm }) => {
             </p>
           ) : (
             <p>
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <button type="button" onClick={() => setIsSignup(true)}>Sign Up</button>
             </p>
           )}
@@ -140,6 +141,9 @@ const SignUpPopup = ({ closePopup, toggleForm }) => {
       </div>
     </div>
   );
+};
+SignUpPopup.propTypes = {
+  closePopup: PropTypes.func.isRequired,
 };
 
 export default SignUpPopup;

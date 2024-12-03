@@ -4,12 +4,12 @@ import { initializeApp } from "firebase/app";
 import "./ForgotPassword.css";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyByO2LXArpKjg6NG5HyJRJVrdNRh0G_vsw",
-  authDomain: "planify-a83a9.firebaseapp.com",
-  projectId: "planify-a83a9",
-  storageBucket: "planify-a83a9.firebasestorage.app",
-  messagingSenderId: "957538892334",
-  appId: "1:957538892334:web:4afae113103bb9d68abdbf"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
 const app = initializeApp(firebaseConfig);
