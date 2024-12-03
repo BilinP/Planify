@@ -152,14 +152,14 @@ const Create = () => {
                             disabled={isOnline}
                             style={{ backgroundColor: isOnline ? '#e0e0e0' : 'white' }}
                         />
-                        <label className="online-checkbox">
+                        <div className="online-checkbox">
                             <input 
                                 type="checkbox" 
                                 checked={isOnline} 
                                 onChange={handleLocationChange} 
                             />
-                            Online?
-                        </label>
+                            <label>Online?</label>
+                        </div>
                     </div>
                 </div>
 
