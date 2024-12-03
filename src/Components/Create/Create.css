@@ -60,7 +60,9 @@
 
 .event-box input[type="text"],
 .event-box input[type="date"],
+
 .event-box input[type="time"],
+
 .event-box input[type="checkbox"] {
     width: calc(100% - 20px);
     padding: 10px;

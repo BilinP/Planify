@@ -11,6 +11,12 @@ const Create = () => {
     const [isOnline, setIsOnline] = useState(false);
     const fileInputRef = useRef(null);
 
+    const handleEventChange = (e) => {
+        const selectedEvent = e.target.value;
+        setEventType(selectedEvent);
+        setShowOtherInput(selectedEvent === 'other');
+    }
+
     const handleLocationChange = (e) => {
         setIsOnline(e.target.checked);
     }
@@ -68,6 +74,7 @@ const Create = () => {
         if (file) {
             const reader = new FileReader();
             reader.onload = (e) => {
+                // Update the header image with the new image
                 setImage(e.target.result);
             };
             reader.readAsDataURL(file);
@@ -118,6 +125,7 @@ const Create = () => {
                         onChange={handleDateChange} 
                         placeholder="Date" 
                     />
+
                     <input
                     id="timeInput"
                     type="time"
@@ -152,14 +160,20 @@ const Create = () => {
                             disabled={isOnline}
                             style={{ backgroundColor: isOnline ? '#e0e0e0' : 'white' }}
                         />
+
                         <div className="online-checkbox">
+
+
                             <input 
                                 type="checkbox" 
                                 checked={isOnline} 
                                 onChange={handleLocationChange} 
                             />
+
                             <label>Online?</label>
                         </div>
+
+
                     </div>
                 </div>
 
