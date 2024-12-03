@@ -36,7 +36,7 @@ const Contact = () => {
     };
 
     return (
-        <div>
+        <div className="contact-container">
             {/* Background box behind the grid */}
             <div className="background-box"></div>
 
