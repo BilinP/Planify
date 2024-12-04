@@ -4,6 +4,7 @@ import { initializeApp } from "firebase/app";
 import ForgotPasswordPopup from "./ForgotPassword"; 
 import "./Login.css";
 import PropTypes from 'prop-types';
+import supabase from "../../../backend/supabaseClient";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -24,6 +25,7 @@ const LoginPopup = ({ isOpen, togglePopup }) => {
   const [password, setPassword] = useState("");
   const [showForgotPassword, setShowForgotPassword] = useState(false); // State for showing forgot password popup
   const [isSignup, setIsSignup] = useState(false); // State to toggle between login and signup forms
+  
 
   const handleGoogleLogin = async () => {
     try {
@@ -38,8 +40,21 @@ const LoginPopup = ({ isOpen, togglePopup }) => {
     }
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+    });
+
+    if (error) {
+      console.error("Login Error:", error);
+      alert("Login failed. Please check your credentials.");
+      return;
+    }
+
+    console.log("Login Success:", data);
+    
     console.log("Logging in with:", email, password, rememberMe);
     togglePopup(); // Close the popup after login
   };
