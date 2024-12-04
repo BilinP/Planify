@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import './FindEvent.css';
+import BrazilianDance from '../../assets/braziliandance.png';
+import GraduationCeremony from '../../assets/graduationceremony.png';
+import Singing from '../../assets/sing.png';
+import Rhythm from '../../assets/Rhythm.png';
+import CountDownIMG from '../../assets/CountDown.png';
+import BakingIMG from '../../assets/BakingIMG.png';
+import FUNdraiser from '../../assets/FUNdraiser.png';
+
 
 
 
@@ -10,7 +18,15 @@ const events = [
         time: "8:00 PM",
         venue: "Motivo LA",
         price: 20.00,
-        image: "https://via.placeholder.com/400x300"
+        image: BrazilianDance
+    },
+    {
+        title: "Graduation Ceremony",
+        date: "Fri, Dec 20",
+        time: "2:00 PM",
+        venue: "CSUN",
+        price: 5.00,
+        image: GraduationCeremony
     },
     {
         title: "Sing! - An 'L.A. Story' Live Music",
@@ -18,7 +34,7 @@ const events = [
         time: "6:00 PM",
         venue: "Hauser & Wirth West Hollywood",
         price: 0,
-        image: "https://via.placeholder.com/400x300"
+        image: Singing
     },
     {
         title: "The RHYTHMS",
@@ -26,7 +42,23 @@ const events = [
         time: "9:00 PM",
         venue: "The Melrose House",
         price: 0,
-        image: "https://via.placeholder.com/400x300"
+        image: Rhythm
+    },
+    {
+        title: "New Year Countdown",
+        date: "Tues, Dec 31",
+        time: "10:00 PM",
+        venue: "Apartment ",
+        price: 0.00,
+        image: CountDownIMG
+    },
+    {
+        title: "Bake Better",
+        date: "Mon, Jan 6",
+        time: "2:00 PM",
+        venue: "Baking class",
+        price: 15.00,
+        image: BakingIMG
     },
     {
         title: "HOPE - LA 6th Annual FUNdraiser 70s Disco Party",
@@ -34,7 +66,7 @@ const events = [
         time: "4:00 PM",
         venue: "XO Banquet Hall",
         price: 50.00,
-        image: "https://via.placeholder.com/400x300"
+        image: FUNdraiser
     }
 ];
 
@@ -66,9 +98,7 @@ const FindEvent = () => {
     }, [searchTerm]);
 
     const handleCategoryClick = (category) => {
-        setActiveCategory(category);
-        // Here you would typically filter events based on the selected category
-        // For this example, we're just re-displaying all events
+        setActiveCategory(category); 
         setFilteredEvents(events);
     };
 
