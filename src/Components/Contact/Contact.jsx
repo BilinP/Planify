@@ -1,15 +1,32 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useAuth } from '../Login_SignUp/Auth.jsx';
+import { supabase } from '../../../backend/supabaseClient.js';
 import './Contact.css';
 
 const Contact = () => {
-    // State variable to store the uploaded image
+    const { authData } = useAuth();
+    const [userData, setUserData] = useState(null);
     const [image, setImage] = useState(null);
-
-    // State for the currently logged-in user's information
-    const [userInfo, setUserInfo] = useState({
-        name: "John Doe", // This can come from an API or context
-        email: "johndoe@example.com"
-    });
+  
+    useEffect(() => {
+      const fetchUserData = async () => {
+        if (authData) {
+          const { data, error } = await supabase
+            .from('profile') 
+            .select('*')
+            .eq('user_id', authData.id)
+            .single();
+  
+          if (error) {
+            console.error('Error fetching user data:', error);
+          } else {
+            setUserData(data);
+          }
+        }
+      };
+  
+      fetchUserData();
+    }, [authData]);
 
     // Handler for file input change
     const handleImageUpload = (e) => {
@@ -26,14 +43,9 @@ const Contact = () => {
         setImage(null); // Set image state back to null to remove the profile picture
     };
 
-    // Mock user data for boxes (REPLACE WITH THE REAL DATA!!!!!!)
-    const userData = {
-        name: "John Doe",
-        dob: "01/01/1990",
-        country: "USA",
-        language: "English",
-        email: "johndoe@example.com",
-    };
+    if (!userData) {
+        return <div>Loading...</div>;
+      }
 
     return (
         <div className="contact-container">
@@ -60,8 +72,8 @@ const Contact = () => {
 
             {/* User Info: Name and Email Display under the Profile Circle */}
             <div className="user-info">
-                <h2 className="user-name">{userInfo.name}</h2>
-                <p className="user-email">{userInfo.email}</p>
+                <h2 className="user-name">{userData.name}</h2>
+                <p className="user-email">{userData.email}</p>
             </div>
 
             {/* File Input for Image Upload */}

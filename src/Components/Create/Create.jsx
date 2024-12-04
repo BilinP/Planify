@@ -82,14 +82,14 @@ const Create = () => {
     }
 
     return (
-        <div className="create-container">
-            <div className="header-image-container">
+        <div className="create-page-container">
+            <div className="create-header-image-container">
                 <img 
                     src={headerImage}
                     alt="eventBanner" 
-                    className="header-image" 
+                    className="create-header-image" 
                 />
-                <div className="circle" onClick={handleCircleClick}>
+                <div className="create-circle" onClick={handleCircleClick}>
                     <input 
                         type="file" 
                         accept="image/*" 
@@ -101,22 +101,22 @@ const Create = () => {
                 </div>
             </div>
 
-            <div className="event-box">
-                <div className="event-name-header">
+            <div className="create-event-box">
+                <div className="create-event-name-header">
                     <h3>Event Title</h3>
-                    <div className="underline"></div>
+                    <div className="create-underline"></div>
                     <input 
                         type="text" 
-                        className="event-title-input" 
+                        className="create-event-title-input" 
                         placeholder="Name" 
                         value={eventTitle} 
                         onChange={(e) => setEventTitle(e.target.value)} 
                     />
                 </div>
 
-                <div className="event-date-box">
+                <div className="create-event-date-box">
                     <h3>Date and Time</h3>
-                    <div className="underline"></div>
+                    <div className="create-underline"></div>
                     <input 
                         id="dateInput" 
                         type="date" 
@@ -133,9 +133,9 @@ const Create = () => {
                     />
                 </div>
 
-                <div className='event-price-box'>
+                <div className='create-event-price-box'>
                     <h3>Ticket Price</h3>
-                    <div className='underline'></div>
+                    <div className='create-underline'></div>
                     <input
                         id='priceInput'
                         type="text"
@@ -147,42 +147,37 @@ const Create = () => {
                     />                   
                 </div>
 
-                <div className="event-location-box">
+                <div className="create-event-location-box">
                     <h3>Location</h3>
-                    <div className="underline"></div>
-                    <div className="location-input-container">
+                    <div className="create-underline"></div>
+                    <div className="create-location-input-container">
                         <input 
                             type="text" 
                             placeholder="Event Location" 
                             value={eventLocation} 
                             onChange={(e) => setEventLocation(e.target.value)}
-                            className="event-location-input"
+                            className="create-event-location-input"
                             disabled={isOnline}
                             style={{ backgroundColor: isOnline ? '#e0e0e0' : 'white' }}
                         />
 
-                        <div className="online-checkbox">
-
-
+                        <div className="create-online-checkbox">
                             <input 
                                 type="checkbox" 
                                 checked={isOnline} 
                                 onChange={handleLocationChange} 
                             />
-
                             <label>Online?</label>
                         </div>
-
-
                     </div>
                 </div>
 
-                <div className='about-event-box'>
+                <div className='create-about-event-box'>
                     <h3>About Event</h3>
-                    <div className="underline"></div>
+                    <div className="create-underline"></div>
                     <input 
                         type='text' 
-                        className='event-about-input' 
+                        className='create-event-about-input' 
                         placeholder='Description' 
                         value={eventSummary} 
                         onChange={(e) => setEventSummary(e.target.value)} 

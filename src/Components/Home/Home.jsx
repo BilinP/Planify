@@ -7,9 +7,10 @@ import "./Home.css";
 const Home = () => {
   const [input, setInput] = useState("");
   const navigate = useNavigate();
+  
   const handleSearch = () => {
     if (input.trim()) {
-      navigate(`/Event/${input}`);
+      navigate(`/Event?search=${encodeURIComponent(input)}`);
     }
   };
 

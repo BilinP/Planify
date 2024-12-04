@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import './FindEvent.css';
 import BrazilianDance from '../../assets/braziliandance.png';
 import GraduationCeremony from '../../assets/graduationceremony.png';
@@ -86,8 +87,18 @@ const FindEvent = () => {
     const [filteredEvents, setFilteredEvents] = useState(events);
     const [searchTerm, setSearchTerm] = useState('');
     const [activeCategory, setActiveCategory] = useState('All');
+    const location = useLocation();
 
     const categories = ['All', 'For you', 'Online', 'Today', 'This weekend', 'Free', 'Music', 'Food & Drink', 'Charity & Causes'];
+
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const search = params.get('search');
+        if (search) {
+            setSearchTerm(search);
+        }
+    }, [location.search]);
+
 
     useEffect(() => {
         const filtered = events.filter(event => 

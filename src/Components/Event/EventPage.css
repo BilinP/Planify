@@ -6,25 +6,25 @@
     align-items: center;
 }
 
-.header-image-container {
+.event-header-image-container {
     position: relative;
     width: 1000px;
     height: 500px;
     margin-bottom: 20px;
 }
 
-.header-image {
+.event-header-image {
     width: 1000px;
     height: 500px;
     border-radius: 8px;
 }
 
-.content-container {
+.event-content-container {
     display: flex;
     width: 1000px;
 }
 
-.event-box {
+.event-page-box {
     width: 70%;
     background-color: #ffffff;
     border: 1px solid #e5e5e5;
@@ -34,7 +34,7 @@
     margin-bottom: 20px;
 }
 
-.ticket-box {
+.event-ticket-box {
     width: 25%;
     height: 160px;
     background-color: #ffffff;
@@ -46,7 +46,7 @@
     align-items: center;
 }
 
-.event-box h3, .ticket-box h3 {
+.event-page-box h3, .event-ticket-box h3 {
     font-size: 24px;
     font-weight: bold;
     color: #333;
@@ -54,22 +54,21 @@
     text-align: left;
 }
 
-.event-box .underline, .ticket-box .underline {
+.event-underline {
     width: 100%;
     height: 2px;
     background-color: #e5e5e5;
     padding: 1px;
 }
 
-.ticket-box .underline {
-}
-.ticket-box p {
+.event-ticket-box p {
     font-size: 30px;
     font-weight: bold;
     color: #333;
     padding: 10px;
 }
-.buy-button {
+
+.event-buy-button {
     padding: 10px 20px;
     background-color: #007bff;
     color: white;
@@ -78,11 +77,11 @@
     cursor: pointer;
 }
 
-.buy-button:hover {
+.event-buy-button:hover {
     background-color: #0056b3;
 }
 
-.review-section {
+.event-review-section {
     width: 1000px;
     background-color: #ffffff;
     border-radius: 8px;
@@ -90,43 +89,42 @@
     margin-bottom: 40px;
 }
 
-.review-section h3 {
+.event-review-section h3 {
     font-size: 24px;
     font-weight: bold;
     color: #333;
     margin: 0 0 10px 0;
     text-align: left;
-
 }
 
-.review-section .underline {
+.event-review-section .event-underline {
     width: 100%;
     height: 2px;
     background-color: #e5e5e5;
     margin-bottom: 20px;
 }
 
-.review {
+.event-review {
     background-color: #ffffff;
     border: 1px solid #e5e5e5;
     border-radius: 8px;
     padding: 10px;
 }
 
-.review-form {
+.event-review-form {
     display: flex;
     flex-direction: column;
     margin-top: 20px;
 }
 
-.review-input {
+.event-review-input {
     padding: 10px;
     border: 1px solid #e5e5e5;
     border-radius: 4px;
     margin-bottom: 10px;
 }
 
-.review-submit-button {
+.event-review-submit-button {
     padding: 10px;
     background-color: #007bff;
     color: white;
@@ -135,6 +133,6 @@
     cursor: pointer;
 }
 
-.review-submit-button:hover {
+.event-review-submit-button:hover {
     background-color: #0056b3;
 }

@@ -33,66 +33,66 @@ const EventPage = () => {
 
     return (
         <div className="event-page-container">
-            <div className="header-image-container">
+            <div className="event-header-image-container">
                 <img 
                     src={headerImage}
                     alt="eventBanner" 
-                    className="header-image" 
+                    className="event-header-image" 
                 />
             </div>
 
-            <div className="content-container">
-                <div className="event-box">
+            <div className="event-content-container">
+                <div className="event-page-box">
                     <div className="event-name-header">
                         <h3>Event Title</h3>
-                        <div className="underline"></div>
+                        <div className="event-underline"></div>
                         <p>{eventTitle}</p>
                     </div>
 
                     <div className="event-date-box">
                         <h3>Date and Time</h3>
-                        <div className="underline"></div>
+                        <div className="event-underline"></div>
                         <p>{eventDate}</p>
                     </div>
 
                     <div className="event-location-box">
                         <h3>Location</h3>
-                        <div className="underline"></div>
+                        <div className="event-underline"></div>
                         <p>{isOnline ? 'Online' : eventLocation}</p>
                     </div>
 
-                    <div className='about-event-box'>
+                    <div className='event-about-box'>
                         <h3>About Event</h3>
-                        <div className="underline"></div>
+                        <div className="event-underline"></div>
                         <p>{eventSummary}</p>
                     </div>
                 </div>
 
-                <div className="ticket-box">
+                <div className="event-ticket-box">
                     <h3>Price</h3>
-                    <div className="underline"></div>
+                    <div className="event-underline"></div>
                     <p>${ticketPrice}</p>
-                    <button className="buy-button" onClick={handleBuyTickets}>Buy Ticket</button>
+                    <button className="event-buy-button" onClick={handleBuyTickets}>Buy Ticket</button>
                 </div>
             </div>
 
-            <div className='review-section'>
+            <div className='event-review-section'>
                 <h3>Reviews</h3>
-                <div className="underline"></div>
+                <div className="event-underline"></div>
                 {reviews.map(review => (
-                    <div key={review.id} className="review">
+                    <div key={review.id} className="event-review">
                         <p>{review.text}</p>
                     </div>
                 ))}
-                <form onSubmit={handleReviewSubmit} className="review-form">
+                <form onSubmit={handleReviewSubmit} className="event-review-form">
                     <input 
                         type="text" 
                         value={newReview} 
                         onChange={handleReviewChange} 
                         placeholder="Write a review..." 
-                        className="review-input"
+                        className="event-review-input"
                     />
-                    <button type="submit" className="review-submit-button">Submit</button>
+                    <button type="submit" className="event-review-submit-button">Submit</button>
                 </form>
             </div>
         </div>
