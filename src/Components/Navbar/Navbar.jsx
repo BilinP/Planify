@@ -1,13 +1,18 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCartShopping } from "@fortawesome/free-solid-svg-icons";
-import LoginPopup from "../Login_SignUp/Login";
+import { useAuth } from '../Login_SignUp/Auth';
 import "./Navbar.css";
 
-export const Navbar = ({ cartItems }) => {
+
+export const Navbar = ({ cartItems, openLoginPopup }) => {
+    const { authData, logout } = useAuth(); // Use the authData and logout function from the context
     const [menuOpen, setMenuOpen] = useState(false);
-    const [showLoginPopup, setShowLoginPopup] = useState(false); // State to control login popup visibility
+
+    const handleLogout = () => {
+        logout();
+    };
 
     return (
         <>
@@ -20,12 +25,21 @@ export const Navbar = ({ cartItems }) => {
                     <li><Link to="/Contact">Contact</Link></li>
                 </ul>
                 <div className="nav-actions">
-                    <button
-                        className="login-button"
-                        onClick={() => setShowLoginPopup(true)} // Open the popup
-                    >
-                        Login/Sign Up
-                    </button>
+                    {!authData ? (
+                        <button
+                            className="login-button"
+                            onClick={openLoginPopup} 
+                        >
+                            Login/Sign Up
+                        </button>
+                    ) : (
+                        <button
+                            className="login-button"
+                            onClick={handleLogout} 
+                        >
+                            Sign Out
+                        </button>
+                    )}
                     <Link to="/Cart">
                         <FontAwesomeIcon
                             icon={faCartShopping}
@@ -44,12 +58,6 @@ export const Navbar = ({ cartItems }) => {
                     <span></span>
                 </div>
             </nav>
-            {showLoginPopup && (
-                <LoginPopup
-                    isOpen={showLoginPopup}
-                    togglePopup={() => setShowLoginPopup(false)} // Close the popup
-                />
-            )}
         </>
     );
 };

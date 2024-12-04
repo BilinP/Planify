@@ -1,6 +1,7 @@
 import { Route, Routes, Navigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import "./App.css";
+import { AuthProvider } from './Components/Login_SignUp/Auth.jsx';
 
 import Footer from "./Components/Footer/Footer.jsx";
 import Navbar from "./Components/Navbar/Navbar.jsx";
@@ -17,8 +18,6 @@ import SignUpPopup from "./Components/Login_SignUp/SignUp.jsx";
 import About from "./Components/About/About.jsx";
 import Home from "./Components/Home/Home.jsx";
 import EventPage from './Components/Event/EventPage';
-
-
 
 function App() {
   // States
@@ -52,21 +51,6 @@ function App() {
     setIsForgotPasswordVisible(false);
   };
 
-
-
-  const events = [
-    {
-      id: 1,
-      image: 'path-to-image.jpg', // Use the image file path
-      title: 'Work, Bitch',
-      price: 12.51,
-      date: 'Saturday, January 25 • 7:00 PM',
-      host: 'Elissa Marcus',
-      description: 'Join us for a spectacular collection of spooky, hilarious sketches...',
-      reviews: 'Great event! Fun and spooky.',
-    }
-  ];
-
   const location = useLocation();
   const validPaths = [
     "/",
@@ -83,15 +67,10 @@ function App() {
     location.pathname.startsWith(path)
   );
 
-  // Debugging: Logging state changes
-  useEffect(() => {
-    console.log("isSignUpVisible state changed:", isSignUpVisible);
-  }, [isSignUpVisible]);
-
   return (
-    <>
+    <AuthProvider>
       {showNavbarAndFooter && (
-        <Navbar cartItems={cartItems} />
+        <Navbar cartItems={cartItems} openLoginPopup={openLoginPopup} />
       )}
 
       <Routes>
@@ -112,15 +91,13 @@ function App() {
         <LoginPopup
           isOpen={isLoginVisible}
           togglePopup={closeAllPopups}
-          openSignUp={openSignUpPopup}
-          openForgotPassword={openForgotPasswordPopup}
         />
       )}
       {isSignUpVisible && <SignUpPopup closePopup={closeAllPopups} />}
       {isForgotPasswordVisible && <ForgotPasswordPopup closePopup={closeAllPopups} />}
 
       {showNavbarAndFooter && <Footer />}
-    </>
+    </AuthProvider>
   );
 }
 
