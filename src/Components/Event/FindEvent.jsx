@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import './FindEvent.css';
 import BrazilianDance from '../../assets/braziliandance.png';
 import GraduationCeremony from '../../assets/graduationceremony.png';
@@ -9,11 +9,9 @@ import CountDownIMG from '../../assets/CountDown.png';
 import BakingIMG from '../../assets/BakingIMG.png';
 import FUNdraiser from '../../assets/FUNdraiser.png';
 
-
-
-
 const events = [
     {
+        id: 1,
         title: "Brazilian Dance Social: Forró & Samba",
         date: "Sat, Dec 7",
         time: "8:00 PM",
@@ -22,6 +20,7 @@ const events = [
         image: BrazilianDance
     },
     {
+        id: 2,
         title: "Graduation Ceremony",
         date: "Fri, Dec 20",
         time: "2:00 PM",
@@ -30,6 +29,7 @@ const events = [
         image: GraduationCeremony
     },
     {
+        id: 3,
         title: "Sing! - An 'L.A. Story' Live Music",
         date: "Wed, Dec 11",
         time: "6:00 PM",
@@ -38,6 +38,7 @@ const events = [
         image: Singing
     },
     {
+        id: 4,
         title: "The RHYTHMS",
         date: "Saturday",
         time: "9:00 PM",
@@ -46,6 +47,7 @@ const events = [
         image: Rhythm
     },
     {
+        id: 5,
         title: "New Year Countdown",
         date: "Tues, Dec 31",
         time: "10:00 PM",
@@ -54,6 +56,7 @@ const events = [
         image: CountDownIMG
     },
     {
+        id: 6,
         title: "Bake Better",
         date: "Mon, Jan 6",
         time: "2:00 PM",
@@ -62,6 +65,7 @@ const events = [
         image: BakingIMG
     },
     {
+        id: 7,
         title: "HOPE - LA 6th Annual FUNdraiser 70s Disco Party",
         date: "Sun, Dec 8",
         time: "4:00 PM",
@@ -71,17 +75,25 @@ const events = [
     }
 ];
 
-const EventCard = ({ event }) => (
-    <div className="event-card">
-        <img src={event.image} alt={event.title} className="event-image" />
-        <div className="event-details">
-            <div className="event-title">{event.title}</div>
-            <div className="event-info">{event.date} • {event.time}</div>
-            <div className="event-info">{event.venue}</div>
-            <div className="event-info">From ${event.price.toFixed(2)}</div>
+const EventCard = ({ event }) => {
+    const navigate = useNavigate();
+
+    const handleClick = () => {
+        navigate(`/Event/${event.id}`);
+    };
+
+    return (
+        <div className="event-card" onClick={handleClick} style={{ cursor: 'pointer' }}>
+            <img src={event.image} alt={event.title} className="event-image" />
+            <div className="event-details">
+                <div className="event-title">{event.title}</div>
+                <div className="event-info">{event.date} • {event.time}</div>
+                <div className="event-info">{event.venue}</div>
+                <div className="event-info">From ${event.price.toFixed(2)}</div>
+            </div>
         </div>
-    </div>
-);
+    );
+};
 
 const FindEvent = () => {
     const [filteredEvents, setFilteredEvents] = useState(events);
@@ -98,7 +110,6 @@ const FindEvent = () => {
             setSearchTerm(search);
         }
     }, [location.search]);
-
 
     useEffect(() => {
         const filtered = events.filter(event => 

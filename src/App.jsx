@@ -78,6 +78,7 @@ function App() {
         <Route path="/Home" element={<Home />} />
         <Route path="/Host" element={<Create />} />
         <Route path="/Event/*" element={<FindEvent />} />
+        <Route path="/Event/:id" element={<EventPage />} />
         <Route path="/About" element={<EventPage />} />
         <Route path="/Account" element={<Account />} />
         <Route path="/Cart" element={<Cart />} />

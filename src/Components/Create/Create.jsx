@@ -1,15 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Create.css';
 import headerImage from '../../assets/header-image.webp';
+import { supabase } from '../../../backend/supabaseClient';
+import { useAuth } from '../Login_SignUp/Auth.jsx';
 
 const Create = () => {
     const [eventDate, setEventDate] = useState('');
+    const [eventTime, setEventTime] = useState('');
     const [eventTitle, setEventTitle] = useState('');
     const [eventSummary, setEventSummary] = useState('');
     const [price, setPrice] = useState('');
     const [eventLocation, setEventLocation] = useState('');
     const [isOnline, setIsOnline] = useState(false);
     const fileInputRef = useRef(null);
+    const { authData } = useAuth();
 
     const handleEventChange = (e) => {
         const selectedEvent = e.target.value;
@@ -17,9 +21,6 @@ const Create = () => {
         setShowOtherInput(selectedEvent === 'other');
     }
 
-    const handleLocationChange = (e) => {
-        setIsOnline(e.target.checked);
-    }
 
     useEffect(() => {
         const today = new Date().toISOString().split('T')[0];
@@ -60,9 +61,43 @@ const Create = () => {
         }
     };
 
-    const handleSubmit = () => {
-        // Add form submission logic here
-        alert('Event created successfully!');
+    const handleLocationChange = (e) => {
+        setEventLocation("Online");
+        setIsOnline(e.target.checked);
+    }
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const eventDateTime = new Date(`${eventDate}T${eventTime}:00Z`);
+        
+        const { data, error } = await supabase
+            .from('EventTable')
+            .insert([
+                {
+                    event_title: eventTitle,
+                    description: eventSummary,
+                    location: eventLocation,
+                    date: eventDateTime,
+                    create_by: authData.id, // Replace with actual user ID
+                    created_at: new Date(),
+                    updated_at: new Date(),
+                    price: parseFloat(price.replace('$', ''))
+                }
+            ]);
+
+        if (error) {
+            console.error('Error inserting event:', error);
+            alert('Failed to create event.');
+        } else {
+            alert('Event created successfully!');
+            // Reset form fields
+            setEventTitle('');
+            setEventSummary('');
+            setEventLocation('');
+            setEventDate(new Date().toISOString().split('T')[0]);
+            setPrice('');
+            setIsOnline(false);
+        }
     }
 
     const handleCircleClick = () => {
@@ -130,6 +165,7 @@ const Create = () => {
                     id="timeInput"
                     type="time"
                     placeholder='Time'
+                    onChange={(e) => setEventTime(e.target.value)} 
                     />
                 </div>
 
