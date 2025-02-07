@@ -4,12 +4,13 @@
 
 nav{
     display: flex;
+    position: fixed;
     justify-content: space-between;
     align-items: center;
     background-color: transparent;
     position: sticky;
     top:0;
-    
+    z-index: 1000;
 }
 .nav-actions {
     display: flex;

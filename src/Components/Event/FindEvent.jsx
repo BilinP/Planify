@@ -129,7 +129,7 @@ const FindEvent = () => {
             <div className="header">
                 <div className="location-selector">
                 <span className="location-text">Browsing events in </span>
-                    <select id="location">
+                    <select className="location">
                         <option>Santa Clarita</option>
                     </select>
                 </div>

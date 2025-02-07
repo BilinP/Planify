@@ -66,6 +66,30 @@ function App() {
   const showNavbarAndFooter = validPaths.some((path) =>
     location.pathname.startsWith(path)
   );
+  useEffect(() => {
+    let lastScrollTop = 0;
+    const navbar = document.querySelector('nav');
+
+    const handleScroll = () => {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+      if (scrollTop > lastScrollTop) {
+        // Scroll down
+        navbar.style.top = '-100px'; // Adjust this value based on your navbar height
+      } else {
+        // Scroll up
+        navbar.style.top = '0';
+      }
+
+      lastScrollTop = scrollTop;
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   return (
     <AuthProvider>
