@@ -33,18 +33,6 @@ function App() {
     setIsForgotPasswordVisible(false);
   };
 
-  const openSignUpPopup = () => {
-    setIsLoginVisible(false);
-    setIsSignUpVisible(true); 
-    setIsForgotPasswordVisible(false);
-  };
-
-  const openForgotPasswordPopup = () => {
-    setIsLoginVisible(false);
-    setIsSignUpVisible(false);
-    setIsForgotPasswordVisible(true);
-  };
-
   const closeAllPopups = () => {
     setIsLoginVisible(false);
     setIsSignUpVisible(false);
@@ -66,6 +54,7 @@ function App() {
   const showNavbarAndFooter = validPaths.some((path) =>
     location.pathname.startsWith(path)
   );
+
   useEffect(() => {
     let lastScrollTop = 0;
     const navbar = document.querySelector('nav');
@@ -118,8 +107,9 @@ function App() {
           togglePopup={closeAllPopups}
         />
       )}
+
       {isSignUpVisible && <SignUpPopup closePopup={closeAllPopups} />}
-      {isForgotPasswordVisible && <ForgotPasswordPopup closePopup={closeAllPopups} />}
+      {isForgotPasswordVisible && <ForgotPasswordPopup closePopup={setIsForgotPasswordVisible} />}
 
       {showNavbarAndFooter && <Footer />}
     </AuthProvider>

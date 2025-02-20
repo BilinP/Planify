@@ -199,7 +199,9 @@ const LoginPopup = ({ isOpen, togglePopup }) => {
           </div>
         </div>
 
-        {showForgotPassword && <ForgotPasswordPopup />}
+        {showForgotPassword && (
+          <ForgotPasswordPopup closePopup={() => setShowForgotPassword(false)} />
+        )}
       </div>
     )
   );

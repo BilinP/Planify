@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { initializeApp } from "firebase/app";
 import "./ForgotPassword.css";
+import PropTypes from 'prop-types';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -25,6 +26,7 @@ const ForgotPasswordPopup = ({ closePopup }) => {
       await sendPasswordResetEmail(auth, email);
       setMessage("Password reset email sent!");
       setEmail(""); // Clear the email field
+      closePopup();
     } catch (error) {
       console.error("Error sending password reset email:", error);
       setMessage("Failed to send password reset email.");
@@ -53,6 +55,9 @@ const ForgotPasswordPopup = ({ closePopup }) => {
       </div>
     </div>
   );
+};
+ForgotPasswordPopup.propTypes = {
+  closePopup: PropTypes.func.isRequired,
 };
 
 export default ForgotPasswordPopup;
