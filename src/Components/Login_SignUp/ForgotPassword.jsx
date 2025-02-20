@@ -32,15 +32,13 @@ const ForgotPasswordPopup = ({ closePopup }) => {
   };
 
   return (
-    <div className="forgot-password-overlay">
-      <div className="forgot-password-popup">
-        <button className="close-btn" onClick={closePopup}>
-          &times;
-        </button>
+    <div className="forgot-password-overlay" onClick={closePopup}>
+      <div className="forgot-password-popup" onClick={(e) => e.stopPropagation()}>
+        <button className="close-btn" onClick={closePopup}>&times;</button>
         <h2>Forgot Password</h2>
         <form onSubmit={handleSubmit} className="forgot-password-form">
           <label>
-            Enter your email:
+            Email:
             <input
               type="email"
               value={email}
