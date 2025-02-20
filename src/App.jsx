@@ -25,6 +25,15 @@ function App() {
   const [isLoginVisible, setIsLoginVisible] = useState(false); // Login popup visibility
   const [isSignUpVisible, setIsSignUpVisible] = useState(false); // Sign Up popup visibility
   const [isForgotPasswordVisible, setIsForgotPasswordVisible] = useState(false); // Forgot Password popup
+  const [isCartOpen, setIsCartOpen] = useState(false); // Cart popup visibility
+
+  const openCartPopup = () => {
+    setIsCartOpen(true);
+  };
+
+  const closeCartPopup = () => {
+    setIsCartOpen(false);
+  };
 
   // Popup Handlers
   const openLoginPopup = () => {
@@ -47,7 +56,6 @@ function App() {
     "/Event",
     "/About",
     "/Account",
-    "/Cart",
     "/OrderHistory",
     "/Contact",
   ];
@@ -83,7 +91,10 @@ function App() {
   return (
     <AuthProvider>
       {showNavbarAndFooter && (
-        <Navbar cartItems={cartItems} openLoginPopup={openLoginPopup} />
+        <>
+          <Navbar openLoginPopup={openLoginPopup} openCartPopup={openCartPopup} cartItems={cartItems} />
+          {isCartOpen && <Cart closeCartPopup={closeCartPopup} />}
+        </>
       )}
 
       <Routes>
@@ -94,7 +105,6 @@ function App() {
         <Route path="/Event/:id" element={<EventPage />} />
         <Route path="/About" element={<EventPage />} />
         <Route path="/Account" element={<Account />} />
-        <Route path="/Cart" element={<Cart />} />
         <Route path="/OrderHistory" element={<OrderHistory />} />
         <Route path="/Contact" element={<Contact />} />
         <Route path="*" element={<NotFoundPage />} />

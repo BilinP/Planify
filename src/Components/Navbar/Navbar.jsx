@@ -1,12 +1,11 @@
-import  { useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCartShopping } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from '../Login_SignUp/Auth';
 import "./Navbar.css";
 
-
-export const Navbar = ({ cartItems, openLoginPopup }) => {
+export const Navbar = ({ cartItems, openLoginPopup, openCartPopup }) => {
     const { authData, logout } = useAuth(); // Use the authData and logout function from the context
     const [menuOpen, setMenuOpen] = useState(false);
 
@@ -40,13 +39,13 @@ export const Navbar = ({ cartItems, openLoginPopup }) => {
                             Sign Out
                         </button>
                     )}
-                    <Link to="/Cart">
                         <FontAwesomeIcon
                             icon={faCartShopping}
+                            onClick={openCartPopup}
                             className="cart-icon"
                             style={{ color: cartItems === 0 ? "red" : "white" }}
                         />
-                    </Link>
+
                 </div>
                 <div
                     className="menu"

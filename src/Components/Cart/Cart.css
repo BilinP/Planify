@@ -3,7 +3,7 @@
     display: flex;
     flex-wrap: nowrap; /* Keep left and right sections side by side */
     width: 100%;
-    height: 100vh; 
+    height: 100%;
     background-color: #f9f9f9;
     box-sizing: border-box;
   }
@@ -267,6 +267,11 @@
   
   /* Responsive Adjustments */
   @media (max-width: 768px) {
+    .cart-popup {
+      width: 90%;
+      max-width: none;
+    }
+  
     .checkout-container {
       flex-direction: column; 
     }
@@ -284,3 +289,39 @@
     }
   }
   
+  /* Overlay for Cart Popup */
+  .cart-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  /* Cart Popup Container */
+  .cart-popup {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    position: relative;
+    box-sizing: border-box;
+  }
+  
+  /* Close Button */
+  .cart-popup .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: #333;
+    cursor: pointer;
+    z-index: 1001;
+  }
