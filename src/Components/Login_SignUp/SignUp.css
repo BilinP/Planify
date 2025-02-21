@@ -69,7 +69,8 @@
   margin-bottom: 5px;
 }
 
-.popup input {
+/* Input fields excluding checkbox */
+.popup input:not([type="checkbox"]) {
   width: 100%;
   padding: 10px;
   margin: 8px 0;
@@ -93,13 +94,14 @@
 }
 
 .checkbox-container input {
-  width: 16px;
+  width: 20px;
   height: 16px;
   margin: 0;
 }
 
 .checkbox-container label {
   font-size: 14px;
+  padding-left: 10px; /* Add padding between checkbox and label */
 }
 
 /* Buttons */
@@ -163,4 +165,19 @@
   color: #ff6b6b;
   margin-top: 10px;
   text-align: center;
+}
+
+
+.styled-checkbox {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.styled-checkbox input[type="checkbox"] {
+  margin-right: 10px;
+}
+
+.styled-checkbox label {
+  padding-top: 2px; /* Adjust this value to align the text vertically */
 }

@@ -1,4 +1,4 @@
-import { createContext, useState, useContext } from 'react';
+import { createContext, useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { supabase } from '../../../backend/supabaseClient.js'; // Adjust the path as necessary
 
@@ -7,7 +7,15 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [authData, setAuthData] = useState(null);
 
-  const login = async (email, password) => {
+  useEffect(() => {
+    const session = localStorage.getItem('supabase.auth.token') || sessionStorage.getItem('supabase.auth.token');
+    if (session) {
+      const parsedSession = JSON.parse(session);
+      setAuthData(parsedSession.user);
+    }
+  }, []);
+
+  const login = async (email, password, rememberMe) => {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -15,12 +23,15 @@ export const AuthProvider = ({ children }) => {
 
     if (error) {
       console.error("Login Error:", error);
-      alert("Login failed. Please check your credentials.");
       return false;
     }
 
     console.log("Login Success:", data);
     setAuthData(data.user);
+
+    const storage = rememberMe ? localStorage : sessionStorage;
+    storage.setItem('supabase.auth.token', JSON.stringify(data.session));
+
     return true;
   };
 
@@ -32,10 +43,53 @@ export const AuthProvider = ({ children }) => {
       return;
     }
     setAuthData(null);
+    localStorage.removeItem('supabase.auth.token');
+    sessionStorage.removeItem('supabase.auth.token');
+  };
+
+  const loginWithGoogle = async () => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin,
+      },
+    });
+
+    if (error) {
+      console.error("Google Login Error:", error);
+      return false;
+    }
+
+    console.log("Google Login Success:", data);
+    setAuthData(data.user);
+    localStorage.setItem('supabase.auth.token', JSON.stringify(data.session));
+
+    return true;
+  };
+
+  const signUp = async (email, password, additionalData) => {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: additionalData,
+      },
+    });
+
+    if (error) {
+      console.error("Sign Up Error:", error);
+      return false;
+    }
+
+    console.log("Sign Up Success:", data);
+    setAuthData(data.user);
+    localStorage.setItem('supabase.auth.token', JSON.stringify(data.session));
+
+    return true;
   };
 
   return (
-    <AuthContext.Provider value={{ authData, login, logout }}>
+    <AuthContext.Provider value={{ authData, login, loginWithGoogle, signUp, logout }}>
       {children}
     </AuthContext.Provider>
   );
