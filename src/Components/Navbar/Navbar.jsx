@@ -3,11 +3,13 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCartShopping } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from '../Login_SignUp/Auth';
-import "./Navbar.css";
+import "../../Components/Navbar/Navbar.css"; 
+import Contact from "../../Components/Contact/Contact"; // Ensure this path is correct
 
 export const Navbar = ({ cartItems, openLoginPopup, openCartPopup }) => {
-    const { authData, logout } = useAuth(); // Use the authData and logout function from the context
+    const { authData, logout } = useAuth();
     const [menuOpen, setMenuOpen] = useState(false);
+    const [profilePopupOpen, setProfilePopupOpen] = useState(false);
 
     const handleLogout = () => {
         logout();
@@ -25,38 +27,53 @@ export const Navbar = ({ cartItems, openLoginPopup, openCartPopup }) => {
                 </ul>
                 <div className="nav-actions">
                     {!authData ? (
-                        <button
-                            className="login-button"
-                            onClick={openLoginPopup} 
-                        >
+                        <button className="login-button" onClick={openLoginPopup}>
                             Login/Sign Up
                         </button>
                     ) : (
-                        <button
-                            className="login-button"
-                            onClick={handleLogout} 
-                        >
+                        <button className="login-button" onClick={handleLogout}>
                             Sign Out
                         </button>
                     )}
-                        <FontAwesomeIcon
-                            icon={faCartShopping}
-                            onClick={openCartPopup}
-                            className="cart-icon"
-                            style={{ color: cartItems === 0 ? "red" : "white" }}
-                        />
 
+                    {/* Profile Button to open the popup */}
+                    <button
+                        className="profileButton"
+                        onClick={() => setProfilePopupOpen(true)}
+                    >
+                        Profile
+                    </button>
+
+                    <FontAwesomeIcon
+                        icon={faCartShopping}
+                        onClick={openCartPopup}
+                        className="cart-icon"
+                        style={{ color: cartItems === 0 ? "red" : "white" }}
+                    />
                 </div>
-                <div
-                    className="menu"
-                    onClick={() => setMenuOpen(!menuOpen)}
-                >
+                <div className="menu" onClick={() => setMenuOpen(!menuOpen)}>
                     <span></span>
                     <span></span>
                     <span></span>
                     <span></span>
                 </div>
             </nav>
+            
+            {/* Profile Popup - Shows Contact Page */}
+            {profilePopupOpen && (
+                <div className="popup-overlay">
+                    <div className="popup-content">
+                        <h2>Contact</h2>
+                        <Contact /> {/* Renders Contact.jsx inside popup */}
+                        <button
+                            className="close-popup"
+                            onClick={() => setProfilePopupOpen(false)}
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            )}
         </>
     );
 };
