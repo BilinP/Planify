@@ -9,7 +9,6 @@ const SignUp = ({ togglePopup }) => {
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [username, setUsername] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [birthday, setBirthday] = useState("");
   const [message, setMessage] = useState("");
@@ -19,7 +18,6 @@ const SignUp = ({ togglePopup }) => {
     const displayName = `${firstName} ${lastName}`;
     const success = await signUp(email, password, {
       displayName,
-      username,
       phoneNumber,
       birthday,
     });
@@ -51,14 +49,6 @@ const SignUp = ({ togglePopup }) => {
         required
       />
 
-      <label>Username:</label>
-      <input
-        type="text"
-        placeholder="Enter username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        required
-      />
 
       <label>Phone Number:</label>
       <input

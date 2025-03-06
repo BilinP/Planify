@@ -85,23 +85,22 @@
   color: rgba(255, 255, 255, 0.7);
 }
 
-/* Checkbox container */
-.checkbox-container {
+
+.styled-checkbox {
   display: flex;
   align-items: center;
-  font-size: 14px;
-  margin-top: 5px;
+  margin-top: 10px;
 }
 
-.checkbox-container input {
-  width: 20px;
+.styled-checkbox input[type="checkbox"] {
+  margin-right: 10px;
+  width: 16px;
   height: 16px;
-  margin: 0;
 }
 
-.checkbox-container label {
+.styled-checkbox label {
+  padding-top: 0;
   font-size: 14px;
-  padding-left: 10px; /* Add padding between checkbox and label */
 }
 
 /* Buttons */
