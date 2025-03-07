@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCartShopping } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from '../Login_SignUp/Auth';
 import "../../Components/Navbar/Navbar.css"; 
+import Contact from "../../Components/Contact/Contact"; // Ensure this path is correct
 import { MdAccountCircle } from "react-icons/md"; 
 
 export const Navbar = ({ cartItems, openLoginPopup, openCartPopup }) => {
