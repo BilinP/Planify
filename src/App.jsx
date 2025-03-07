@@ -18,6 +18,9 @@ import SignUpPopup from "./Components/Login_SignUp/SignUp.jsx";
 import About from "./Components/About/About.jsx";
 import Home from "./Components/Home/Home.jsx";
 import EventPage from './Components/Event/EventPage';
+import DeveloperDashboard from "./Components/DeveloperDashboard/DeveloperDashboard";
+
+
 
 function App() {
   // States
@@ -97,18 +100,22 @@ function App() {
         </>
       )}
 
-      <Routes>
-        <Route path="/" element={<Navigate to="/Home" />} />
-        <Route path="/Home" element={<Home />} />
-        <Route path="/Host" element={<Create />} />
-        <Route path="/Event/*" element={<FindEvent />} />
-        <Route path="/Event/:id" element={<EventPage />} />
-        <Route path="/About" element={<EventPage />} />
-        <Route path="/Account" element={<Account />} />
-        <Route path="/OrderHistory" element={<OrderHistory />} />
-        <Route path="/Contact" element={<Contact />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
+<Routes>
+  <Route path="/" element={<Navigate to="/Home" />} />
+  <Route path="/Home" element={<Home />} />
+  <Route path="/Host" element={<Create />} />
+  <Route path="/Event/*" element={<FindEvent />} />
+  <Route path="/Event/:id" element={<EventPage />} />
+  <Route path="/About" element={<EventPage />} />
+  <Route path="/Account" element={<Account />} />
+  <Route path="/OrderHistory" element={<OrderHistory />} />
+  <Route path="/Contact" element={<Contact />} />
+  
+  <Route path="/dev-dashboard/*" element={<DeveloperDashboard />} /> {/* This should be used */}
+
+  <Route path="*" element={<NotFoundPage />} />
+</Routes>
+
 
       {/* Popups */}
       {isLoginVisible && (
