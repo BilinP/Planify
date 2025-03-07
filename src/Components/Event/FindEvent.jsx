@@ -143,7 +143,7 @@ const FindEvent = () => {
                 <div className="map-modal">
                     <div className="map-content">
                         <h3>Event Locations</h3>
-                        <div className="map-placeholder">Map will be displayed here</div>
+                        <div className="map-placeholder">Map</div>
                         <button onClick={handleCloseMap} className="close-button">Close</button>
                     </div>
                 </div>
