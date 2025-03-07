@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FaTrash } from "react-icons/fa"; // Import the trash can icon
+import { FaTrash } from "react-icons/fa"; 
 import "./Cart.css"; // Ensure your CSS file is linked
 import VisaIcon from "./visa-svgrepo-com.png";
 import MastercardIcon from "./mastercard-svgrepo-com.png";
@@ -78,8 +78,8 @@ const Cart = ({ closeCartPopup }) => {
                     <button onClick={() => updateQuantity(index, item.quantity - 1)} disabled={item.quantity <= 1}>-</button>
                     <span>{item.quantity}</span>
                     <button onClick={() => updateQuantity(index, item.quantity + 1)} disabled={item.quantity >= maxQuantity}>+</button>
-                    <button onClick={() => removeItem(index)}><FaTrash /></button> {/* Use the trash can icon */}
-                    <span>${(item.price * item.quantity).toFixed(2)}</span>
+                    <button onClick={() => removeItem(index)}><FaTrash /></button> 
+                    <span className="price">${(item.price * item.quantity).toFixed(2)}</span> 
                   </div>
                 </div>
               ))}

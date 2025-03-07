@@ -71,6 +71,11 @@
   font-weight: bold;
 }
 
+.quantity-price .price {
+  width: 70px;
+  text-align: right; 
+}
+
 .order-subtotal,
 .order-shipping,
 .order-total {
