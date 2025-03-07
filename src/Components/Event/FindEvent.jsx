@@ -100,6 +100,7 @@ const FindEvent = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [activeCategory, setActiveCategory] = useState('All');
     const location = useLocation();
+    const [showMap, setShowMap] = useState(false);
 
     const categories = ['All', 'For you', 'Online', 'Today', 'This weekend', 'Free', 'Music', 'Food & Drink', 'Charity & Causes'];
 
@@ -124,11 +125,33 @@ const FindEvent = () => {
         setFilteredEvents(events);
     };
 
+    const handleShowMap = () => {
+        setShowMap(true);
+    };
+
+    const handleCloseMap = () => {
+        setShowMap(false);
+    };
+
     return (
         <div className="container">
+            <button onClick={handleShowMap} className="map-button">
+                Show Map
+            </button>
+
+            {showMap && (
+                <div className="map-modal">
+                    <div className="map-content">
+                        <h3>Event Locations</h3>
+                        <div className="map-placeholder">Map will be displayed here</div>
+                        <button onClick={handleCloseMap} className="close-button">Close</button>
+                    </div>
+                </div>
+            )}
+
             <div className="header">
                 <div className="location-selector">
-                <span className="location-text">Browsing events in </span>
+                    <span className="location-text">Browsing events in </span>
                     <select className="location">
                         <option>Santa Clarita</option>
                     </select>
