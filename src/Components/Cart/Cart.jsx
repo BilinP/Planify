@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { FaTrash } from "react-icons/fa"; // Import the trash can icon
 import "./Cart.css"; // Ensure your CSS file is linked
 import VisaIcon from "./visa-svgrepo-com.png";
 import MastercardIcon from "./mastercard-svgrepo-com.png";
@@ -36,6 +37,12 @@ const Cart = ({ closeCartPopup }) => {
     }
   };
 
+  // Remove item from the cart
+  const removeItem = (index) => {
+    const updatedCart = cart.filter((_, i) => i !== index);
+    setCart(updatedCart);
+  };
+
   // Fetch address suggestions from the Nominatim API
   const fetchSuggestions = async (query) => {
     if (query.length > 2) {
@@ -68,22 +75,16 @@ const Cart = ({ closeCartPopup }) => {
                 <div key={index} className="order-item">
                   <div>{item.name}</div>
                   <div className="quantity-price">
-                    <select
-                      value={item.quantity}
-                      onChange={(e) =>
-                        updateQuantity(index, parseInt(e.target.value, 10))
-                      }
-                    >
-                      {Array.from({ length: maxQuantity }, (_, i) => (
-                        <option key={i} value={i + 1}>
-                          {i + 1}
-                        </option>
-                      ))}
-                    </select>
+                    <button onClick={() => updateQuantity(index, item.quantity - 1)} disabled={item.quantity <= 1}>-</button>
+                    <span>{item.quantity}</span>
+                    <button onClick={() => updateQuantity(index, item.quantity + 1)} disabled={item.quantity >= maxQuantity}>+</button>
+                    <button onClick={() => removeItem(index)}><FaTrash /></button> {/* Use the trash can icon */}
                     <span>${(item.price * item.quantity).toFixed(2)}</span>
                   </div>
                 </div>
               ))}
+            </div>
+            <div className="order-summary-bottom">
               <div className="order-subtotal">
                 <span>Subtotal:</span>
                 <span>${subtotal.toFixed(2)}</span>
@@ -96,8 +97,8 @@ const Cart = ({ closeCartPopup }) => {
                 <span>Total Due:</span>
                 <span>${total.toFixed(2)}</span>
               </div>
+              <p className="powered-by">Powered by Stripe</p>
             </div>
-            <p className="powered-by">Powered by Stripe</p>
           </div>
 
           {/* Right Section */}

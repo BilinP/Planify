@@ -54,17 +54,21 @@ export const AuthProvider = ({ children }) => {
         redirectTo: window.location.origin,
       },
     });
-
+  
     if (error) {
       console.error("Google Login Error:", error);
       return false;
     }
-
-    console.log("Google Login Success:", data);
-    setAuthData(data.user);
-    localStorage.setItem('supabase.auth.token', JSON.stringify(data.session));
-
-    return true;
+  
+    if (data?.user) {
+      console.log("Google Login Success:", data);
+      setAuthData(data.user);
+      localStorage.setItem('supabase.auth.token', JSON.stringify(data.session));
+      return true;
+    } else {
+      console.error("Google Login Error: No user data returned");
+      return false;
+    }
   };
 
   const signUp = async (email, password, additionalData) => {
