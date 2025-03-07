@@ -1,32 +1,17 @@
-import { useEffect, useState } from 'react';
-import { useAuth } from '../Login_SignUp/Auth.jsx';
-import { supabase } from '../../../backend/supabaseClient.js';
+import { useState } from 'react';
 import './Contact.css';
 
 const Contact = () => {
-    const { authData } = useAuth();
-    const [userData, setUserData] = useState(null);
+    // Hardcoded user data
+    const userData = {
+        name: 'John Doe',
+        email: 'john.doe@example.com',
+        dob: 'January 1, 1990',
+        country: 'USA',
+        language: 'English',
+    };
+
     const [image, setImage] = useState(null);
-  
-    useEffect(() => {
-      const fetchUserData = async () => {
-        if (authData) {
-          const { data, error } = await supabase
-            .from('profile') 
-            .select('*')
-            .eq('user_id', authData.id)
-            .single();
-  
-          if (error) {
-            console.error('Error fetching user data:', error);
-          } else {
-            setUserData(data);
-          }
-        }
-      };
-  
-      fetchUserData();
-    }, [authData]);
 
     // Handler for file input change
     const handleImageUpload = (e) => {
@@ -43,14 +28,9 @@ const Contact = () => {
         setImage(null); // Set image state back to null to remove the profile picture
     };
 
-    if (!userData) {
-        return <div>Loading...</div>;
-      }
-
     return (
         <div className="contact-container">
-            {/* Background box behind the grid */}
-            <div className="background-box"></div>
+            
 
             {/* Heading and Description */}
             <div className="info-header">
