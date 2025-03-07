@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCartShopping } from "@fortawesome/free-solid-svg-icons";
@@ -10,6 +10,29 @@ export const Navbar = ({ cartItems, openLoginPopup, openCartPopup }) => {
     const { authData, logout } = useAuth();
     const [menuOpen, setMenuOpen] = useState(false);
     const [profilePopupOpen, setProfilePopupOpen] = useState(false);
+    const popupRef = useRef(null); // Ref to the popup content
+
+    // Function to close the popup
+    const closePopup = () => {
+        setProfilePopupOpen(false);
+    };
+
+    // Event listener to detect clicks outside the popup
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (popupRef.current && !popupRef.current.contains(e.target)) {
+                closePopup();
+            }
+        };
+
+        // Add event listener to detect click outside
+        document.addEventListener('mousedown', handleClickOutside);
+
+        // Cleanup the event listener when the component unmounts
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
     const handleLogout = () => {
         logout();
@@ -62,15 +85,9 @@ export const Navbar = ({ cartItems, openLoginPopup, openCartPopup }) => {
             {/* Profile Popup - Shows Contact Page */}
             {profilePopupOpen && (
                 <div className="popup-overlay">
-                    <div className="popup-content">
-                        <h2>Contact</h2>
+                    <div className="popup-content" ref={popupRef}>
+                        <h2></h2>
                         <Contact /> {/* Renders Contact.jsx inside popup */}
-                        <button
-                            className="close-popup"
-                            onClick={() => setProfilePopupOpen(false)}
-                        >
-                            Close
-                        </button>
                     </div>
                 </div>
             )}

@@ -1,135 +1,135 @@
-/* Contact.css */
+/* General popup content container adjustments */
+.popup-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    width: 1000px;
+    max-width: 90%;
+    height: 700px;
+    max-height: 80%;
+    overflow-y: auto; /* Allow scrolling if content overflows */
+    position: relative; /* Make sure child elements are positioned correctly */
+}
 
-/* Profile Circle */
+/* Profile Circle adjustments */
 .profile-circle {
     position: absolute;
-    top: 150px;
-    right: 500px;
-    width: 150px;
-    height: 150px;
+    top: 25px; /* Adjust to fit better in the container */
+    left: 80%; 
+    transform: translateX(-50%); /* Center horizontally */
+    width: 120px; /* Adjust size to fit the pop-up box */
+    height: 120px;
     border-radius: 50%;
-    background-color: #f0f0f0; /* Light gray background */
-    border: 2px solid #ccc; /* Border around the circle */
+    background-color: #f0f0f0;
+    border: 2px solid #ccc;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    margin: 20px auto;
-    position: relative;
 }
 
 .profile-img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Crop the image to fit inside the circle */
+    object-fit: cover;
 }
 
-/* Placeholder text in the circle */
 .profile-placeholder {
     font-size: 40px;
     color: #007bff;
     font-weight: bold;
 }
 
-/* Style for the file input */
+/* File input for image upload */
 .file-input {
     position: absolute;
-    top:400px;
-    left:250px;
+    top: 140px; /* Position it below the profile circle */
+    left: 85%;
+    transform: translateX(-50%); /* Center horizontally */
     display: block;
     margin: 20px auto;
     cursor: pointer;
     z-index: 3;
 }
 
-
-
 /* Background box behind the grid */
 .background-box {
-    position: absolute; /* Position it absolutely on the screen */
-    right:5px; /* Align it to the right side of the screen */
-    left:5px;
-    top: 50%; /* Position it vertically */
-    transform: translateY(-50%); /* Center it vertically */
-    width: 1705px; /* Width slightly larger than the grid */
-    height: 1000px; /* Height slightly larger than the grid */
-    background-color: #f0f0f080; /* Light background color */
-    border-radius: 12px; /* Rounded corners for the background box */
-    z-index: 1; /* Position it behind the grid */
+    position: absolute;
+    left: 20px;
+    right: 20px;
+    top: 150px; /* Adjust the top to fit in the box */
+    bottom: 20px;
+    background-color: #f0f0f080;
+    border-radius: 12px;
+    z-index: 1;
 }
 
-.contact-gif {
-    display: block;
-    margin: 20px auto; /* Center the GIF horizontally */
-    max-width: 100%; /* Makes the GIF responsive */
-    border: 3px solid #ccc; /* Optional: Add a border around the GIF */
-}
-
-/* Contact.css */
+/* Grid container for user information boxes */
 .contact-container .container {
-    display: grid; /* Use grid layout */
-    grid-template-columns: repeat(2, 1fr); /* 2 equal columns */
-    grid-template-rows: repeat(2, 1fr); /* 2 equal rows */
-    gap: 35px; /* Space between the boxes */
-    justify-items: center; /* Center boxes horizontally within their grid cells */
-    align-items: center; /* Center boxes vertically within their grid cells */
-    position: absolute; /* Position the grid container */
-    right: 200px; /* Align the container to the right side of the screen */
-    top: 45%; /* Vertically center the container */
-    transform: translateY(-50%); /* Ensure it's exactly centered vertically */
-    height: 200px; /* Set a fixed height to accommodate the 2x2 grid */
+    display: grid;
+    grid-template-columns: repeat(2, .09fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 15px; /* Reduce gap to fit in the pop-up */
+    justify-items: center;
+    align-items: center;
+    position: absolute;
+    top: 215px;
+    left: 28%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-height: 300px; /* Set a max height to ensure it fits within the pop-up */
     z-index: 2;
 }
 
 .box {
-    width: 300px; /* Set the width of each box */
-    height: 125px; /* Set the height of each box */
-    background-color: #ffffff; /* Set background color */
-    border-radius: 8px; /* Optional: Rounded corners */
+    width: 250px; /* Adjust width for better layout */
+    height: 100px; /* Adjust height */
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 10px;
     z-index: 2;
 }
 
 /* Styling for the buttons container */
 .button-container {
-    position: absolute; /* Absolute positioning */
-    left: 20px; /* Position it on the left side of the screen */
-    top: 45%; /* Align vertically to the middle of the screen */
-    transform: translateY(-50%); /* Adjust so it's perfectly centered vertically */
-    display: flex; /* Use flexbox for easy button alignment */
-    flex-direction: column; /* Align buttons vertically */
-    gap: 10px; /* Space between buttons */
-    padding-left: 10px; /* Optional: Adjust the padding if needed */
+    position: absolute;
+    top: 65%;
+    left: 85%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-left: 10px;
     z-index: 3;
 }
 
 /* Button styling */
 .btn {
-    position: relative;
-    top: 80px;
-    left: 150px;
     font-family: "Ultra";
-    background-color: transparent; /* Transparent background */
-    border: 2px solid #000000; /* Blue border */
-    color: #000000; /* Blue text color */
-    padding: 10px 20px; /* Button padding */
-    border-radius: 5px; /* Rounded corners */
-    font-size: 24px; /* Font size */
-    cursor: pointer; /* Change cursor to pointer on hover */
-    transition: background-color 0.3s, color 0.3s; /* Smooth transition */
-    margin-bottom: 10px; /* Space between buttons */
+    background-color: transparent;
+    border: 2px solid #000000;
+    color: #000000;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 20px; /* Adjust font size to fit in the pop-up */
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    margin-bottom: 10px;
 }
 
 .btn:hover {
-    background-color: #ff00aa; /* Blue background on hover */
-    color: white; /* White text color on hover */
+    background-color: #ff00aa;
+    color: white;
 }
 
 /* Remove Profile Picture Button */
 .remove-btn {
     display: block;
     margin: 10px auto;
-    background-color: #ff4d4d; /* Red background */
-    color: rgb(0, 0, 0); /* White text */
+    background-color: #ff4d4d;
+    color: rgb(0, 0, 0);
     border: none;
     padding: 10px 20px;
     border-radius: 5px;
@@ -139,75 +139,72 @@
 }
 
 .remove-btn:hover {
-    background-color: #ff0000; /* Darker red on hover */
+    background-color: #ff0000;
 }
 
 /* Label styling (e.g., "Name", "Date of Birth") */
 .box-label {
-    position: relative;
-    top: 5px;
-    font-family: 'Ultra', sans-serif; /* Optional font family */
-    font-size: 24px; /* Font size for labels */
-    color: #000000; /* Dark text color */
-    font-weight: bold; /* Make the text bold */
-    margin: 0; /* Remove default margin */
+    font-family: 'Ultra', sans-serif;
+    font-size: 20px;
+    color: #000000;
+    font-weight: bold;
 }
 
 /* Value styling (e.g., "John Doe", "01/01/1990") */
 .box-value {
-    position: relative;
-    top: 10px;
-    font-family: 'Ultra', sans-serif; /* Optional font family */
-    font-size: 16px; /* Font size for values */
-    color: #999999; /* Light gray text color */
-    font-weight: normal; /* Regular weight for contrast */
-    margin: 0; /* Remove default margin */
+    font-family: 'Ultra', sans-serif;
+    font-size: 16px;
+    color: #999999;
+    font-weight: normal;
 }
-
 
 /* Heading and description styles */
 .info-header {
     position: absolute;
-    top: 350px; /* Position above the grid */
-    left: 875px; /* Adjust to align with the grid */
-    text-align: left; /* Align text to the left */
-    z-index: 12; /* Ensure it is above the background box */
+    top: 50px; /* Adjust to fit within the pop-up */
+    left: 35%;
+    transform: translateX(-50%);
+    text-align: left;
+    z-index: 12;
 }
 
 .info-title {
     font-family: 'Ultra';
-    font-size: 28px; /* Size for the heading */
+    font-size: 24px;
     font-weight: bold;
-    color: #000000; /* Black text */
-    margin-bottom: 10px; /* Space below the heading */
+    color: #000000;
+    text-align: left;
 }
 
 .info-description {
     font-family: 'Ultra';
-    font-size: 16px; /* Size for the description */
-    color: #000000; /* Dark gray text for better readability */
-    line-height: 1.5; /* Spacing between lines */
-    max-width: 600px; /* Optional: Limit the width for better formatting */
+    font-size: 16px;
+    color: #000000;
+    line-height: 1.5;
+    max-width: 600px;
+    margin-top: 10px;
 }
+
 /* Styling for the User Info section below the profile circle */
 .user-info {
     position: absolute;
-    text-align: left; /* Center the text */
-    top: 440px;
-    left: 200px;
-    margin-top: 20px; /* Space between the profile circle and the user info */
+    text-align: center;
+    top: 160px;
+    left: 81%;
+    transform: translateX(-50%);
+    margin-top: 20px;
     z-index: 10;
 }
 
 .user-name {
     font-family: 'Ultra';
-    font-size: 24px; /* Font size for the name */
-    color: #000000; /* Dark color for the name */
+    font-size: 22px;
+    color: #000000;
 }
 
 .user-email {
     font-family: 'Ultra';
-    font-size: 16px; /* Font size for the email */
-    color: #000000; /* Light gray color for the email */
-    margin-top: 5px; /* Space between name and email */
+    font-size: 16px;
+    color: #000000;
+    margin-top: 5px;
 }
