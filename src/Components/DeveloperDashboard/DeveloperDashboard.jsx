@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, Routes, Route } from "react-router-dom";
+import { Link, Routes, Route, useLocation } from "react-router-dom";
 
 // Styling
 const sidebarStyle = {
@@ -28,14 +28,24 @@ const activeLinkStyle = {
   backgroundColor: "#555",
 };
 
+const sectionTitleStyle = {
+  textAlign: "left", // Ensure titles are left-aligned
+  margin: "0", // Remove any default margin that could push titles to the right
+  padding: "10px 0", // Add some padding above and below titles
+  fontSize: "1.5rem", // Make the title slightly bigger for better visibility
+  color: "white", // Ensure the title color is consistent with the theme
+};
+
 const DeveloperDashboard = () => {
+  const location = useLocation(); // Get the current location (route)
+
   console.log("Developer Dashboard Rendered");
 
   return (
     <div style={{ display: "flex" }}>
       {/* Sidebar */}
       <div style={sidebarStyle}>
-        <h2>Developer Dashboard</h2>
+        <h2>DevDash</h2>
         <ul>
           <li>
             <Link to="notifications" style={linkStyle} activeStyle={activeLinkStyle}>
@@ -62,8 +72,13 @@ const DeveloperDashboard = () => {
 
       {/* Main content */}
       <div style={mainContentStyle}>
-        <h1>Developer Dashboard</h1>
-        <p>Welcome to the Developer Dashboard! Here, you can monitor project activity.</p>
+        {/* Conditionally render the "Welcome" text only if the current path is the root dashboard */}
+        {location.pathname === "/dev-dashboard" && (
+          <div>
+            <h1 style={sectionTitleStyle}>Developer Dashboard</h1>
+            <p>Welcome to the Developer Dashboard! Here, you can monitor project activity.</p>
+          </div>
+        )}
 
         {/* Nested Routes for Sections */}
         <Routes>
@@ -87,7 +102,7 @@ const Notifications = () => {
 
   return (
     <div>
-      <h2>Notifications</h2>
+      <h2 style={sectionTitleStyle}>Notifications</h2>
       <ul>
         {notifications.map((notification, index) => (
           <li key={index}>{notification}</li>
@@ -116,7 +131,7 @@ const Analytics = () => {
 
   return (
     <div>
-      <h2>Analytics</h2>
+      <h2 style={sectionTitleStyle}>Analytics</h2>
       <button style={{ margin: "5px" }} onClick={() => setShowTicketSales(!showTicketSales)}>
         Ticket Sales
       </button>
@@ -162,7 +177,7 @@ const UserData = () => {
 
   return (
     <div>
-      <h2>User Data</h2>
+      <h2 style={sectionTitleStyle}>User Data</h2>
       <ul>
         {users.map((user) => (
           <li key={user.id}>
@@ -185,7 +200,7 @@ const UserData = () => {
 const Settings = () => {
   return (
     <div>
-      <h2>Settings</h2>
+      <h2 style={sectionTitleStyle}>Settings</h2>
       <p>Manage your account and preferences here.</p>
       <button style={{ margin: "5px" }}>Change Profile Picture</button>
       <button style={{ margin: "5px" }}>Change Email</button>
