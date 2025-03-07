@@ -1,16 +1,9 @@
 import { useState } from 'react';
+import { useAuth } from '../Login_SignUp/Auth';
 import './Contact.css';
 
 const Contact = () => {
-    // Hardcoded user data
-    const userData = {
-        name: 'John Doe',
-        email: 'john.doe@example.com',
-        dob: 'January 1, 1990',
-        country: 'USA',
-        language: 'English',
-    };
-
+    const { authData, profileData } = useAuth(); // Get user and profile data from context
     const [image, setImage] = useState(null);
 
     // Handler for file input change
@@ -28,10 +21,12 @@ const Contact = () => {
         setImage(null); // Set image state back to null to remove the profile picture
     };
 
+    if (!authData || !profileData) {
+        return <div>Loading...</div>; // Show a loading state while user data is being fetched
+    }
+
     return (
         <div className="contact-container">
-            
-
             {/* Heading and Description */}
             <div className="info-header">
                 <h2 className="info-title">Personal Information</h2>
@@ -52,8 +47,8 @@ const Contact = () => {
 
             {/* User Info: Name and Email Display under the Profile Circle */}
             <div className="user-info">
-                <h2 className="user-name">{userData.name}</h2>
-                <p className="user-email">{userData.email}</p>
+                <h2 className="user-name">{profileData.name || 'No Name'}</h2>
+                <p className="user-email">{authData.email}</p>
             </div>
 
             {/* File Input for Image Upload */}
@@ -75,23 +70,23 @@ const Contact = () => {
             <div className="container">
                 <div className="box">
                     <p className="box-label">Name:</p>
-                    <p className="box-value">{userData.name}</p>
+                    <p className="box-value">{profileData.name || 'No Name'}</p>
                 </div>
                 <div className="box">
                     <p className="box-label">Date of Birth:</p>
-                    <p className="box-value">{userData.dob}</p>
+                    <p className="box-value">{profileData.dob || 'No DOB'}</p>
                 </div>
                 <div className="box">
                     <p className="box-label">Country:</p>
-                    <p className="box-value">{userData.country}</p>
+                    <p className="box-value">{profileData.country || 'No Country'}</p>
                 </div>
                 <div className="box">
                     <p className="box-label">Language:</p>
-                    <p className="box-value">{userData.language}</p>
+                    <p className="box-value">{profileData.language || 'No Language'}</p>
                 </div>
                 <div className="box">
                     <p className="box-label">Email:</p>
-                    <p className="box-value">{userData.email}</p>
+                    <p className="box-value">{authData.email}</p>
                 </div>
             </div>
 

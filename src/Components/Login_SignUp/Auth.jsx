@@ -6,14 +6,31 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [authData, setAuthData] = useState(null);
+  const [profileData, setProfileData] = useState(null);
 
   useEffect(() => {
     const session = localStorage.getItem('supabase.auth.token') || sessionStorage.getItem('supabase.auth.token');
     if (session) {
       const parsedSession = JSON.parse(session);
       setAuthData(parsedSession.user);
+      fetchProfileData(parsedSession.user.id);
     }
   }, []);
+
+  const fetchProfileData = async (userId) => {
+    const { data, error } = await supabase
+      .from('profile')
+      .select('*')
+      .eq('user_id', userId)
+      .single();
+
+    if (error) {
+      console.error("Error fetching profile data:", error);
+      return;
+    }
+
+    setProfileData(data);
+  };
 
   const login = async (email, password, rememberMe) => {
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -28,6 +45,7 @@ export const AuthProvider = ({ children }) => {
 
     console.log("Login Success:", data);
     setAuthData(data.user);
+    fetchProfileData(data.user.id);
 
     const storage = rememberMe ? localStorage : sessionStorage;
     storage.setItem('supabase.auth.token', JSON.stringify(data.session));
@@ -43,6 +61,7 @@ export const AuthProvider = ({ children }) => {
       return;
     }
     setAuthData(null);
+    setProfileData(null);
     localStorage.removeItem('supabase.auth.token');
     sessionStorage.removeItem('supabase.auth.token');
   };
@@ -54,15 +73,16 @@ export const AuthProvider = ({ children }) => {
         redirectTo: window.location.origin,
       },
     });
-  
+
     if (error) {
       console.error("Google Login Error:", error);
       return false;
     }
-  
+
     if (data?.user) {
       console.log("Google Login Success:", data);
       setAuthData(data.user);
+      fetchProfileData(data.user.id);
       localStorage.setItem('supabase.auth.token', JSON.stringify(data.session));
       return true;
     } else {
@@ -87,13 +107,14 @@ export const AuthProvider = ({ children }) => {
 
     console.log("Sign Up Success:", data);
     setAuthData(data.user);
+    fetchProfileData(data.user.id);
     localStorage.setItem('supabase.auth.token', JSON.stringify(data.session));
 
     return true;
   };
 
   return (
-    <AuthContext.Provider value={{ authData, login, loginWithGoogle, signUp, logout }}>
+    <AuthContext.Provider value={{ authData, profileData, login, loginWithGoogle, signUp, logout }}>
       {children}
     </AuthContext.Provider>
   );
