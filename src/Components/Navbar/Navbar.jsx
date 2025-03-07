@@ -5,7 +5,7 @@ import { faCartShopping } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from '../Login_SignUp/Auth';
 import "../../Components/Navbar/Navbar.css"; 
 import Contact from "../../Components/Contact/Contact"; // Ensure this path is correct
-import { FaTrash } from "react-icons/fa"; 
+import { MdAccountCircle } from "react-icons/md"; 
 
 export const Navbar = ({ cartItems, openLoginPopup, openCartPopup }) => {
     const { authData, logout } = useAuth();
@@ -32,18 +32,18 @@ export const Navbar = ({ cartItems, openLoginPopup, openCartPopup }) => {
                             Login/Sign Up
                         </button>
                     ) : (
-                        <button className="login-button" onClick={handleLogout}>
-                            Sign Out
-                        </button>
+                        <>
+                            <button className="login-button" onClick={handleLogout}>
+                                Sign Out
+                            </button>
+                            {/* Profile Icon to open the popup */}
+                            <MdAccountCircle
+                                size={40}
+                                className="profile-icon"
+                                onClick={() => setProfilePopupOpen(true)}
+                            />
+                        </>
                     )}
-
-                    {/* Profile Button to open the popup */}
-                    <button
-                        className="profileButton"
-                        onClick={() => setProfilePopupOpen(true)}
-                    >
-                        Profile
-                    </button>
 
                     <FontAwesomeIcon
                         icon={faCartShopping}
