@@ -1,111 +1,87 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { supabase } from '../../../backend/supabaseClient'; 
+import { useAuth } from '../Login_SignUp/Auth';
 import './EventPage.css';
-import BrazilianDance from '../../assets/braziliandance.png';
-import GraduationCeremony from '../../assets/graduationceremony.png';
-import Singing from '../../assets/sing.png';
-import Rhythm from '../../assets/Rhythm.png';
-import CountDownIMG from '../../assets/CountDown.png';
-import BakingIMG from '../../assets/BakingIMG.png';
-import FUNdraiser from '../../assets/FUNdraiser.png';
 
 
-const events = [
-    {
-        id: 1,
-        title: "Brazilian Dance Social: Forró & Samba",
-        date: "Sat, Dec 7",
-        time: "8:00 PM",
-        venue: "Motivo LA",
-        price: 20.00,
-        image: BrazilianDance,
-        summary: "Join us for a night of Brazilian dance and music!"
-    },
-    {
-        id: 2,
-        title: "Graduation Ceremony",
-        date: "Fri, Dec 20",
-        time: "2:00 PM",
-        venue: "CSUN",
-        price: 5.00,
-        image: GraduationCeremony,
-        summary: "Celebrate the achievements of our graduates."
-    },
-    {
-        id: 3,
-        title: "Sing! - An 'L.A. Story' Live Music",
-        date: "Wed, Dec 11",
-        time: "6:00 PM",
-        venue: "Hauser & Wirth West Hollywood",
-        price: 0,
-        image: Singing,
-        summary: "Enjoy live music performances in L.A."
-    },
-    {
-        id: 4,
-        title: "The RHYTHMS",
-        date: "Saturday",
-        time: "9:00 PM",
-        venue: "The Melrose House",
-        price: 0,
-        image: Rhythm,
-        summary: "Experience the rhythms of the night."
-    },
-    {
-        id: 5,
-        title: "New Year Countdown",
-        date: "Tues, Dec 31",
-        time: "10:00 PM",
-        venue: "Apartment ",
-        price: 0.00,
-        image: CountDownIMG,
-        summary: "Countdown to the new year with us!"
-    },
-    {
-        id: 6,
-        title: "Bake Better",
-        date: "Mon, Jan 6",
-        time: "2:00 PM",
-        venue: "Baking class",
-        price: 15.00,
-        image: BakingIMG,
-        summary: "Learn to bake better with our expert tips."
-    },
-    {
-        id: 7,
-        title: "HOPE - LA 6th Annual FUNdraiser 70s Disco Party",
-        date: "Sun, Dec 8",
-        time: "4:00 PM",
-        venue: "XO Banquet Hall",
-        price: 50.00,
-        image: FUNdraiser,
-        summary: "Join us for a 70s disco party fundraiser."
-    }
-];
+
+const bucketBaseUrl = 'https://gliujspizqdmlzvnkyfb.supabase.co/storage/v1/object/public/Planify/Event/';
 
 const EventPage = () => {
-    const { id } = useParams();
+    const { id } = useParams(); // Get event ID from URL
+    const { authData } = useAuth(); // Get user authentication data
     const [event, setEvent] = useState(null);
-    const [reviews, setReviews] = useState([
-        { id: 1, text: 'Great event! Fun and engaging.' },
-        { id: 2, text: 'Well organized and informative.' },
-    ]);
+    const [reviews, setReviews] = useState([]);
     const [newReview, setNewReview] = useState('');
+    const [showLoginPopup, setShowLoginPopup] = useState(false); // State for login popup
 
     useEffect(() => {
-        const event = events.find(event => event.id === parseInt(id));
-        setEvent(event);
+        // Fetch event details and reviews when the component loads
+        fetchEvent();
+        fetchReviews();
     }, [id]);
+
+    const fetchEvent = async () => {
+        const { data, error } = await supabase
+            .from('EventTable')
+            .select('*')
+            .eq('event_id', id)
+            .single();
+
+        if (error) {
+            console.error('Error fetching event:', error);
+        } else {
+            setEvent(data);
+        }
+    };
+
+    const fetchReviews = async () => {
+        const { data, error } = await supabase
+            .from('Review') // Replace 'Review' with your table name
+            .select('*')
+            .eq('event_id', id); // Fetch reviews for the specific event
+
+        if (error) {
+            console.error('Error fetching reviews:', error);
+        } else {
+            setReviews(data);
+        }
+    };
 
     const handleReviewChange = (e) => {
         setNewReview(e.target.value);
     };
 
-    const handleReviewSubmit = (e) => {
+    const handleReviewSubmit = async (e) => {
         e.preventDefault();
+
+        
+        if (!authData) {
+            setShowLoginPopup(true); 
+            return;
+        }
+
         if (newReview.trim()) {
-            setReviews([...reviews, { id: reviews.length + 1, text: newReview }]);
-            setNewReview('');
+            const { data, error } = await supabase
+                .from('Review') 
+                .insert([
+                    {
+                        event_id: id, 
+                        created_at: new Date().toISOString(), 
+                        user_id: authData.id, 
+                        review_txt: newReview,
+                    },
+                ])
+                .select();
+
+            if (error) {
+                console.error('Error saving review:', error);
+            } else {
+             
+                setReviews([...reviews, ...data]);
+                setNewReview('');
+            }
         }
     };
 
@@ -121,7 +97,7 @@ const EventPage = () => {
         <div className="event-page-container">
             <div className="event-header-image-container">
                 <img 
-                    src={event.image}
+                    src={`${bucketBaseUrl}event_${id}.png`}
                     alt="eventBanner" 
                     className="event-header-image" 
                 />
@@ -132,25 +108,27 @@ const EventPage = () => {
                     <div className="event-name-header">
                         <h3>Event Title</h3>
                         <div className="event-underline"></div>
-                        <p style={{ marginBottom: '20px' }}>{event.title}</p>
+                        <p style={{ marginBottom: '20px' }}>{event.event_title}</p>
                     </div>
 
                     <div className="event-date-box">
                         <h3>Date and Time</h3>
                         <div className="event-underline"></div>
-                        <p style={{ marginBottom: '20px' }}>{event.date}</p>
+                        <p style={{ marginBottom: '20px' }}>
+                           {new Date(event.date).toISOString().slice(0, 10).replace("T", " ")}
+                        </p>
                     </div>
 
                     <div className="event-location-box">
                         <h3>Location</h3>
                         <div className="event-underline"></div>
-                        <p style={{ marginBottom: '20px' }}>{event.venue}</p>
+                        <p style={{ marginBottom: '20px' }}>{event.location}</p>
                     </div>
 
                     <div className='event-about-box'>
                         <h3>About Event</h3>
                         <div className="event-underline"></div>
-                        <p style={{ marginBottom: '20px' }}>{event.summary}</p>
+                        <p style={{ marginBottom: '20px' }}>{event.description}</p>
                     </div>
                 </div>
 
@@ -162,12 +140,12 @@ const EventPage = () => {
                 </div>
             </div>
 
-            <div className='event-review-section'>
+            <div className="event-review-section">
                 <h3>Reviews</h3>
                 <div className="event-underline"></div>
-                {reviews.map(review => (
-                    <div key={review.id} className="event-review">
-                        <p>{review.text}</p>
+                {reviews.map((review) => (
+                    <div key={review.id} className="event-review"> 
+                        <p>{review.review_txt}</p>
                     </div>
                 ))}
                 <form onSubmit={handleReviewSubmit} className="event-review-form">
@@ -181,8 +159,17 @@ const EventPage = () => {
                     <button type="submit" className="event-review-submit-button">Submit</button>
                 </form>
             </div>
+
+            {showLoginPopup && (
+                <div className="login-popup">
+                    <div className="login-popup-content">
+                        <p>You must be logged in to submit a review.</p>
+                        <button onClick={() => setShowLoginPopup(false)}>Close</button>
+                    </div>
+                </div>
+            )}
         </div>
     );
-}
+};
 
 export default EventPage;

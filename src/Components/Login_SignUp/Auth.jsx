@@ -107,6 +107,25 @@ export const AuthProvider = ({ children }) => {
 
     console.log("Sign Up Success:", data);
     setAuthData(data.user);
+
+    // Insert a new record into the profile table
+    const { error: profileError } = await supabase
+      .from('profile')
+      .insert([{
+        user_id: data.user.id,
+        email: data.user.email,
+        name: `${additionalData.firstName} ${additionalData.last_name}`,
+        dob: additionalData.dob,
+        country: 'USA',
+        language: 'English',
+        created_at: new Date().toISOString()
+      }]);
+
+    if (profileError) {
+      console.error("Profile Insert Error:", profileError);
+      return false;
+    }
+
     fetchProfileData(data.user.id);
     localStorage.setItem('supabase.auth.token', JSON.stringify(data.session));
 
