@@ -106,7 +106,7 @@ function App() {
   <Route path="/Host" element={<Create />} />
   <Route path="/Event/*" element={<FindEvent />} />
   <Route path="/Event/:id" element={<EventPage />} />
-  <Route path="/About" element={<EventPage />} />
+  <Route path="/About" element={<About />} />
   <Route path="/Account" element={<Account />} />
   <Route path="/OrderHistory" element={<OrderHistory />} />
   <Route path="/Contact" element={<Contact />} />

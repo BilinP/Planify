@@ -1,0 +1,112 @@
+.about-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 93vh; 
+    font-family: 'Poppins', sans-serif;
+    box-sizing: border-box;
+    padding-bottom: 10rem;
+}
+
+
+.about-box {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px); 
+    border: 1px solid rgba(255, 255, 255, 0.3); 
+    border-radius: 15px;
+    padding: 40px;
+    max-width: 900px;
+    width: 100%;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2); 
+    color: #000; 
+    animation: fadeIn 1.5s ease-in-out; 
+}
+
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+.about-title {
+    font-size: 3rem; 
+    color: #1ca6dd;
+    text-align: center;
+    margin-bottom: 30px;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); 
+}
+
+
+.about-description {
+    font-size: 1.5rem; 
+    line-height: 1.8;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+
+.about-features {
+    margin-bottom: 40px;
+}
+
+.about-features h2 {
+    font-size: 2rem; 
+    color: #1ca6dd;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.about-features ul {
+    list-style-type: disc;
+    padding-left: 40px;
+}
+
+.about-features li {
+    font-size: 1.5em; 
+    margin-bottom: 15px;
+    transition: transform 0.3s ease, color 0.3s ease; 
+}
+
+.about-features li:hover {
+    transform: translateX(10px); 
+    color: #1ca6dd; 
+}
+
+
+.about-mission h2 {
+    font-size: 2rem;
+    color: #1ca6dd; 
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.about-mission p {
+    font-size: 1.5rem; 
+    line-height: 1.8;
+    text-align: center;
+}
+
+
+.about-box:hover {
+    border-color: rgba(79, 70, 229, 3); 
+    box-shadow: 0 20px 300px rgba(79, 70, 229, 1); 
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+
+.hover-word {
+    display: inline-block;
+    margin-right: 0.3rem;
+    transition: color 0.3s ease;
+}
+
+.hover-word:hover {
+    color: #1ca6dd;
+}
