@@ -171,7 +171,7 @@
 
 .login-popup-content button {
     padding: 10px 20px;
-    background: #1ca6dd;
+    background: #007bff;
     color: white;
     border: none;
     border-radius: 5px;
@@ -180,5 +180,5 @@
 }
 
 .login-popup-content button:hover {
-    background: #148bb5;
+    background: #0056b3;
 }
