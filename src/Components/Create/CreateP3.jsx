@@ -5,7 +5,7 @@ import './CreateP1.css';
 const CreateP3 = ({ prevStep, formData, handleSubmit }) => {
     return (
         <div className="step-three-container">
-            <h2>Review and Confirm</h2>
+            <h2>Review</h2>
             <ul>
                 <li><strong>Event Title:</strong> {formData.eventTitle}</li>
                 <li><strong>Date:</strong> {formData.eventDate}</li>

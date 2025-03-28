@@ -4,7 +4,8 @@ Page 1
 
 .step-one-container{
     width: 100%;
-    max-width: 400px;
+    max-width: 500px;
+    border-radius: 5%;
     padding: 10px;
     display: flex;
     flex-direction: column;
@@ -27,6 +28,7 @@ h2 {
 
 .step-one-container input{
     font-size: 18px;
+    border-radius: 10%;
     background: linear-gradient(to bottom,rgb(54,36,171), rgb(26,2,114));
     color: #ffffff;
     padding: 10px;
@@ -38,6 +40,7 @@ h2 {
 
 .step-one-container input::placeholder{
     color: #ffffff;
+    text-align: center;
 }
 
 .step-one-container button {
@@ -80,6 +83,7 @@ Page 2
 
 .step-two-container{
     width: 100%;
+    border-radius: 5%;
     max-width: 400px;
     padding: 10px;
     display: flex;
@@ -94,6 +98,7 @@ Page 2
 
 .step-two-container input{
     font-size: 18px;
+    border-radius: 10%;
     background: linear-gradient(to bottom,rgb(54,36,171), rgb(26,2,114));
     color: #ffffff;
     padding: 10px;
@@ -110,14 +115,17 @@ Page 2
 .create-online-checkbox {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 5px; 
 }
 
 .create-online-checkbox label{
     display: flex;
+    color: #ffffff;
     align-items: center;
     justify-content: center; 
     gap: 5px; 
+    text-align: center;
 }
 
 .step-two-container button {
@@ -159,17 +167,19 @@ Page 3
 */
 
 .step-three-container {
+    width: 100%;
+    border-radius: 5%;
+    max-width: 500px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-color: #2c2c54;
-    color: white;
-    padding: 20px;
-    border-radius: 10px;
-    width: 50%;
-    margin: auto;
-    text-align: center;
+    align-items: left;
+    background: linear-gradient(to bottom, rgb(26, 2, 114), rgb(54, 36, 171));
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    color: #ffffff;
 }
 
 ul {
