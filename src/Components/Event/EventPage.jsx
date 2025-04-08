@@ -56,7 +56,6 @@ const EventPage = () => {
     const handleReviewSubmit = async (e) => {
         e.preventDefault();
 
-        
         if (!authData) {
             setShowLoginPopup(true); 
             return;
@@ -78,15 +77,43 @@ const EventPage = () => {
             if (error) {
                 console.error('Error saving review:', error);
             } else {
-             
                 setReviews([...reviews, ...data]);
                 setNewReview('');
             }
         }
     };
 
-    const handleBuyTickets = () => {
-        alert('Purchased tickets.');
+    const handleBuyTickets = async () => {
+        const ticket = {
+            ticket_type_id: id, 
+            name: event.event_title,
+            price: event.price,
+        };
+
+        if (authData) {
+            const { error } = await supabase
+                .from("cart")
+                .insert([{
+                    user_id: authData.id,
+                    ticket_type_id: ticket.ticket_type_id,
+                    quantity: 1,
+                }]);
+            if (error) {
+                console.error("Error adding ticket to cart:", error);
+            } else {
+                alert("Ticket added to your cart!");
+            }
+        } else {
+            const cachedCart = JSON.parse(localStorage.getItem("cart")) || [];
+            cachedCart.push({
+                ticket_type_id: ticket.ticket_type_id,
+                name: ticket.name,
+                price: ticket.price,
+                quantity: 1,
+            });
+            localStorage.setItem("cart", JSON.stringify(cachedCart));
+            alert("Ticket added to your cart!");
+        }
     };
 
     if (!event) {
@@ -97,7 +124,7 @@ const EventPage = () => {
         <div className="event-page-container">
             <div className="event-header-image-container">
                 <img 
-                    src={`${bucketBaseUrl}event_${id}.png`}
+                    src={`${bucketBaseUrl}event_${id}.png?width=1000&height=500&quality=100`}
                     alt="eventBanner" 
                     className="event-header-image" 
                 />
@@ -140,11 +167,11 @@ const EventPage = () => {
                 </div>
             </div>
 
-            <div className="event-review-section">
+            <div className='event-review-section'>
                 <h3>Reviews</h3>
                 <div className="event-underline"></div>
-                {reviews.map((review) => (
-                    <div key={review.id} className="event-review"> 
+                {reviews.map(review => (
+                    <div key={review.id} className="event-review">
                         <p>{review.review_txt}</p>
                     </div>
                 ))}

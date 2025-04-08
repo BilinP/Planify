@@ -1,19 +1,129 @@
-import React, { useState } from "react";
+import { useEffect, useState } from 'react';
 import { FaTrash } from "react-icons/fa"; 
-import "./Cart.css"; // Ensure your CSS file is linked
+import { supabase } from "../../../backend/supabaseClient"; 
+import "./Cart.css";
 import VisaIcon from "./visa-svgrepo-com.png";
+import PropTypes from "prop-types";
 import MastercardIcon from "./mastercard-svgrepo-com.png";
+import { useAuth } from '../Login_SignUp/Auth';
 
 const Cart = ({ closeCartPopup }) => {
-  const [cart, setCart] = useState([
-    { name: "VIP Tickets", price: 75, quantity: 2 },
-    { name: "Concert Lightsticks", price: 25, quantity: 2 },
-  ]);
-
+  const [cart, setCart] = useState([]);
   const [showManualAddress, setShowManualAddress] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState("");
   const [suggestions, setSuggestions] = useState([]);
+  const { authData } = useAuth(); // Get user authentication data
   const maxQuantity = 4;
+
+  // Load cart from local storage or database on component mount
+  useEffect(() => {
+    const loadCart = async () => {
+      if (authData) {
+        const { data, error } = await supabase
+          .from("cart")
+          .select(`
+            id,
+            quantity,
+            ticket_type_id,
+            ticket_types (
+              name,
+              price
+            )
+          `)
+          .eq("user_id", authData.id);
+    
+        if (error) {
+          console.error("Error fetching cart:", error);
+        } else {
+          const formattedCart = data.map((item) => ({
+            id: item.id,
+            ticket_type_id: item.ticket_type_id,
+            name: item.ticket_types.name,
+            price: item.ticket_types.price,
+            quantity: item.quantity
+          }));
+    
+          setCart(formattedCart);
+          console.log("Fetched cart from DB:", formattedCart);
+        }
+      } else {
+        const cachedCart = JSON.parse(localStorage.getItem("cart")) || [];
+        setCart(cachedCart);
+      }
+    };
+
+    loadCart();
+  }, [authData]);
+
+  // Save cart to database or local storage
+  const saveCart = async (updatedCart) => {
+    setCart(updatedCart);
+  
+    if (authData) {
+      const { error } = await supabase
+        .from("cart")
+        .upsert(
+          updatedCart.map((item) => ({
+            id: item.id, // keep existing ID if present
+            user_id: authData.id,
+            ticket_type_id: item.ticket_type_id,
+            quantity: item.quantity,
+          })),
+          { onConflict: ['id'] }
+        );
+  
+      if (error) {
+        console.error("Error saving cart:", error);
+      }
+    } else {
+      localStorage.setItem("cart", JSON.stringify(updatedCart));
+    }
+  };
+
+  // Add an item to the cart
+  const addToCart = (item) => {
+    if (authData) {
+      // ideally handled on ticket detail page or with a DB insert
+      console.warn("Logged-in cart items should be added via the backend.");
+    } else {
+      const existingItemIndex = cart.findIndex((cartItem) => cartItem.ticket_type_id === item.ticket_type_id);
+      if (existingItemIndex !== -1) {
+        const updatedCart = [...cart];
+        updatedCart[existingItemIndex].quantity += item.quantity;
+        saveCart(updatedCart);
+      } else {
+        const updatedCart = [...cart, item];
+        saveCart(updatedCart);
+      }
+    }
+  };
+
+  // Update item quantity in the cart
+  const updateQuantity = async (index, quantity) => {
+    if (quantity >= 1 && quantity <= maxQuantity) {
+      const updatedCart = [...cart];
+      updatedCart[index].quantity = quantity;
+      await saveCart(updatedCart);
+    }
+  };
+  
+  const removeItem = async (index) => {
+    const cartItem = cart[index];
+  
+    if (authData) {
+      const { error } = await supabase
+        .from("cart")
+        .delete()
+        .eq("id", cartItem.id);
+  
+      if (error) {
+        console.error("Error removing item:", error);
+      }
+    }
+  
+    const updatedCart = cart.filter((_, i) => i !== index);
+    setCart(updatedCart);
+  };
 
   // Calculate subtotal
   const subtotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
@@ -27,21 +137,6 @@ const Cart = ({ closeCartPopup }) => {
 
   const shippingCost = calculateShipping(subtotal);
   const total = subtotal + shippingCost;
-
-  // Update item quantity in the cart
-  const updateQuantity = (index, quantity) => {
-    if (quantity >= 1 && quantity <= maxQuantity) {
-      const updatedCart = [...cart];
-      updatedCart[index].quantity = quantity;
-      setCart(updatedCart);
-    }
-  };
-
-  // Remove item from the cart
-  const removeItem = (index) => {
-    const updatedCart = cart.filter((_, i) => i !== index);
-    setCart(updatedCart);
-  };
 
   // Fetch address suggestions from the Nominatim API
   const fetchSuggestions = async (query) => {
@@ -202,6 +297,12 @@ const Cart = ({ closeCartPopup }) => {
       </div>
     </div>
   );
+};
+Cart.propTypes = {
+  closeCartPopup: PropTypes.func.isRequired,
+  authData: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+  }),
 };
 
 export default Cart;

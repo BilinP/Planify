@@ -8,17 +8,18 @@
 
 .event-header-image-container {
     position: relative;
-    width: 1000px;
-    height: 500px;
+    width: 100%;
+    max-width: 1000px; 
+    height: auto; 
     margin-bottom: 20px;
     overflow: hidden;
 }
 
 .event-header-image {
     width: 100%;
-    height: 100%;
+    height: auto; 
     border-radius: 8px;
-    object-fit: cover;
+    object-fit: cover; 
 }
 
 .event-content-container {
@@ -182,3 +183,4 @@
 .login-popup-content button:hover {
     background: #0056b3;
 }
+
