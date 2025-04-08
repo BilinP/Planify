@@ -8,6 +8,7 @@ import Rhythm from '../../assets/Rhythm.png';
 import CountDownIMG from '../../assets/CountDown.png';
 import BakingIMG from '../../assets/BakingIMG.png';
 import FUNdraiser from '../../assets/FUNdraiser.png';
+import { FaShare, FaCalendar, FaTimes, FaTwitter, FaFacebook, FaLinkedin, FaWhatsapp, FaEnvelope } from 'react-icons/fa';
 
 const events = [
     {
@@ -75,11 +76,151 @@ const events = [
     }
 ];
 
+const ShareModal = ({ event, onClose }) => {
+    const shareUrl = window.location.href;
+    const shareText = `Check out this event: ${event.title} at ${event.venue} on ${event.date}`;
+    
+    const handleClose = (e) => {
+        e.stopPropagation();
+        onClose();
+    };
+
+    const shareLinks = [
+        {
+            name: 'Twitter',
+            icon: <FaTwitter />,
+            url: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`,
+            color: '#1DA1F2'
+        },
+        {
+            name: 'Facebook',
+            icon: <FaFacebook />,
+            url: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
+            color: '#4267B2'
+        },
+        {
+            name: 'LinkedIn',
+            icon: <FaLinkedin />,
+            url: `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(event.title)}`,
+            color: '#0077B5'
+        },
+        {
+            name: 'WhatsApp',
+            icon: <FaWhatsapp />,
+            url: `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`,
+            color: '#25D366'
+        },
+        {
+            name: 'Email',
+            icon: <FaEnvelope />,
+            url: `mailto:?subject=${encodeURIComponent(event.title)}&body=${encodeURIComponent(shareText + '\n\n' + shareUrl)}`,
+            color: '#EA4335'
+        }
+    ];
+
+    return (
+        <div className="modal-overlay" onClick={handleClose}>
+            <div className="share-modal" onClick={(e) => e.stopPropagation()}>
+                <div className="share-modal-header">
+                    <h2>Share Event</h2>
+                    <button className="close-modal-button" onClick={handleClose}>
+                        <FaTimes />
+                    </button>
+                </div>
+                <div className="share-modal-content">
+                    <div className="share-preview">
+                        <img src={event.image} alt={event.title} className="share-preview-image" />
+                        <div className="share-preview-info">
+                            <h3>{event.title}</h3>
+                            <p>{event.date} • {event.time}</p>
+                            <p>{event.venue}</p>
+                        </div>
+                    </div>
+                    <div className="share-buttons">
+                        {shareLinks.map((link, index) => (
+                            <a
+                                key={index}
+                                href={link.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="share-button"
+                                style={{ backgroundColor: link.color }}
+                            >
+                                {link.icon}
+                                <span>{link.name}</span>
+                            </a>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 const EventCard = ({ event }) => {
     const navigate = useNavigate();
+    const [showShareModal, setShowShareModal] = useState(false);
 
     const handleClick = () => {
         navigate(`/Event/${event.id}`);
+    };
+
+    const handleShare = (e) => {
+        e.stopPropagation();
+        setShowShareModal(true);
+    };
+
+    const handleAddToCalendar = (e) => {
+        e.stopPropagation();
+        // Create event date string in ISO format
+        const eventDate = new Date(event.date);
+        const eventTime = event.time.split(':');
+        eventDate.setHours(parseInt(eventTime[0]), parseInt(eventTime[1]));
+
+        // Create calendar event data
+        const calendarEvent = {
+            text: event.title,
+            dates: eventDate.toISOString(),
+            details: `Location: ${event.venue}\nPrice: $${event.price}`,
+            location: event.venue
+        };
+
+        // Create calendar URLs
+        const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(calendarEvent.text)}&dates=${calendarEvent.dates.replace(/[-:]/g, '').split('.')[0]}Z/${calendarEvent.dates.replace(/[-:]/g, '').split('.')[0]}Z&details=${encodeURIComponent(calendarEvent.details)}&location=${encodeURIComponent(calendarEvent.location)}`;
+        const outlookCalendarUrl = `https://outlook.live.com/calendar/0/addsubject?subject=${encodeURIComponent(calendarEvent.text)}&body=${encodeURIComponent(calendarEvent.details)}&startdt=${calendarEvent.dates}&enddt=${calendarEvent.dates}&location=${encodeURIComponent(calendarEvent.location)}`;
+        const appleCalendarUrl = `data:text/calendar;charset=utf-8,BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nDTSTART:${calendarEvent.dates}\nDTEND:${calendarEvent.dates}\nSUMMARY:${calendarEvent.text}\nDESCRIPTION:${calendarEvent.details}\nLOCATION:${calendarEvent.location}\nEND:VEVENT\nEND:VCALENDAR`;
+
+        // Open calendar dialog
+        const calendarWindow = window.open('', '_blank', 'width=600,height=400');
+        calendarWindow.document.write(`
+            <html>
+                <head>
+                    <title>Add to Calendar</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; }
+                        .calendar-button { 
+                            display: block; 
+                            width: 100%; 
+                            padding: 10px; 
+                            margin: 10px 0; 
+                            text-align: center; 
+                            text-decoration: none; 
+                            color: white; 
+                            border-radius: 5px;
+                        }
+                        .google { background-color: #DB4437; }
+                        .outlook { background-color: #0078D4; }
+                        .apple { background-color: #000000; }
+                    </style>
+                </head>
+                <body>
+                    <h2>Add to Calendar</h2>
+                    <a href="${googleCalendarUrl}" class="calendar-button google" target="_blank">Add to Google Calendar</a>
+                    <a href="${outlookCalendarUrl}" class="calendar-button outlook" target="_blank">Add to Outlook Calendar</a>
+                    <a href="${appleCalendarUrl}" class="calendar-button apple" download="event.ics">Add to Apple Calendar</a>
+                </body>
+            </html>
+        `);
     };
 
     return (
@@ -90,7 +231,21 @@ const EventCard = ({ event }) => {
                 <div className="event-info">{event.date} • {event.time}</div>
                 <div className="event-info">{event.venue}</div>
                 <div className="event-info">From ${event.price.toFixed(2)}</div>
+                <div className="event-actions">
+                    <button className="event-action-button" onClick={handleShare}>
+                        <FaShare /> Share
+                    </button>
+                    <button className="event-action-button" onClick={handleAddToCalendar}>
+                        <FaCalendar /> Add to Calendar
+                    </button>
+                </div>
             </div>
+            {showShareModal && (
+                <ShareModal 
+                    event={event} 
+                    onClose={() => setShowShareModal(false)} 
+                />
+            )}
         </div>
     );
 };
