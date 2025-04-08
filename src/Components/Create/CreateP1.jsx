@@ -4,7 +4,7 @@ import './CreateP1.css';
 const CreateP1 = ({ nextStep, handleChange, formData }) => {
     return (
         <div className="step-one-container">
-            <h2>Event Details</h2>
+            <h2>Details</h2>
             <input
                 type="text"
                 placeholder="Event Title"

@@ -8,3 +8,27 @@ body {
   padding: 0;
   height: 100vh;
 }
+
+
+.sidebar-link {
+  color: white;
+  text-decoration: none;
+  display: block;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  font-size: 1.1rem;
+  transition: background 0.2s ease;
+}
+
+/* Hover effect on the sidebar links only */
+.sidebar-link:hover {
+  transform: scale(1.05); /* Slightly enlarge the link on hover */
+  background-color: #3B4B5C; /* Lighter shade for the background */
+  transition: transform 0.2s ease, background-color 0.2s ease; /* Smooth transition */
+}
+
+/* Active link style */
+.sidebar-link.active {
+  background-color: #4B5563; /* Tailwind gray-700 */
+}
