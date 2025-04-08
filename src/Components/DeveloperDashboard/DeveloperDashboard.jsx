@@ -1,78 +1,82 @@
 import React, { useState } from "react";
 import { Link, Routes, Route, useLocation } from "react-router-dom";
 
-// Styling
 const sidebarStyle = {
   width: "250px",
   height: "100vh",
   padding: "20px",
-  backgroundColor: "#333",
+  backgroundColor: "rgba(0, 0, 0, 0.85)", // Slight transparency
   color: "white",
   position: "fixed",
-};
-
-const mainContentStyle = {
-  marginLeft: "250px",
-  padding: "20px",
-  color: "white", // White text only for the dashboard
+  top: "50px", // Lower the sidebar
+  left: 0,
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "space-between",
+  zIndex: 10,
 };
 
 const linkStyle = {
   color: "white",
   textDecoration: "none",
   display: "block",
-  padding: "10px",
+  padding: "12px 16px",
+  borderRadius: "8px",
+  marginBottom: "8px",
+  fontSize: "1.1rem",
+  transition: "background 0.2s ease", // For background color transitions
 };
 
 const activeLinkStyle = {
-  backgroundColor: "#555",
+  backgroundColor: "#4B5563", // Tailwind gray-700
+};
+
+const mainContentStyle = {
+  marginLeft: "250px",
+  padding: "40px 20px",
+  color: "white",
+  minHeight: "100vh",
+  backgroundColor: "rgba(0, 0, 0, 0.6)",
 };
 
 const sectionTitleStyle = {
-  textAlign: "left", // Ensure titles are left-aligned
-  margin: "0", // Remove any default margin that could push titles to the right
-  padding: "10px 0", // Add some padding above and below titles
-  fontSize: "1.5rem", // Make the title slightly bigger for better visibility
-  color: "white", // Ensure the title color is consistent with the theme
+  fontSize: "1.8rem",
+  marginBottom: "16px",
 };
 
 const DeveloperDashboard = () => {
-  const location = useLocation(); // Get the current location (route)
+  const location = useLocation();
 
-  console.log("Developer Dashboard Rendered");
+  const linkPaths = [
+    { path: "notifications", label: "Notifications" },
+    { path: "analytics", label: "Analytics" },
+    { path: "user-data", label: "User Data" },
+    { path: "settings", label: "Settings" },
+  ];
 
   return (
     <div style={{ display: "flex" }}>
-      {/* Sidebar */}
-      <div style={sidebarStyle}>
-        <h2>DevDash</h2>
-        <ul>
-          <li>
-            <Link to="notifications" style={linkStyle} activeStyle={activeLinkStyle}>
-              Notifications
+      <aside style={sidebarStyle}>
+        <div>
+          <h2 style={{ fontSize: "1.5rem", marginBottom: "1.5rem" }}>DevDash</h2>
+          {linkPaths.map(({ path, label }) => (
+            <Link
+              key={path}
+              to={path}
+              style={{
+                ...linkStyle,
+                ...(location.pathname.includes(path) ? activeLinkStyle : {}),
+              }}
+              className="sidebar-link"  // Add this class for hover effect
+            >
+              {label}
             </Link>
-          </li>
-          <li>
-            <Link to="analytics" style={linkStyle} activeStyle={activeLinkStyle}>
-              Analytics
-            </Link>
-          </li>
-          <li>
-            <Link to="user-data" style={linkStyle} activeStyle={activeLinkStyle}>
-              User Data
-            </Link>
-          </li>
-          <li>
-            <Link to="settings" style={linkStyle} activeStyle={activeLinkStyle}>
-              Settings
-            </Link>
-          </li>
-        </ul>
-      </div>
+          ))}
+        </div>
+        <small style={{ color: "#ccc", fontSize: "0.75rem" }}>© 2025 Planify</small>
+      </aside>
 
-      {/* Main content */}
-      <div style={mainContentStyle}>
-        {/* Conditionally render the "Welcome" text only if the current path is the root dashboard */}
+      <main style={mainContentStyle}>
         {location.pathname === "/dev-dashboard" && (
           <div>
             <h1 style={sectionTitleStyle}>Developer Dashboard</h1>
@@ -80,19 +84,17 @@ const DeveloperDashboard = () => {
           </div>
         )}
 
-        {/* Nested Routes for Sections */}
         <Routes>
           <Route path="notifications" element={<Notifications />} />
           <Route path="analytics" element={<Analytics />} />
           <Route path="user-data" element={<UserData />} />
           <Route path="settings" element={<Settings />} />
         </Routes>
-      </div>
+      </main>
     </div>
   );
 };
 
-// Notifications Section
 const Notifications = () => {
   const notifications = [
     "New user signed up",
@@ -112,63 +114,15 @@ const Notifications = () => {
   );
 };
 
-// Analytics Section with Dynamic Data Display
 const Analytics = () => {
-  const [showTicketSales, setShowTicketSales] = useState(false);
-  const [showEvents, setShowEvents] = useState(false);
-
-  const ticketSalesData = [
-    { event: "Concert A", ticketsSold: 120 },
-    { event: "Festival B", ticketsSold: 300 },
-    { event: "Sports Match C", ticketsSold: 250 },
-  ];
-
-  const eventsData = [
-    { name: "Music Festival", date: "2025-04-12", location: "Los Angeles" },
-    { name: "Tech Conference", date: "2025-05-20", location: "San Francisco" },
-    { name: "Comedy Night", date: "2025-06-15", location: "New York" },
-  ];
-
   return (
     <div>
       <h2 style={sectionTitleStyle}>Analytics</h2>
-      <button style={{ margin: "5px" }} onClick={() => setShowTicketSales(!showTicketSales)}>
-        Ticket Sales
-      </button>
-      <button style={{ margin: "5px" }} onClick={() => setShowEvents(!showEvents)}>
-        Events
-      </button>
-
-      {showTicketSales && (
-        <div>
-          <h3>Ticket Sales</h3>
-          <ul>
-            {ticketSalesData.map((sale, index) => (
-              <li key={index}>
-                <strong>{sale.event}</strong>: {sale.ticketsSold} tickets sold
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {showEvents && (
-        <div>
-          <h3>Upcoming Events</h3>
-          <ul>
-            {eventsData.map((event, index) => (
-              <li key={index}>
-                <strong>{event.name}</strong> - {event.date} in {event.location}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <p>Here are the analytics data...</p>
     </div>
   );
 };
 
-// User Data Section
 const UserData = () => {
   const users = [
     { id: 1, name: "John Doe", lastLogin: "2025-03-05", purchases: [{ item: "Concert Ticket", date: "2025-03-01" }] },
@@ -196,15 +150,11 @@ const UserData = () => {
   );
 };
 
-// Settings Section
 const Settings = () => {
   return (
     <div>
       <h2 style={sectionTitleStyle}>Settings</h2>
       <p>Manage your account and preferences here.</p>
-      <button style={{ margin: "5px" }}>Change Profile Picture</button>
-      <button style={{ margin: "5px" }}>Change Email</button>
-      <button style={{ margin: "5px" }}>Log Out</button>
     </div>
   );
 };
