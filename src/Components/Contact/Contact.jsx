@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../Login_SignUp/Auth';
 import { useNavigate } from 'react-router-dom';
 import './Contact.css';
+import PropTypes from 'prop-types';
 
 const Contact = ({closePopup}) => {
     const { authData, profileData } = useAuth(); // Get user and profile data from context
@@ -109,6 +110,9 @@ const Contact = ({closePopup}) => {
             </div>
         </div>
     );
+};
+Contact.propTypes = {
+    closePopup: PropTypes.func.isRequired,
 };
 
 export default Contact;

@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { Link, Routes, Route, useLocation } from "react-router-dom";
 
 const sidebarStyle = {

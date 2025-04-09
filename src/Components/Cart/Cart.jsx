@@ -19,30 +19,34 @@ const Cart = ({ closeCartPopup }) => {
   useEffect(() => {
     const loadCart = async () => {
       if (authData) {
+        // Join ticket_types with events to pull the event title
         const { data, error } = await supabase
           .from("cart")
           .select(`
             id,
             quantity,
             ticket_type_id,
-            ticket_types (
-              name,
-              price
+            ticket_types(
+              price,
+              EventTable (
+                event_title
+              )
             )
           `)
           .eq("user_id", authData.id);
-    
+  
         if (error) {
           console.error("Error fetching cart:", error);
         } else {
+          // Use event_title from the joined events table
           const formattedCart = data.map((item) => ({
             id: item.id,
             ticket_type_id: item.ticket_type_id,
-            name: item.ticket_types.name,
+            name: item.ticket_types.EventTable.event_title,
             price: item.ticket_types.price,
             quantity: item.quantity
           }));
-    
+  
           setCart(formattedCart);
           console.log("Fetched cart from DB:", formattedCart);
         }
@@ -51,7 +55,7 @@ const Cart = ({ closeCartPopup }) => {
         setCart(cachedCart);
       }
     };
-
+  
     loadCart();
   }, [authData]);
 
@@ -156,7 +160,11 @@ const Cart = ({ closeCartPopup }) => {
                     <span>{item.quantity}</span>
                     <button onClick={() => updateQuantity(index, item.quantity + 1)} disabled={item.quantity >= maxQuantity}>+</button>
                     <button onClick={() => removeItem(index)}><FaTrash /></button> 
-                    <span className="price">${(item.price * item.quantity).toFixed(2)}</span> 
+                    <span className="price">
+                      {item.price === 0 
+                        ? "FREE" 
+                        : `$${(item.price * item.quantity).toFixed(2)}`}
+                    </span>
                   </div>
                 </div>
               ))}
