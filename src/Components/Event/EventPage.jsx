@@ -84,37 +84,76 @@ const EventPage = () => {
     };
 
     const handleBuyTickets = async () => {
+        const { data: ticketType } = await supabase
+          .from("ticket_types")
+          .select("id, price")
+          .eq("event_id", id)
+          .single();
+
         const ticket = {
-            ticket_type_id: id, 
-            name: event.event_title,
-            price: event.price,
+          ticket_type_id: ticketType.id,
+          event_title: event.event_title, 
+          price: ticketType.price,    
         };
 
         if (authData) {
-            const { error } = await supabase
+            try {
+              // Check for an existing cart row for this ticket type
+              const { data: existingCartItems, error } = await supabase
                 .from("cart")
-                .insert([{
-                    user_id: authData.id,
-                    ticket_type_id: ticket.ticket_type_id,
-                    quantity: 1,
-                }]);
-            if (error) {
-                console.error("Error adding ticket to cart:", error);
-            } else {
-                alert("Ticket added to your cart!");
+                .select("*")
+                .eq("ticket_type_id", ticket.ticket_type_id)
+                .eq("user_id", authData.id);
+          
+              if (error) throw error;
+          
+              if (existingCartItems?.length > 0) {
+                // Update quantity if ticket already exists
+                const newQuantity = existingCartItems[0].quantity + 1;
+                const { error } = await supabase
+                  .from("cart")
+                  .update({ quantity: newQuantity })
+                  .eq("id", existingCartItems[0].id);
+                if (error) throw error;
+                alert("Ticket quantity updated in your cart.");
+              } else {
+                // Insert new cart row for the ticket
+                const { error } = await supabase
+                  .from("cart")
+                  .insert([
+                    {
+                      user_id: authData.id,
+                      ticket_type_id: ticket.ticket_type_id,
+                      quantity: 1,
+                    },
+                  ]);
+                if (error) throw error;
+                alert("Ticket added to your cart.");
+              }
+            } catch (error) {
+              console.error("Error processing ticket addition:", error);
+              alert("There was an error processing your request. Please try again later.");
             }
-        } else {
-            const cachedCart = JSON.parse(localStorage.getItem("cart")) || [];
-            cachedCart.push({
+          } else {
+            // For guest users, update the cart in local storage
+            let cachedCart = JSON.parse(localStorage.getItem("cart")) || [];
+            const index = cachedCart.findIndex(
+              (item) => item.ticket_type_id === ticket.ticket_type_id
+            );
+            if (index !== -1) {
+                cachedCart[index].quantity += 1;
+            } else {
+                cachedCart.push({
                 ticket_type_id: ticket.ticket_type_id,
-                name: ticket.name,
+                name: ticket.event_title,
                 price: ticket.price,
                 quantity: 1,
-            });
+              });
+            }
             localStorage.setItem("cart", JSON.stringify(cachedCart));
-            alert("Ticket added to your cart!");
-        }
-    };
+            alert("Ticket added/updated in your cart.");
+          }
+      };
 
     if (!event) {
         return <div>Loading...</div>;

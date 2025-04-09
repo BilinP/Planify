@@ -95,19 +95,20 @@ const Cart = ({ closeCartPopup }) => {
   
   const removeItem = async (index) => {
     const cartItem = cart[index];
+    const updatedCart = cart.filter((_, i) => i !== index);
   
     if (authData) {
       const { error } = await supabase
         .from("cart")
         .delete()
         .eq("id", cartItem.id);
-  
       if (error) {
         console.error("Error removing item:", error);
       }
+    } else {
+      localStorage.setItem("cart", JSON.stringify(updatedCart));
     }
   
-    const updatedCart = cart.filter((_, i) => i !== index);
     setCart(updatedCart);
   };
 
