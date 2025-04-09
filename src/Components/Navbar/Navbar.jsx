@@ -87,7 +87,7 @@ export const Navbar = ({ cartItems, openLoginPopup, openCartPopup }) => {
                 <div className="popup-overlay">
                     <div className="popup-content" ref={popupRef}>
                         <h2></h2>
-                        <Contact /> {/* Renders Contact.jsx inside popup */}
+                        <Contact closePopup={closePopup} /> {/* Renders Contact.jsx inside popup */}
                     </div>
                 </div>
             )}

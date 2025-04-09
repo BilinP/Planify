@@ -1,10 +1,14 @@
 import { useState } from 'react';
 import { useAuth } from '../Login_SignUp/Auth';
+import { useNavigate } from 'react-router-dom';
 import './Contact.css';
 
-const Contact = () => {
+const Contact = ({closePopup}) => {
     const { authData, profileData } = useAuth(); // Get user and profile data from context
     const [image, setImage] = useState(null);
+    const navigate = useNavigate();
+
+    
 
     // Handler for file input change
     const handleImageUpload = (e) => {
@@ -19,6 +23,11 @@ const Contact = () => {
     // Handler to remove the profile picture
     const removeProfilePicture = () => {
         setImage(null); // Set image state back to null to remove the profile picture
+    };
+
+    const handleOrderHistoryClick = () => {
+        closePopup(); 
+        navigate('/OrderHistory'); // Navigate to the Order History page 
     };
 
     if (!authData || !profileData) {
@@ -92,9 +101,11 @@ const Contact = () => {
 
             {/* Buttons for Personal Information, Billing, Order History */}
             <div className="button-container">
-                <button className="btn">Personal Information</button>
+             {/*   <button className="btn">Personal Information</button> */}
                 <button className="btn">Billing</button>
-                <button className="btn">Order History</button>
+                <button className="btn" onClick={handleOrderHistoryClick}>
+                    Order History
+                </button>
             </div>
         </div>
     );
