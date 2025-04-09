@@ -80,24 +80,6 @@ const Cart = ({ closeCartPopup }) => {
     }
   };
 
-  // Add an item to the cart
-  const addToCart = (item) => {
-    if (authData) {
-      // ideally handled on ticket detail page or with a DB insert
-      console.warn("Logged-in cart items should be added via the backend.");
-    } else {
-      const existingItemIndex = cart.findIndex((cartItem) => cartItem.ticket_type_id === item.ticket_type_id);
-      if (existingItemIndex !== -1) {
-        const updatedCart = [...cart];
-        updatedCart[existingItemIndex].quantity += item.quantity;
-        saveCart(updatedCart);
-      } else {
-        const updatedCart = [...cart, item];
-        saveCart(updatedCart);
-      }
-    }
-  };
-
   // Update item quantity in the cart
   const updateQuantity = async (index, quantity) => {
     if (quantity >= 1 && quantity <= maxQuantity) {
