@@ -1,0 +1,112 @@
+.order-history-container {
+    max-width: 900px;
+    margin: 50px auto;
+    padding: 30px;
+    background-image: url('/src/orderhistorybg.jpg'); /* Add your background image here */
+    background-size: cover; /* Ensures the image covers the entire container */
+    background-position: center; /* Centers the background image */
+    background-repeat: no-repeat; /* Prevents the image from repeating */
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    font-family: 'Arial', sans-serif;
+    color: white; /* Ensures text is visible on top of the background */
+}
+
+.order-history-title {
+    font-size: 32px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 30px;
+    color: #000000;
+}
+
+.orders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.order-card {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.order-card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+.order-card h2 {
+    margin-top: 0;
+    color: #007bff;
+    font-size: 1.5rem;
+}
+
+.order-card p {
+    margin: 5px 0;
+    color: #444;
+}
+
+.order-status {
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 5px;
+    text-align: center;
+    width: 120px;
+}
+
+.order-status.delivered {
+    background-color: #28a745;
+    color: white;
+}
+
+.order-status.in-progress {
+    background-color: #ffc107;
+    color: white;
+}
+
+.order-status.pending {
+    background-color: #dc3545;
+    color: white;
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}
+
+.action-buttons .btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.action-buttons .btn:hover {
+    background-color: #0056b3;
+}
+
+.no-orders {
+    text-align: center;
+    font-size: 18px;
+    color: #999;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .order-card {
+        padding: 15px;
+    }
+
+    .order-card h2 {
+        font-size: 1.2rem;
+    }
+}

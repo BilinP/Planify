@@ -1,6 +1,10 @@
 /* General popup content container adjustments */
 .popup-content {
-    background: white;
+    background-image: url('/src/newback.jpg');
+    background-size: cover; /* Make it cover the whole div */
+    background-position: center; /* Center the image nicely */
+    background-repeat: no-repeat; /* Prevent it from repeating */
+    
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
@@ -9,9 +13,10 @@
     max-width: 90%;
     height: 700px;
     max-height: 80%;
-    overflow-y: auto; /* Allow scrolling if content overflows */
-    position: relative; /* Make sure child elements are positioned correctly */
+    overflow-y: auto;
+    position: relative;
 }
+
 
 /* Profile Circle adjustments */
 .profile-circle {
@@ -109,8 +114,8 @@
 .btn {
     font-family: "Ultra";
     background-color: transparent;
-    border: 2px solid #000000;
-    color: #000000;
+    border: 2px solid #ffffff;
+    color: #ffffff;
     padding: 10px 20px;
     border-radius: 5px;
     font-size: 20px; /* Adjust font size to fit in the pop-up */
@@ -129,7 +134,7 @@
     display: block;
     margin: 10px auto;
     background-color: #ff4d4d;
-    color: rgb(0, 0, 0);
+    color: rgb(255, 255, 255);
     border: none;
     padding: 10px 20px;
     border-radius: 5px;
@@ -172,14 +177,14 @@
     font-family: 'Ultra';
     font-size: 24px;
     font-weight: bold;
-    color: #000000;
+    color: #ffffff;
     text-align: left;
 }
 
 .info-description {
     font-family: 'Ultra';
     font-size: 16px;
-    color: #000000;
+    color: #ffffff;
     line-height: 1.5;
     max-width: 600px;
     margin-top: 10px;
@@ -199,12 +204,12 @@
 .user-name {
     font-family: 'Ultra';
     font-size: 22px;
-    color: #000000;
+    color: #ffffff;
 }
 
 .user-email {
     font-family: 'Ultra';
     font-size: 16px;
-    color: #000000;
+    color: #ffffff;
     margin-top: 5px;
 }
