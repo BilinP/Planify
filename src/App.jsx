@@ -74,11 +74,11 @@ function App() {
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
       if (scrollTop > lastScrollTop) {
-        // Scroll down
-        navbar.style.top = '-100px'; // Adjust this value based on your navbar height
+        navbar.style.top = '-100px';
+        document.body.classList.add('navbar-hidden');
       } else {
-        // Scroll up
         navbar.style.top = '0';
+        document.body.classList.remove('navbar-hidden');
       }
 
       lastScrollTop = scrollTop;

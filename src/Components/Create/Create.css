@@ -9,18 +9,28 @@ h2,
 .event-page {
     display: flex;
     font-family: 'Helvetica Neue', sans-serif;
-    height: 100vh;
+    height: 200vh;
     color: #2d2e2e;
   }
   
+
   .sidebar {
-    width: 260px;
-    padding: 20px;
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-right: 1px solid rgba(255, 255, 255, 0.2);
-  }  
+  position: fixed;
+  top: 8vh; 
+  left: 10px;
+  width: 260px;
+  height: 85vh;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px 10px 10px 10px;
+}
+.navbar-hidden .sidebar {
+  top: 2vh;
+  height:91vh
+}
   
   .back-button {
     background: none;
@@ -73,6 +83,8 @@ h2,
   }
   
   .form-content {
+    position: relative;
+    margin-left: 260px;
     flex-grow: 1;
     padding: 40px;
     overflow-y: auto;
@@ -258,4 +270,73 @@ h2,
     background: rgba(255, 0, 0, 0.9);
   }
 
-  
+
+
+  input[type="checkbox"].switch_1{
+    font-size: 30px;
+    -webkit-appearance: none;
+       -moz-appearance: none;
+            appearance: none;
+    width: 3em;
+    height: 1.2em;
+    background: #ddd;
+    border-radius: 3em;
+    position: relative;
+    cursor: pointer;
+    outline: none;
+    -webkit-transition: all .2s ease-in-out;
+    transition: all .2s ease-in-out;
+    }
+    
+    input[type="checkbox"].switch_1:checked{
+    background: #0ebeff;
+    }
+    
+    input[type="checkbox"].switch_1:after{
+    position: absolute;
+    content: "";
+    width: 1.2em;
+    height: 1.2em;
+    border-radius: 50%;
+    background: #fff;
+    -webkit-box-shadow: 0 0 .25em rgba(0,0,0,.3);
+            box-shadow: 0 0 .25em rgba(0,0,0,.3);
+    -webkit-transform: scale(.7);
+            transform: scale(.7);
+    left: 0;
+    -webkit-transition: all .2s ease-in-out;
+    transition: all .2s ease-in-out;
+    }
+    
+    input[type="checkbox"].switch_1:checked:after{
+    left: calc(100% - 1.5em);
+    }
+
+    .switch_box {
+      display: flex;
+      align-items: center;
+    }
+
+
+
+    .nav-buttons {
+      justify-content: right;
+      padding-top: 20px;
+      display: flex;
+      gap: 10px;
+    }
+    
+    .nav-btn {
+      padding: 20px 30px;
+      background-color: #4ab904;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    
+
+    .nav-btn.back-btn {
+      background-color: #dc3545 !important;
+    }

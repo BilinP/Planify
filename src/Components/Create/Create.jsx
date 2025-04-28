@@ -9,7 +9,8 @@ import {
   import { supabase } from '../../../backend/supabaseClient';
   import { useAuth } from '../Login_SignUp/Auth.jsx';
   
-  const MAPS_API_KEY = 'AIzaSyCYfvhB48e0BxMfAdZNgs739UOm6qkDgzI';
+  const MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+  const MAP_LIBRARIES = ['places'];
   
   const Create = () => {
     const [formData, setFormData] = useState({
@@ -85,6 +86,15 @@ import {
     const removeTicket = (index) => {
       const updatedTickets = tickets.filter((_, i) => i !== index);
       setTickets(updatedTickets);
+    };
+    const handleNext = () => {
+      if (activeStep === "build") setActiveStep("tickets");
+      else if (activeStep === "tickets") setActiveStep("publish");
+    };
+  
+    const handleBack = () => {
+      if (activeStep === "publish") setActiveStep("tickets");
+      else if (activeStep === "tickets") setActiveStep("build");
     };
   
     const handleSubmit = async () => {
@@ -214,23 +224,25 @@ import {
               </section>
   
               <section className="form-section">
-                <div className="form-group checkbox-inline">
+                <div className="switch_box">
                   <input
                     type="checkbox"
                     id="isOnline"
                     checked={formData.isOnline}
                     onChange={handleLocationToggle}
+                    className="switch_1"
                   />
                   <label htmlFor="isOnline" style={{ marginLeft: '8px' }}>
                     Online Event?
                   </label>
                 </div>
   
-                <LoadScript googleMapsApiKey={MAPS_API_KEY} libraries={['places']}>
+                <LoadScript googleMapsApiKey={MAPS_API_KEY} libraries={MAP_LIBRARIES}>
                   {!formData.isOnline && (
                     <>
                       <h2>Event Location</h2>
                       <Autocomplete
+                        key={formData.isOnline ? 'hidden' : 'shown'}
                         onLoad={(ref) => (autocompleteRef.current = ref)}
                         onPlaceChanged={handlePlaceSelect}
                       >
@@ -345,13 +357,20 @@ import {
                 </div>
               </div>
   
-              <div className="submit-button-container">
-                <button onClick={handleSubmit} className="submit-button">
-                  Create Event
-                </button>
-              </div>
+
             </section>
           )}
+        <div className="nav-buttons">
+          {activeStep !== "build" && (
+            <button className="nav-btn back-btn" onClick={handleBack}>Back</button>
+          )}
+          {activeStep !== "publish" ? (
+            <button className="nav-btn next-btn" onClick={handleNext}>Next</button>
+          ) : (
+            <button className="nav-btn next-btn" onClick={handleSubmit}>Create Event</button>
+          )}
+        </div>
+
         </main>
       </div>
     );
