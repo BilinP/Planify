@@ -8,11 +8,13 @@ import {
   import './Create.css';
   import { supabase } from '../../../backend/supabaseClient';
   import { useAuth } from '../Login_SignUp/Auth.jsx';
+  import { useNavigate } from 'react-router-dom';
   
   const MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const MAP_LIBRARIES = ['places'];
   
   const Create = () => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
       eventTitle: '',
       eventDate: '',
@@ -138,7 +140,7 @@ import {
     return (
       <div className="event-page">
         <aside className="sidebar">
-          <button className="back-button">← Find events</button>
+          <button className="back-button"onClick={() => navigate('/Event')}>← Find events</button>
           <ul className="steps">
             <li className={activeStep === 'build' ? 'active' : ''} onClick={() => setActiveStep('build')}>
               Build event page
