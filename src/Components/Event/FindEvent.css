@@ -97,15 +97,31 @@ body {
     margin-bottom: 40px;
 }
 .event-card {
-    background-color: white;
+    display: flex;
+    padding: 15px;
+    border: 1px solid #e5e5e5;
     border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: white;
+}
+.event-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+.event-card.selected {
+    border-color: #007bff;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
 }
 .event-image {
-    width: 100%;
-    height: 150px;
+    width: 120px;
+    height: 120px;
     object-fit: cover;
+    border-radius: 4px;
+    margin-right: 15px;
+    flex-shrink: 0;
+    border: 1px solid #e5e5e5;
 }
 .event-details {
     padding: 15px;
@@ -115,6 +131,11 @@ body {
     margin-bottom: 10px;
 }
 .event-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-width: 0;
     font-size: 0.9em;
     color: #666;
 }
@@ -200,11 +221,12 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.7);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
+    backdrop-filter: blur(5px);
 }
 
 .share-modal {
@@ -307,5 +329,480 @@ body {
 
 .share-button svg {
     font-size: 1.2rem;
+}
+
+.find-event-container {
+    display: grid;
+    grid-template-columns: 250px 1fr 1fr;
+    gap: 20px;
+    padding: 10px 20px;
+    height: calc(100vh - 0px);
+    margin-top: 0px;
+    overflow: hidden;
+    position: fixed;
+    width: calc(100% - 40px);
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.filters-sidebar {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    overflow-y: auto;
+    height: calc(100vh - 20px);
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 20px);
+}
+
+.filter-section {
+    margin-bottom: 12px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    flex-shrink: 0;
+}
+
+.filter-section h3 {
+    font-size: 16px;
+    color: #ff5a5f;
+    margin-bottom: 12px;
+    font-weight: 600;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+.section-toggle {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    transition: transform 0.2s ease;
+}
+
+.filter-section h3:hover {
+    color: #ff5a5f;
+}
+
+.filter-section h3:hover .section-toggle {
+    color: #ff5a5f;
+}
+
+.filter-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 5px;
+    transition: max-height 0.3s ease;
+}
+
+.filter-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    color: #ffffff;
+}
+
+.filter-option:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.filter-option.active {
+    background: rgba(255, 90, 95, 0.2);
+    color: #ff5a5f;
+    border-left: 3px solid #ff5a5f;
+}
+
+.filter-option.active span {
+    color: #ff5a5f;
+}
+
+.filter-option input[type="radio"],
+.filter-option input[type="checkbox"] {
+    margin: 0;
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+}
+
+.filter-option span {
+    font-size: 14px;
+    color: #ffffff;
+    flex: 1;
+}
+
+.filter-option:hover span {
+    color: #ffffff;
+}
+
+/* Custom scrollbar for filter options */
+.filter-options::-webkit-scrollbar {
+    width: 4px;
+}
+
+.filter-options::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+}
+
+.filter-options::-webkit-scrollbar-thumb {
+    background: rgba(255, 90, 95, 0.5);
+    border-radius: 2px;
+}
+
+.filter-options::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 90, 95, 0.7);
+}
+
+.events-list {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 20px);
+}
+
+.events-header {
+    padding: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    flex-shrink: 0;
+}
+
+.events-header h1 {
+    color: #ffffff;
+    font-size: 24px;
+    margin: 0;
+}
+
+.search-bar {
+    margin-bottom: 15px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.filters {
+    display: flex;
+    gap: 10px;
+}
+
+.filter-btn {
+    padding: 8px 16px;
+    border: 1px solid #e5e5e5;
+    border-radius: 20px;
+    background-color: white;
+    color: #1e1e1e;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+    background-color: #f5f5f5;
+}
+
+.events-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+    height: calc(100% - 60px);
+    min-height: 0;
+}
+
+.event-card img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-right: 15px;
+}
+
+.event-info h3 {
+    font-size: 18px;
+    margin: 0 0 8px 0;
+    color: #1e1e1e;
+}
+
+.event-date {
+    color: #666;
+    margin: 0 0 4px 0;
+}
+
+.event-location {
+    color: #666;
+    margin: 0 0 4px 0;
+}
+
+.event-price {
+    font-weight: bold;
+    color: #1e1e1e;
+    margin: 8px 0 0 0;
+}
+
+.map-container {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+    height: calc(100vh - 20px);
+}
+
+.location-header {
+    margin-bottom: 20px;
+}
+
+.location-display {
+    margin: 0;
+    font-size: 28px;
+    color: #1e1e1e;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+}
+
+.edit-location-btn {
+    background: none;
+    border: none;
+    color: #007bff;
+    font-size: 14px;
+    padding: 4px 8px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    font-weight: normal;
+    margin-left: 8px;
+}
+
+.edit-location-btn:hover {
+    background-color: #f0f7ff;
+    text-decoration: underline;
+}
+
+.location-form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.location-input {
+    font-size: 28px;
+    padding: 8px 12px;
+    border: 2px solid #007bff;
+    border-radius: 4px;
+    width: 300px;
+    font-weight: 600;
+}
+
+.location-input::placeholder {
+    color: #999;
+    font-weight: normal;
+}
+
+.save-location-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+    height: fit-content;
+}
+
+.save-location-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Custom scrollbar for filters sidebar and events scroll */
+.filters-sidebar::-webkit-scrollbar,
+.events-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.filters-sidebar::-webkit-scrollbar-track,
+.events-scroll::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.filters-sidebar::-webkit-scrollbar-thumb,
+.events-scroll::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+}
+
+.filters-sidebar::-webkit-scrollbar-thumb:hover,
+.events-scroll::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Custom scrollbar for events scroll */
+.events-scroll::-webkit-scrollbar {
+    width: 4px;
+}
+
+.events-scroll::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+}
+
+.events-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255, 90, 95, 0.5);
+    border-radius: 2px;
+}
+
+.events-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 90, 95, 0.7);
+}
+
+.event-modal {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    position: relative;
+    overflow: hidden;
+    color: white;
+}
+
+.close-modal-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    font-size: 24px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    z-index: 2;
+}
+
+.close-modal-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.modal-content {
+    display: flex;
+    gap: 30px;
+    padding: 30px;
+}
+
+.modal-image-container {
+    flex: 1;
+    max-width: 400px;
+}
+
+.modal-image {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.modal-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.modal-details h2 {
+    font-size: 28px;
+    margin: 0;
+    color: white;
+}
+
+.detail-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.detail-icon {
+    font-size: 20px;
+    width: 24px;
+    text-align: center;
+}
+
+.detail-row p {
+    margin: 0;
+    font-size: 16px;
+}
+
+.event-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.action-button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: #ff5a5f;
+    color: white;
+}
+
+.action-button.secondary {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.action-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 768px) {
+    .modal-content {
+        flex-direction: column;
+    }
+
+    .modal-image-container {
+        max-width: 100%;
+    }
 }
 
