@@ -109,7 +109,7 @@ function App() {
   <Route path="/About" element={<About />} />
   <Route path="/Account" element={<Account />} />
   <Route path="/OrderHistory" element={<OrderHistory />} />
-  <Route path="/Contact" element={<Contact />} />
+  <Route path="/Contact" element={<Contact closePopup={closeAllPopups} />} />
   
   <Route path="/dev-dashboard/*" element={<DeveloperDashboard />} /> {/* This should be used */}
 

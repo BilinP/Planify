@@ -59,7 +59,7 @@ const DeveloperDashboard = () => {
     const fetchData = async () => {
       try {
         const { data: events, error } = await supabase
-          .from('events')
+          .from('EventTable')
           .select('*');
         if (error) throw error;
 
