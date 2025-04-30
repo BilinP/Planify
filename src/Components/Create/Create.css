@@ -143,7 +143,6 @@ h2,
   .checkbox-inline {
     display: flex;
     align-items: center;
-    margin-bottom: 20px;
     color: white;
   }
   
@@ -315,6 +314,7 @@ h2,
     .switch_box {
       display: flex;
       align-items: center;
+      margin-bottom: 10px;
     }
 
 
