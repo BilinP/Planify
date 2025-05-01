@@ -1,20 +1,9 @@
 import React, { useState } from "react";
-import { getAuth, sendPasswordResetEmail } from "firebase/auth";
-import { initializeApp } from "firebase/app";
 import "./ForgotPassword.css";
 import PropTypes from 'prop-types';
+import { supabase } from '../../../backend/supabaseClient';
 
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID
-};
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 
 const ForgotPasswordPopup = ({ closePopup }) => {
   const [email, setEmail] = useState("");
@@ -22,17 +11,15 @@ const ForgotPasswordPopup = ({ closePopup }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      await sendPasswordResetEmail(auth, email);
-      setMessage("Password reset email sent!");
-      setEmail(""); // Clear the email field
-      closePopup();
-    } catch (error) {
-      console.error("Error sending password reset email:", error);
-      setMessage("Failed to send password reset email.");
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin, 
+    });
+
+    if (!error) {
+      setMessage("Password reset email sent via Supabase!");
+      setEmail(""); 
     }
   };
-
   return (
     <div className="forgot-password-overlay" onClick={closePopup}>
       <div className="forgot-password-popup" onClick={(e) => e.stopPropagation()}>

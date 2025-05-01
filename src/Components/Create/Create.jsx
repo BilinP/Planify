@@ -141,6 +141,7 @@ import {
       <div className="event-page">
         <aside className="sidebar">
           <button className="back-button"onClick={() => navigate('/Event')}>← Find events</button>
+          <button className="dashboard-button" onClick={() => navigate('/dev-dashboard')}>Dashboard </button>
           <ul className="steps">
             <li className={activeStep === 'build' ? 'active' : ''} onClick={() => setActiveStep('build')}>
               Build event page
