@@ -363,7 +363,7 @@ const FindEvent = () => {
                 <span>All</span>
               </div>
               {categories.map(category => (
-                <div className="filter-option">
+                <div className="filter-option" key={category.id}>
                   <input
                     type="radio"
                     name="category"
@@ -510,8 +510,7 @@ const FindEvent = () => {
               <Marker
                 position={locationMarker}
                 icon={
-                  mapsLoaded
-                    ? {
+                     {
                         path: window.google.maps.SymbolPath.CIRCLE,
                         scale: 10,
                         fillColor: '#FF0000',
@@ -519,7 +518,6 @@ const FindEvent = () => {
                         strokeColor: '#FFFFFF',
                         strokeWeight: 2
                       }
-                    : undefined
                 }
               />
             )}
