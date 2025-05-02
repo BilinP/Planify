@@ -1,9 +1,7 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, Routes, Route, useLocation, useNavigate, useParams } from "react-router-dom";
+import { supabase } from "../../../backend/supabaseClient";
 
-
-// Basic Styles
 const sidebarStyle = {
   width: "250px",
   height: "100vh",
@@ -30,10 +28,6 @@ const linkStyle = {
   transition: "background 0.3s ease",
 };
 
-const activeLinkStyle = {
-  backgroundColor: "#4B5563",
-};
-
 const mainContentStyle = {
   marginLeft: "250px",
   padding: "40px 20px",
@@ -42,7 +36,6 @@ const mainContentStyle = {
   backgroundColor: "rgba(0, 0, 0, 0.6)",
 };
 
-// Section Styles with Boxed Layout
 const sectionTitleStyle = {
   fontSize: "1.8rem",
   marginBottom: "16px",
@@ -58,32 +51,52 @@ const sectionBoxStyle = {
   animation: "fadeIn 1s ease-in-out",
 };
 
-// Main Dashboard Component
 const DeveloperDashboard = () => {
-  const location = useLocation();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [events, setEvents] = useState([]);
 
-  const [events, setEvents] = useState([
-    { id: 1, title: "Brazilian Dance Social: Forró & Samba", venue: "Motivo LA", price: 20, seats: 20 },
-    { id: 2, title: "Graduation Ceremony", venue: "CSUN", price: 5, seats: 5 },
-    { id: 3, title: "Sing! - An 'L.A. Story' Live Music", venue: "West Hollywood", price: 0, seats: 0 },
-    { id: 4, title: "The RHYTHMS", venue: "L.A. Arts Center", price: 15, seats: 30 },
-    { id: 5, title: "New Year Countdown", venue: "L.A. Downtown", price: 30, seats: 50 },
-    { id: 6, title: "Bake Better", venue: "Sweet & Savory Bakery", price: 25, seats: 15 },
-    { id: 7, title: "HOPE - LA 6th Annual FUNdraiser 70s Disco Party", venue: "L.A. Disco Hall", price: 50, seats: 100 },
-  ]);
+  useEffect(() => {
+    const fetchEvents = async () => {
+      const { data, error } = await supabase
+        .from("EventTable")
+        .select("event_id, event_title, location, price, seats");
+
+      if (error) {
+        console.error("Error fetching events:", error);
+      } else {
+        setEvents(data);
+      }
+    };
+
+    fetchEvents();
+  }, []);
 
   const handleEditEvent = (eventId) => {
-    navigate(`/dev-dashboard/event-manager/edit/${eventId}`);
+    navigate(`event-manager/edit/${eventId}`);
   };
 
-  const handleSaveEvent = (updatedEvent) => {
-    setEvents((prevEvents) =>
-      prevEvents.map((event) =>
-        event.id === updatedEvent.id ? updatedEvent : event
-      )
-    );
-    navigate("/dev-dashboard/event-manager");
+  const handleSaveEvent = async (updatedEvent) => {
+    const { error } = await supabase
+      .from("EventTable")
+      .update({
+        event_title: updatedEvent.event_title,
+        location: updatedEvent.location,
+        price: updatedEvent.price,
+        seats: updatedEvent.seats,
+      })
+      .eq("event_id", updatedEvent.event_id);
+
+    if (error) {
+      console.error("Error updating event:", error);
+    } else {
+      setEvents((prevEvents) =>
+        prevEvents.map((event) =>
+          event.event_id === updatedEvent.event_id ? updatedEvent : event
+        )
+      );
+      navigate("event-manager");
+    }
   };
 
   return (
@@ -91,16 +104,53 @@ const DeveloperDashboard = () => {
       <aside style={sidebarStyle}>
         <div>
           <h2 style={{ fontSize: "1.5rem", marginBottom: "1.5rem" }}>Host Panel</h2>
-          <Link to="/dev-dashboard/overview" style={linkStyle}>
+
+          <Link
+            to="overview"
+            style={{
+              ...linkStyle,
+              ...(location.pathname.endsWith("overview") && {
+                backgroundColor: "#2563EB",
+                fontWeight: "bold",
+              }),
+            }}
+          >
             Dashboard Overview
           </Link>
-          <Link to="/dev-dashboard/event-manager" style={linkStyle}>
+
+          <Link
+            to="event-manager"
+            style={{
+              ...linkStyle,
+              ...(location.pathname.includes("event-manager") &&
+                !location.pathname.includes("edit") && {
+                  backgroundColor: "#2563EB",
+                  fontWeight: "bold",
+                }),
+            }}
+          >
             Event Manager
           </Link>
-          <Link to="/dev-dashboard/transactions" style={linkStyle}>
+
+          <Link
+            to="transactions"
+            style={{
+              ...linkStyle,
+              ...(location.pathname.includes("transactions") && {
+                backgroundColor: "#2563EB",
+                fontWeight: "bold",
+              }),
+            }}
+          >
             Transactions
           </Link>
-          <Link to="https://docs.google.com/document/d/1u8i1cayhj8q4j6HUniee2QJw8GGnU1XjTmIFnUfGqvc/edit?usp=sharing" style={linkStyle} target="_blank" rel="noopener noreferrer">
+
+          <Link
+            to="https://docs.google.com/document/d/1u8i1cayhj8q4j6HUniee2QJw8GGnU1XjTmIFnUfGqvc/edit?usp=sharing"
+            style={linkStyle}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             Help & Support
           </Link>
         </div>
@@ -117,14 +167,14 @@ const DeveloperDashboard = () => {
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "20px" }}>
                   {events.map((event) => (
                     <div
-                      key={event.id}
+                      key={event.event_id}
                       style={sectionBoxStyle}
-                      onClick={() => handleEditEvent(event.id)}
+                      onClick={() => handleEditEvent(event.event_id)}
                     >
-                      <h3>{event.title}</h3>
-                      <p>{event.venue}</p>
-                      <div><strong>Price:</strong> ${event.price}</div>
-                      <div><strong>Seats Available:</strong> {event.seats}</div>
+                      <h3>{event.event_title}</h3>
+                      <p>{event.location}</p>
+                      <div><strong>Price:</strong> ${event.price ?? 0}</div>
+                      <div><strong>Seats Available:</strong> {event.seats ?? 0}</div>
                     </div>
                   ))}
                 </div>
@@ -139,11 +189,11 @@ const DeveloperDashboard = () => {
                 <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "20px" }}>
                   {events.map((event) => (
                     <div
-                      key={event.id}
+                      key={event.event_id}
                       style={sectionBoxStyle}
-                      onClick={() => handleEditEvent(event.id)}
+                      onClick={() => handleEditEvent(event.event_id)}
                     >
-                      <h3>{event.title}</h3>
+                      <h3>{event.event_title}</h3>
                     </div>
                   ))}
                 </div>
@@ -163,11 +213,9 @@ const DeveloperDashboard = () => {
   );
 };
 
-// Event Edit Form Component
 const EventEditForm = ({ events, onSaveEvent }) => {
   const { eventId } = useParams();
-  const eventToEdit = events.find((event) => event.id === parseInt(eventId));
-
+  const eventToEdit = events.find((event) => event.event_id === parseInt(eventId));
   const [editedEvent, setEditedEvent] = useState({ ...eventToEdit });
 
   const handleChange = (e) => {
@@ -183,43 +231,86 @@ const EventEditForm = ({ events, onSaveEvent }) => {
     onSaveEvent(editedEvent);
   };
 
+  if (!editedEvent) return <p>Loading event...</p>;
+
   return (
     <div>
       <h2 style={sectionTitleStyle}>Edit Event</h2>
-      <form onSubmit={handleSubmit}>
-        <label>Event Title:</label>
+      <form onSubmit={handleSubmit} style={{ maxWidth: "400px", display: "flex", flexDirection: "column", gap: "12px" }}>
+        <label style={{ fontWeight: "bold" }}>Event Title:</label>
         <input
           type="text"
-          name="title"
-          value={editedEvent.title}
+          name="event_title"
+          value={editedEvent.event_title}
           onChange={handleChange}
+          style={{
+            padding: "10px",
+            borderRadius: "6px",
+            border: "1px solid #ccc",
+            fontSize: "1rem"
+          }}
         />
-        <br />
-        <label>Event Venue:</label>
+
+        <label style={{ fontWeight: "bold" }}>Event Location:</label>
         <input
           type="text"
-          name="venue"
-          value={editedEvent.venue}
+          name="location"
+          value={editedEvent.location}
           onChange={handleChange}
+          style={{
+            padding: "10px",
+            borderRadius: "6px",
+            border: "1px solid #ccc",
+            fontSize: "1rem"
+          }}
         />
-        <br />
-        <label>Price:</label>
+
+        <label style={{ fontWeight: "bold" }}>Price:</label>
         <input
           type="number"
           name="price"
           value={editedEvent.price}
           onChange={handleChange}
+          style={{
+            padding: "10px",
+            borderRadius: "6px",
+            border: "1px solid #ccc",
+            fontSize: "1rem"
+          }}
         />
-        <br />
-        <label>Seats Available:</label>
+
+        <label style={{ fontWeight: "bold" }}>Seats Available:</label>
         <input
           type="number"
           name="seats"
           value={editedEvent.seats}
           onChange={handleChange}
+          style={{
+            padding: "10px",
+            borderRadius: "6px",
+            border: "1px solid #ccc",
+            fontSize: "1rem"
+          }}
         />
-        <br />
-        <button type="submit">Save Changes</button>
+
+        <button
+          type="submit"
+          style={{
+            marginTop: "12px",
+            padding: "12px",
+            borderRadius: "6px",
+            backgroundColor: "#2563EB",
+            color: "white",
+            border: "none",
+            fontSize: "1rem",
+            cursor: "pointer",
+            transition: "background-color 0.3s ease"
+          }}
+          onMouseOver={(e) => (e.target.style.backgroundColor = "#1D4ED8")}
+          onMouseOut={(e) => (e.target.style.backgroundColor = "#2563EB")}
+        >
+          Save Changes
+        </button>
       </form>
     </div>
   );
