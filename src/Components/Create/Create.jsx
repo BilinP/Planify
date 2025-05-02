@@ -1,17 +1,14 @@
-import {
+  import React, { useRef, useState } from 'react';
+  import {
     GoogleMap,
-    LoadScript,
     Marker,
     Autocomplete
   } from '@react-google-maps/api';
-  import React, { useRef, useState } from 'react';
   import './Create.css';
   import { supabase } from '../../../backend/supabaseClient';
   import { useAuth } from '../Login_SignUp/Auth.jsx';
   import { useNavigate } from 'react-router-dom';
-  
-  const MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-  const MAP_LIBRARIES = ['places'];
+  import GoogleMapsProvider from '../../GoogleMapsProvider.jsx';
   
   const Create = () => {
     const navigate = useNavigate();
@@ -37,13 +34,13 @@ import {
     const [imageFile, setImageFile] = useState(null);
     const imageInputRef = useRef(null);
 
-    const handleImageChange = (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        setImageFile(file);
-        setImagePreview(URL.createObjectURL(file));
-      }
-    };
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
 
     const handleRemoveImage = () => {
         setImageFile(null);
@@ -112,74 +109,99 @@ import {
           created_at: new Date(),
           updated_at: new Date(),
           price: parseFloat(formData.price.replace('$', ''))
-          // image: upload logic can go here
         }
-      ]);
-  
-      if (error) {
-        console.error('Error inserting event:', error);
-        alert('Failed to create event.');
-      } else {
-        alert('Event created successfully!');
-        setFormData({
-          eventTitle: '',
-          eventDate: '',
-          eventTime: '',
-          eventSummary: '',
-          price: '',
-          eventLocation: '',
-          isOnline: false
+      ])
+      .select();
+
+    if (eventError || !data || data.length === 0) {
+      console.error('Error inserting event:', eventError);
+      alert('Failed to create event.');
+      return;
+    }
+    console.log('Event created:', data[0].event_id);
+    const eventId = data[0].event_id;
+
+    let ticketsData = [];
+    tickets.forEach(ticket => {
+      const quantity = parseInt(ticket.ticketQuantity) || 0;
+      for (let i = 0; i < quantity; i++) {
+        ticketsData.push({
+          name: ticket.ticketName,
+          price: parseFloat(ticket.ticketPrice) || 0,
+          created_at: new Date(),
+          purchased_by: null,
+          status: 'available',
+          event_id: eventId
         });
-        setTickets([{ ticketName: '', ticketPrice: '', ticketQuantity: '' }]);
-        setImageFile(null);
-        setImagePreview(null);
-        setActiveStep('build');
       }
-    };
-  
-    return (
-      <div className="event-page">
-        <aside className="sidebar">
-          <button className="back-button"onClick={() => navigate('/Event')}>← Find events</button>
-          <button className="dashboard-button" onClick={() => navigate('/dev-dashboard')}>Dashboard </button>
-          <ul className="steps">
-            <li className={activeStep === 'build' ? 'active' : ''} onClick={() => setActiveStep('build')}>
-              Build event page
-            </li>
-            <li className={activeStep === 'tickets' ? 'active' : ''} onClick={() => setActiveStep('tickets')}>
-              Add tickets
-            </li>
-            <li className={activeStep === 'publish' ? 'active' : ''} onClick={() => setActiveStep('publish')}>
-              Publish
-            </li>
-          </ul>
-        </aside>
-  
-        <main className="form-content">
-          {activeStep === 'build' && (
-            <>
-              <div className="banner-image">
-                {imagePreview ? (
-                    <>
-                    <img src={imagePreview} alt="Preview" className="uploaded-banner" />
-                    <button className="remove-image-button" onClick={handleRemoveImage}>
-                        ✕ Remove Image
-                    </button>
-                    </>
-                ) : (
-                    <label htmlFor="imageUpload" className="image-upload">
-                    📤 Upload photos and video
-                    </label>
-                )}
-                    <input
-                    type="file"
-                    id="imageUpload"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    ref={imageInputRef}
-                    style={{ display: 'none' }}
-                    />
-                </div>
+    });
+
+    const { error: ticketError } = await supabase
+      .from('Ticket')
+      .insert(ticketsData);
+
+    if (ticketError) {
+      console.error('Error inserting tickets:', ticketError);
+      alert('Event created but failed to add tickets.');
+      return;
+    }
+
+    alert('Event created successfully!');
+
+    setFormData({
+      eventTitle: '',
+      eventDate: '',
+      eventTime: '',
+      eventSummary: '',
+      price: '',
+      eventLocation: '',
+      isOnline: false
+    });
+    setTickets([{ ticketName: '', ticketPrice: '', ticketQuantity: '' }]);
+    setImageFile(null);
+    setImagePreview(null);
+    setActiveStep('build');
+  };
+
+  return (
+    <div className="event-page">
+      <aside className="sidebar">
+        <button className="back-button" onClick={() => navigate('/Event')}>← Find events</button>
+        <button className="dashboard-button" onClick={() => navigate('/dev-dashboard')}>Dashboard </button>
+        <ul className="steps">
+          <li className={activeStep === 'build' ? 'active' : ''} onClick={() => setActiveStep('build')}>
+            Build event page
+          </li>
+          <li className={activeStep === 'tickets' ? 'active' : ''} onClick={() => setActiveStep('tickets')}>
+            Add tickets
+          </li>
+          <li className={activeStep === 'publish' ? 'active' : ''} onClick={() => setActiveStep('publish')}>
+            Publish
+          </li>
+        </ul>
+      </aside>
+
+      <main className="form-content">
+        {activeStep === 'build' && (
+          <>
+            <div className="banner-image">
+              {imagePreview ? (
+                <>
+                  <img src={imagePreview} alt="Preview" className="uploaded-banner" />
+                  <button className="remove-image-button" onClick={handleRemoveImage}>✕ Remove Image</button>
+                </>
+              ) : (
+                <label htmlFor="imageUpload" className="image-upload">📤 Upload photos and video</label>
+              )}
+              <input
+                type="file"
+                id="imageUpload"
+                accept="image/*"
+                onChange={handleImageChange}
+                ref={imageInputRef}
+                style={{ display: 'none' }}
+              />
+            </div>
 
               <section className="form-section">
                 <h2>Event Overview</h2>
@@ -240,8 +262,9 @@ import {
                   </label>
                 </div>
   
-                <LoadScript googleMapsApiKey={MAPS_API_KEY} libraries={MAP_LIBRARIES}>
+                
                   {!formData.isOnline && (
+                    <GoogleMapsProvider>
                     <>
                       <h2>Event Location</h2>
                       <Autocomplete
@@ -271,8 +294,8 @@ import {
                         <Marker position={location} />
                       </GoogleMap>
                     </>
+                    </GoogleMapsProvider>
                   )}
-                </LoadScript>
               </section>
             </>
           )}
@@ -365,12 +388,12 @@ import {
           )}
         <div className="nav-buttons">
           {activeStep !== "build" && (
-            <button className="nav-btn back-btn" onClick={handleBack}>Back</button>
+            <button className="button-89 back-btn" onClick={handleBack}>Back</button>
           )}
           {activeStep !== "publish" ? (
-            <button className="nav-btn next-btn" onClick={handleNext}>Next</button>
+            <button className="button-89 next-btn" onClick={handleNext}>Next</button>
           ) : (
-            <button className="nav-btn next-btn" onClick={handleSubmit}>Create Event</button>
+            <button className="button-89 create-btn" onClick={handleSubmit}>Create Event</button>
           )}
         </div>
 

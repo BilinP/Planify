@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
+import { GoogleMap, Marker } from '@react-google-maps/api';
 import supabase from '@backend/supabaseClient';
 import './FindEvent.css';
+import GoogleMapsProvider from '../../GoogleMapsProvider.jsx';
 
 // Import images
 import bakingImg from '../../assets/BakingIMG.png';
@@ -32,6 +33,7 @@ const FindEvent = () => {
     price: true
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [mapsLoaded, setMapsLoaded] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -50,6 +52,41 @@ const FindEvent = () => {
 
   useEffect(() => {
     fetchEvents();
+
+    // Try to get user's current location.
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setMapCenter({ lat: latitude, lng: longitude });
+          setLocationMarker({ lat: latitude, lng: longitude });
+          
+          // Use Google Maps Geocoder to reverse geocode current lat/lng
+          const geocoder = new window.google.maps.Geocoder();
+          geocoder.geocode({ location: { lat: latitude, lng: longitude } }, (results, status) => {
+            if (status === 'OK' && results[0]) {
+              const addressComponents = results[0].address_components;
+              // Look for a "locality" or city identifier.
+              const cityComponent = addressComponents.find(component =>
+                component.types.includes("locality") || component.types.includes("administrative_area_level_2")
+              );
+              if (cityComponent) {
+                setCurrentLocation(cityComponent.long_name);
+                setTempLocation(cityComponent.long_name);
+              } else {
+                setCurrentLocation(results[0].formatted_address);
+                setTempLocation(results[0].formatted_address);
+              }
+            } else {
+              console.error('Geocoder failed due to: ' + status);
+            }
+          });
+        },
+        (error) => {
+          console.error('Error getting geolocation:', error);
+        }
+      );
+    }
   }, []);
 
   const fetchEvents = async () => {
@@ -462,7 +499,7 @@ const FindEvent = () => {
 
       {/* Right side - Map */}
       <div className="map-container">
-        <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
+      <GoogleMapsProvider>
           <GoogleMap
             mapContainerStyle={mapContainerStyle}
             center={mapCenter}
@@ -472,14 +509,18 @@ const FindEvent = () => {
             {locationMarker && (
               <Marker
                 position={locationMarker}
-                icon={{
-                  path: window.google.maps.SymbolPath.CIRCLE,
-                  scale: 10,
-                  fillColor: '#FF0000',
-                  fillOpacity: 1,
-                  strokeColor: '#FFFFFF',
-                  strokeWeight: 2,
-                }}
+                icon={
+                  mapsLoaded
+                    ? {
+                        path: window.google.maps.SymbolPath.CIRCLE,
+                        scale: 10,
+                        fillColor: '#FF0000',
+                        fillOpacity: 1,
+                        strokeColor: '#FFFFFF',
+                        strokeWeight: 2
+                      }
+                    : undefined
+                }
               />
             )}
             
@@ -495,7 +536,7 @@ const FindEvent = () => {
               />
             ))}
           </GoogleMap>
-        </LoadScript>
+        </GoogleMapsProvider>
       </div>
 
       {/* Event Details Modal */}
