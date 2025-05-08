@@ -8,26 +8,24 @@ import './EventPage.css';
 const bucketBaseUrl = 'https://gliujspizqdmlzvnkyfb.supabase.co/storage/v1/object/public/Planify/Event/';
 
 const EventPage = () => {
-  const { id } = useParams(); // Get event ID from URL
-  const { authData } = useAuth(); // Get user authentication data
+  const { id } = useParams(); 
+  const { authData } = useAuth(); 
   const [event, setEvent] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [newReview, setNewReview] = useState('');
-  const [reviewRating, setReviewRating] = useState(0); // For star rating
+  const [reviewRating, setReviewRating] = useState(0); 
   const [showLoginPopup, setShowLoginPopup] = useState(false);
 
-  // For ticket types
   const [ticketTypes, setTicketTypes] = useState([]);
   const [selectedTicketType, setSelectedTicketType] = useState(null);
 
-  // For reply functionality in reviews
   const [replyTexts, setReplyTexts] = useState({});
   const [openReplyForm, setOpenReplyForm] = useState(null);
 
   useEffect(() => {
     fetchEvent();
     fetchReviews();
-    fetchTicketTypes(); // Fetch ticket types for dropdown
+    fetchTicketTypes(); 
   }, [id]);
 
   const fetchEvent = async () => {
@@ -107,12 +105,11 @@ const EventPage = () => {
         console.log('Review saved:', data);
         setReviews([...reviews, ...data]);
         setNewReview('');
-        setReviewRating(0); // Reset star rating after submission
+        setReviewRating(0); // Reset star rating
       }
     }
   };
 
-  // Ticket type dropdown change handler
   const handleTicketTypeChange = (e) => {
     const typeId = parseInt(e.target.value, 10);
     const selectedType = ticketTypes.find(tt => tt.id === typeId);
@@ -121,15 +118,10 @@ const EventPage = () => {
   };
 
   const handleBuyTickets = async () => {
-    if (!selectedTicketType) {
-      alert("Please select a ticket type.");
-      return;
-    }
-    
     const ticket = {
-      ticket_type_id: selectedTicketType.id,
+      event_id: event.event_id,
       event_title: event.event_title,
-      price: selectedTicketType.price,
+      price: event.price,
     };
 
     if (authData) {
@@ -137,7 +129,7 @@ const EventPage = () => {
         const { data: existingCartItems, error } = await supabase
           .from("cart")
           .select("*")
-          .eq("ticket_type_id", ticket.ticket_type_id)
+          .eq("event_id", ticket.event_id)
           .eq("user_id", authData.id);
     
         if (error) throw error;
@@ -148,19 +140,19 @@ const EventPage = () => {
             .update({ quantity: newQuantity })
             .eq("id", existingCartItems[0].id);
           if (error) throw error;
-          alert("Ticket quantity updated in your cart.");
+          alert("Ticket added in your cart.");
         } else {
           const { error } = await supabase
             .from("cart")
             .insert([
               {
                 user_id: authData.id,
-                ticket_type_id: ticket.ticket_type_id,
+                event_id: ticket.event_id,
                 quantity: 1,
               },
             ]);
           if (error) throw error;
-          alert("Ticket added to your cart.");
+          alert("Ticket added in your cart.");
         }
       } catch (error) {
         console.error("Error processing ticket addition:", error);
@@ -169,20 +161,20 @@ const EventPage = () => {
     } else {
       let cachedCart = JSON.parse(localStorage.getItem("cart")) || [];
       const index = cachedCart.findIndex(
-        (item) => item.ticket_type_id === ticket.ticket_type_id
+        (item) => item.event_id === ticket.event_id
       );
       if (index !== -1) {
         cachedCart[index].quantity += 1;
       } else {
         cachedCart.push({
-          ticket_type_id: ticket.ticket_type_id,
+          event_id: ticket.event_id,
           name: ticket.event_title,
           price: ticket.price,
           quantity: 1,
         });
       }
       localStorage.setItem("cart", JSON.stringify(cachedCart));
-      alert("Ticket added/updated in your cart.");
+      alert("Ticket added in your cart.");
     }
   };
 
@@ -212,7 +204,7 @@ const EventPage = () => {
             user_id: authData.id,
             review_txt: replyText,
             parent_review_id: parentReviewId,
-            rating: null, // Replies don't get a star rating
+            rating: null, 
           },
         ])
         .select();
@@ -236,7 +228,7 @@ const EventPage = () => {
           <div className="event-review-container">
             <div className="event-review-profile">
               <img 
-                src="https://via.placeholder.com/50" //replace this with user's actual pfp link
+                src="https://via.placeholder.com/50" 
                 alt="Profile" 
               />
             </div>
@@ -328,14 +320,7 @@ const EventPage = () => {
         <div className="event-ticket-box">
           <h3>Price</h3>
           <div className="event-underline"></div>
-          {selectedTicketType ? (
-            <p>${selectedTicketType.price}</p>
-          ) : (
-            <p>N/A</p>
-          )}
-          <button className="event-buy-button" onClick={handleBuyTickets}>
-            Buy Ticket
-          </button>
+          <p>${event.price || 0}</p>
           {ticketTypes.length > 0 && (
             <select
               className="ticket-type-dropdown"
@@ -344,11 +329,14 @@ const EventPage = () => {
             >
               {ticketTypes.map(tt => (
                 <option key={tt.id} value={tt.id}>
-                  {tt.type}
+                  {tt.type} - ${tt.price}
                 </option>
               ))}
             </select>
           )}
+          <button className="event-buy-button" onClick={handleBuyTickets}>
+            Buy Ticket
+          </button>
         </div>
       </div>
 
