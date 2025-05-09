@@ -1,38 +1,51 @@
-  import React, { useRef, useState } from 'react';
-  import {
-    GoogleMap,
-    Marker,
-    Autocomplete
-  } from '@react-google-maps/api';
-  import './Create.css';
-  import { supabase } from '../../../backend/supabaseClient';
-  import { useAuth } from '../Login_SignUp/Auth.jsx';
-  import { useNavigate } from 'react-router-dom';
-  import GoogleMapsProvider from '../../GoogleMapsProvider.jsx';
-  
-  const Create = () => {
-    const navigate = useNavigate();
-    const [formData, setFormData] = useState({
-      eventTitle: '',
-      eventDate: '',
-      eventTime: '',
-      eventSummary: '',
-      price: '',
-      eventLocation: '',
-      isOnline: false
-    });
-    const [tickets, setTickets] = useState([
-      { ticketName: '', ticketPrice: '', ticketQuantity: '' }
-    ]);
-    const [location, setLocation] = useState({ lat: 37.7749, lng: -122.4194 });
-    const [activeStep, setActiveStep] = useState('build');
-    const autocompleteRef = useRef(null);
-    const { authData } = useAuth();
-  
-    // Image upload state
-    const [imagePreview, setImagePreview] = useState(null);
-    const [imageFile, setImageFile] = useState(null);
-    const imageInputRef = useRef(null);
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  GoogleMap,
+  Marker,
+  Autocomplete
+} from '@react-google-maps/api';
+import './Create.css';
+import { supabase } from '../../../backend/supabaseClient';
+import { useAuth } from '../Login_SignUp/Auth.jsx';
+import { useNavigate } from 'react-router-dom';
+import GoogleMapsProvider from '../../GoogleMapsProvider.jsx';
+import DeveloperDashboard from '../DeveloperDashboard/DeveloperDashboard'; // Adjust import path as needed
+
+const Create = () => {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    eventTitle: '',
+    eventDate: '',
+    eventTime: '',
+    eventSummary: '',
+    price: '',
+    eventLocation: '',
+    isOnline: false
+  });
+  const [tickets, setTickets] = useState([
+    { ticketName: '', ticketPrice: '', ticketQuantity: '' }
+  ]);
+  const [location, setLocation] = useState({ lat: 37.7749, lng: -122.4194 });
+  const [activeStep, setActiveStep] = useState('build');
+  const autocompleteRef = useRef(null);
+  const { authData } = useAuth();
+  const [showDashboard, setShowDashboard] = useState(false);
+  const [notification, setNotification] = useState(null);
+
+  // Auto-dismiss notification after 5 seconds
+  useEffect(() => {
+    if (notification) {
+      const timer = setTimeout(() => {
+        setNotification(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [notification]);
+
+  // Image upload state
+  const [imagePreview, setImagePreview] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
+  const imageInputRef = useRef(null);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -42,80 +55,113 @@
     }
   };
 
-    const handleRemoveImage = () => {
-        setImageFile(null);
-        setImagePreview(null);
-        if (imageInputRef.current) {
-          imageInputRef.current.value = null;
-        }
-      };
-         
-  
-    const handlePlaceSelect = () => {
-      const place = autocompleteRef.current.getPlace();
-      if (place && place.geometry) {
-        const loc = place.geometry.location;
-        setLocation({ lat: loc.lat(), lng: loc.lng() });
-        handleChange('eventLocation')({
-          target: { value: place.formatted_address }
-        });
-      }
-    };
-  
-    const handleLocationToggle = () => {
-      handleChange('isOnline')({
-        target: { value: !formData.isOnline }
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    if (imageInputRef.current) {
+      imageInputRef.current.value = null;
+    }
+  };
+
+  const handlePlaceSelect = () => {
+    const place = autocompleteRef.current.getPlace();
+    if (place && place.geometry) {
+      const loc = place.geometry.location;
+      setLocation({ lat: loc.lat(), lng: loc.lng() });
+      handleChange('eventLocation')({
+        target: { value: place.formatted_address }
       });
-    };
-  
-    const handleChange = (input) => (e) => {
-      setFormData({ ...formData, [input]: e.target.value });
-    };
-  
-    const handleTicketChange = (index, field) => (e) => {
-      const updatedTickets = [...tickets];
-      updatedTickets[index][field] = e.target.value;
-      setTickets(updatedTickets);
-    };
-  
-    const addTicket = () => {
-      setTickets([...tickets, { ticketName: '', ticketPrice: '', ticketQuantity: '' }]);
-    };
-  
-    const removeTicket = (index) => {
-      const updatedTickets = tickets.filter((_, i) => i !== index);
-      setTickets(updatedTickets);
-    };
-    const handleNext = () => {
-      if (activeStep === "build") setActiveStep("tickets");
-      else if (activeStep === "tickets") setActiveStep("publish");
-    };
-  
-    const handleBack = () => {
-      if (activeStep === "publish") setActiveStep("tickets");
-      else if (activeStep === "tickets") setActiveStep("build");
-    };
-  
-    const handleSubmit = async () => {
-      const eventDateTime = new Date(`${formData.eventDate}T${formData.eventTime}:00Z`);
-  
-      const { data, error } = await supabase.from('EventTable').insert([
-        {
-          event_title: formData.eventTitle,
-          description: formData.eventSummary,
-          location: formData.eventLocation,
-          date: eventDateTime,
-          create_by: authData.id,
-          created_at: new Date(),
-          updated_at: new Date(),
-          price: parseFloat(formData.price.replace('$', ''))
-        }
-      ])
-      .select();
+    }
+  };
+
+  const handleLocationToggle = () => {
+    handleChange('isOnline')({
+      target: { value: !formData.isOnline }
+    });
+  };
+
+  const handleChange = (input) => (e) => {
+    setFormData({ ...formData, [input]: e.target.value });
+  };
+
+  const handleTicketChange = (index, field) => (e) => {
+    const updatedTickets = [...tickets];
+    updatedTickets[index][field] = e.target.value;
+    setTickets(updatedTickets);
+  };
+
+  const addTicket = () => {
+    setTickets([...tickets, { ticketName: '', ticketPrice: '', ticketQuantity: '' }]);
+  };
+
+  const removeTicket = (index) => {
+    const updatedTickets = tickets.filter((_, i) => i !== index);
+    setTickets(updatedTickets);
+  };
+  const handleNext = () => {
+    if (activeStep === "build") setActiveStep("tickets");
+    else if (activeStep === "tickets") setActiveStep("publish");
+  };
+
+  const handleBack = () => {
+    if (activeStep === "publish") setActiveStep("tickets");
+    else if (activeStep === "tickets") setActiveStep("build");
+  };
+
+  const handleSubmit = async () => {
+    if (!authData) {
+      setNotification({ message: "You need to be logged in to create an event.", type: "error" });
+      return;
+    }
+
+    // Validate event details
+    if (
+      !formData.eventTitle ||
+      formData.eventTitle.trim().toUpperCase() === "N/A" ||
+      !formData.eventDate ||
+      formData.eventDate.trim().toUpperCase() === "N/A" ||
+      !formData.eventTime ||
+      formData.eventTime.trim().toUpperCase() === "N/A" ||
+      !formData.eventSummary ||
+      formData.eventSummary.trim().toUpperCase() === "N/A" ||
+      !formData.eventLocation ||
+      formData.eventLocation.trim().toUpperCase() === "N/A"
+    ) {
+      setNotification({ message: "Please provide valid event title, date, time, summary, and location.", type: "error" });
+      return;
+    }
+
+    // Validate tickets: each ticket must have a name and a positive quantity
+    for (let i = 0; i < tickets.length; i++) {
+      const ticket = tickets[i];
+      if (!ticket.ticketName || ticket.ticketName.trim().toUpperCase() === "N/A") {
+        setNotification({ message: `Ticket ${i + 1} must have a valid name.`, type: "error" });
+        return;
+      }
+      if (!ticket.ticketQuantity || parseInt(ticket.ticketQuantity) <= 0) {
+        setNotification({ message: `Ticket ${i + 1} must have a positive quantity.`, type: "error" });
+        return;
+      }
+    }
+
+    const eventDateTime = new Date(`${formData.eventDate}T${formData.eventTime}:00Z`);
+
+    const { data, error } = await supabase.from('EventTable').insert([
+      {
+        event_title: formData.eventTitle,
+        description: formData.eventSummary,
+        location: formData.eventLocation,
+        date: eventDateTime,
+        create_by: authData.id,
+        created_at: new Date(),
+        updated_at: new Date(),
+        price: parseFloat(formData.price.replace('$', ''))
+      }
+    ]).select();
 
     if (error || !data || data.length === 0) {
       console.error('Error inserting event:', error);
-      alert('Failed to create event.');
+      setNotification({ message: "Failed to create event.", type: "error" });
       return;
     }
     console.log('Event created:', data[0].event_id);
@@ -142,11 +188,11 @@
 
     if (ticketError) {
       console.error('Error inserting tickets:', ticketError);
-      alert('Event created but failed to add tickets.');
+      setNotification({ message: "Event created but failed to add tickets.", type: "error" });
       return;
     }
 
-    alert('Event created successfully!');
+    setNotification({ message: "Event created successfully!", type: "success" });
 
     setFormData({
       eventTitle: '',
@@ -165,9 +211,21 @@
 
   return (
     <div className="event-page">
+      {notification && (
+        <div className={`popup-notification ${notification.type}`}>
+          {notification.message}
+        </div>
+      )}
       <aside className="sidebar">
         <button className="back-button" onClick={() => navigate('/Event')}>← Find events</button>
-        <button className="dashboard-button" onClick={() => navigate('/dev-dashboard')}>Dashboard </button>
+        {authData && (
+          <button 
+            className="dashboard-button" 
+            onClick={() => setShowDashboard(true)}
+          >
+            Dashboard
+          </button>
+        )}
         <ul className="steps">
           <li className={activeStep === 'build' ? 'active' : ''} onClick={() => setActiveStep('build')}>
             Build event page
@@ -396,11 +454,14 @@
             <button className="button-89 create-btn" onClick={handleSubmit}>Create Event</button>
           )}
         </div>
+      </main>
 
-        </main>
-      </div>
-    );
-  };
-  
-  export default Create;
-  
+      {/* Conditionally render the Dev Dashboard popup */}
+      {showDashboard && (
+        <DeveloperDashboard onClose={() => setShowDashboard(false)} />
+      )}
+    </div>
+  );
+};
+
+export default Create;

@@ -1,22 +1,41 @@
 // DeveloperDashboard.jsx
 import React, { useState, useEffect } from "react";
-import { Link, Routes, Route, useLocation, useNavigate, useParams } from "react-router-dom";
 import { supabase } from "../../../backend/supabaseClient";
 
-// --- Styles ---
+// --- Updated Styles ---
+const containerStyle = {
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  minHeight: "80vh",
+  width: "100%",
+  padding: "20px",
+};
+
+const dashboardStyle = {
+  width: "1300px",
+  height: "800px",
+  display: "flex",
+  backgroundColor: "rgba(0, 0, 0, 0.9)",
+  borderRadius: "8px",
+  overflow: "hidden",
+};
+
 const sidebarStyle = {
   width: "250px",
-  height: "100vh",
   padding: "20px",
-  backgroundColor: "rgba(0, 0, 0, 0.85)",
+  backgroundColor: "rgba(0, 0, 0, 1)",
   color: "white",
-  position: "fixed",
-  top: "50px",
-  left: 0,
   display: "flex",
   flexDirection: "column",
   justifyContent: "space-between",
-  zIndex: 10,
+};
+
+const mainContentStyle = {
+  flexGrow: 1,
+  padding: "40px 20px",
+  color: "white",
+  overflowY: "auto",
 };
 
 const linkStyle = {
@@ -28,14 +47,7 @@ const linkStyle = {
   marginBottom: "8px",
   fontSize: "1.1rem",
   transition: "background 0.3s ease",
-};
-
-const mainContentStyle = {
-  marginLeft: "250px",
-  padding: "40px 20px",
-  color: "white",
-  minHeight: "100vh",
-  backgroundColor: "rgba(0, 0, 0, 0.6)",
+  cursor: "pointer",
 };
 
 const sectionTitleStyle = {
@@ -53,25 +65,55 @@ const sectionBoxStyle = {
   animation: "fadeIn 1s ease-in-out",
 };
 
+// --- Popup Styles ---
+const popupOverlayStyle = {
+  position: "fixed",
+  top: 0,
+  left: 0,
+  width: "100%",
+  height: "100%",
+  backgroundColor: "rgba(0, 0, 0, 0.5)",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  zIndex: 1000,
+};
+
+const popupContentStyle = {
+  borderRadius: "8px",
+  overflow: "hidden",
+  position: "relative",
+};
+
 // --- Main Component ---
-const DeveloperDashboard = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
+const DeveloperDashboard = ({ onClose }) => {
   const [events, setEvents] = useState([]);
+  const [currentView, setCurrentView] = useState("overview"); // "overview", "eventManager", "edit", "transactions"
+  const [editingEvent, setEditingEvent] = useState(null);
+
+  // Disable scrolling on mount and re-enable on unmount
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, []);
 
   useEffect(() => {
     const fetchEvents = async () => {
       const { data, error } = await supabase
         .from("EventTable")
         .select("event_id, event_title, location, price, seats");
-
       if (error) console.error("Error fetching events:", error);
       else setEvents(data);
     };
     fetchEvents();
   }, []);
 
-  const handleEditEvent = (eventId) => navigate(`event-manager/edit/${eventId}`);
+  const handleEditEvent = (event) => {
+    setEditingEvent(event);
+    setCurrentView("edit");
+  };
 
   const handleSaveEvent = async (updatedEvent) => {
     const { error } = await supabase
@@ -91,125 +133,154 @@ const DeveloperDashboard = () => {
           event.event_id === updatedEvent.event_id ? updatedEvent : event
         )
       );
-      navigate("event-manager");
+      setCurrentView("overview");
+      setEditingEvent(null);
     }
   };
 
   return (
-    <div style={{ display: "flex" }}>
-      <aside style={sidebarStyle}>
-        <div>
-          <h2 style={{ fontSize: "1.5rem", marginBottom: "1.5rem" }}>Host Panel</h2>
+    <div style={popupOverlayStyle} onClick={onClose}>
+      <div style={popupContentStyle} onClick={(e) => e.stopPropagation()}>
+        <div style={containerStyle}>
+          <div style={dashboardStyle}>
+            <aside style={sidebarStyle}>
+              <div>
+                <h2 style={{ fontSize: "1.5rem", marginBottom: "1.5rem" }}>
+                  Host Panel
+                </h2>
+                <div
+                  style={{
+                    ...linkStyle,
+                    backgroundColor: currentView === "overview" ? "#2563EB" : "transparent",
+                    fontWeight: currentView === "overview" ? "bold" : "normal",
+                  }}
+                  onClick={() => { setCurrentView("overview"); setEditingEvent(null); }}
+                >
+                  Dashboard Overview
+                </div>
+                <div
+                  style={{
+                    ...linkStyle,
+                    backgroundColor: currentView === "eventManager" ? "#2563EB" : "transparent",
+                    fontWeight: currentView === "eventManager" ? "bold" : "normal",
+                  }}
+                  onClick={() => { setCurrentView("eventManager"); setEditingEvent(null); }}
+                >
+                  Event Manager
+                </div>
+                <div
+                  style={{
+                    ...linkStyle,
+                    backgroundColor: currentView === "transactions" ? "#2563EB" : "transparent",
+                    fontWeight: currentView === "transactions" ? "bold" : "normal",
+                  }}
+                  onClick={() => { setCurrentView("transactions"); setEditingEvent(null); }}
+                >
+                  Transactions
+                </div>
+                <a
+                  href="https://docs.google.com/document/d/1u8i1cayhj8q4j6HUniee2QJw8GGnU1XjTmIFnUfGqvc/edit?usp=sharing"
+                  style={linkStyle}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Help & Support
+                </a>
+              </div>
+              <small style={{ color: "#ccc", fontSize: "0.75rem" }}>
+                © 2025 Planify
+              </small>
+            </aside>
 
-          <Link
-            to="overview"
-            style={{
-              ...linkStyle,
-              ...(location.pathname.endsWith("overview") && {
-                backgroundColor: "#2563EB",
-                fontWeight: "bold",
-              }),
-            }}
-          >
-            Dashboard Overview
-          </Link>
+            <main style={mainContentStyle} className="main-content-custom-scroll">
+              {currentView === "overview" && (
+                <div>
+                  <h2 style={sectionTitleStyle}>Dashboard Overview</h2>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(2, 1fr)",
+                      gap: "20px",
+                    }}
+                  >
+                    {events.map((event) => (
+                      <div
+                        key={event.event_id}
+                        style={sectionBoxStyle}
+                        onClick={() => handleEditEvent(event)}
+                      >
+                        <h3>{event.event_title}</h3>
+                        <p>{event.location}</p>
+                        <div>
+                          <strong>Price:</strong> ${event.price ?? 0}
+                        </div>
+                        <div>
+                          <strong>Seats Available:</strong> {event.seats ?? 0}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
-          <Link
-            to="event-manager"
-            style={{
-              ...linkStyle,
-              ...(location.pathname.includes("event-manager") &&
-                !location.pathname.includes("edit") && {
-                  backgroundColor: "#2563EB",
-                  fontWeight: "bold",
-                }),
-            }}
-          >
-            Event Manager
-          </Link>
+              {currentView === "eventManager" && (
+                <div>
+                  <h2 style={sectionTitleStyle}>Manage Events</h2>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr",
+                      gap: "20px",
+                    }}
+                  >
+                    {events.map((event) => (
+                      <div
+                        key={event.event_id}
+                        style={sectionBoxStyle}
+                        onClick={() => handleEditEvent(event)}
+                      >
+                        <h3>{event.event_title}</h3>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
-          <Link
-            to="transactions"
-            style={{
-              ...linkStyle,
-              ...(location.pathname.includes("transactions") && {
-                backgroundColor: "#2563EB",
-                fontWeight: "bold",
-              }),
-            }}
-          >
-            Transactions
-          </Link>
+              {currentView === "transactions" && (
+                <TransactionsInline />
+              )}
 
-          <Link
-            to="https://docs.google.com/document/d/1u8i1cayhj8q4j6HUniee2QJw8GGnU1XjTmIFnUfGqvc/edit?usp=sharing"
-            style={linkStyle}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Help & Support
-          </Link>
+              {currentView === "edit" && editingEvent && (
+                <EventEditForm 
+                  event={editingEvent} 
+                  onSaveEvent={handleSaveEvent} 
+                  onCancel={() => { setCurrentView("overview"); setEditingEvent(null); }}
+                />
+              )}
+            </main>
+          </div>
         </div>
-        <small style={{ color: "#ccc", fontSize: "0.75rem" }}>© 2025 Planify</small>
-      </aside>
-
-      <main style={mainContentStyle}>
-        <Routes>
-          <Route
-            path="overview"
-            element={
-              <div>
-                <h2 style={sectionTitleStyle}>Dashboard Overview</h2>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "20px" }}>
-                  {events.map((event) => (
-                    <div
-                      key={event.event_id}
-                      style={sectionBoxStyle}
-                      onClick={() => handleEditEvent(event.event_id)}
-                    >
-                      <h3>{event.event_title}</h3>
-                      <p>{event.location}</p>
-                      <div><strong>Price:</strong> ${event.price ?? 0}</div>
-                      <div><strong>Seats Available:</strong> {event.seats ?? 0}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            }
-          />
-          <Route
-            path="event-manager"
-            element={
-              <div>
-                <h2 style={sectionTitleStyle}>Manage Events</h2>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "20px" }}>
-                  {events.map((event) => (
-                    <div
-                      key={event.event_id}
-                      style={sectionBoxStyle}
-                      onClick={() => handleEditEvent(event.event_id)}
-                    >
-                      <h3>{event.event_title}</h3>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            }
-          />
-          <Route
-            path="event-manager/edit/:eventId"
-            element={<EventEditForm events={events} onSaveEvent={handleSaveEvent} />}
-          />
-          <Route
-            path="transactions"
-            element={<TransactionsInline />}
-          />
-        </Routes>
-      </main>
+      </div>
+      
+      <style>
+        {`
+          .main-content-custom-scroll::-webkit-scrollbar {
+            width: 8px;
+            height: 10px;
+          }
+          .main-content-custom-scroll::-webkit-scrollbar-track {
+            background: inherit;
+          }
+          .main-content-custom-scroll::-webkit-scrollbar-thumb {
+            background: yellow;
+          }
+        `}
+      </style>
     </div>
   );
 };
 
+// Inline Transactions component remains unchanged
 const TransactionsInline = () => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -297,10 +368,9 @@ const TransactionsInline = () => {
   );
 };
 
-const EventEditForm = ({ events, onSaveEvent }) => {
-  const { eventId } = useParams();
-  const eventToEdit = events.find((event) => event.event_id === parseInt(eventId));
-  const [editedEvent, setEditedEvent] = useState({ ...eventToEdit });
+// EventEditForm receives the event to edit via prop and calls onSaveEvent when done.
+const EventEditForm = ({ event, onSaveEvent, onCancel }) => {
+  const [editedEvent, setEditedEvent] = useState({ ...event });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
