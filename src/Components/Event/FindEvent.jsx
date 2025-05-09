@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { GoogleMap, Marker } from '@react-google-maps/api';
+import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 import supabase from '@backend/supabaseClient';
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
 import './FindEvent.css';
-import GoogleMapsProvider from '../../GoogleMapsProvider.jsx';
 
 // Import images
 import bakingImg from '../../assets/BakingIMG.png';
@@ -17,7 +18,6 @@ import defaultImg from '../../assets/Placeholder_PFP.png';
 
 const FindEvent = () => {
   const [events, setEvents] = useState([]);
-  const [selectedEvent, setSelectedEvent] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [currentLocation, setCurrentLocation] = useState('Santa Clarita, CA');
   const [isLocationEditing, setIsLocationEditing] = useState(false);
@@ -32,8 +32,11 @@ const FindEvent = () => {
     date: true,
     price: true
   });
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [mapsLoaded, setMapsLoaded] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [priceFilter, setPriceFilter] = useState(null);
+  const [dateFilter, setDateFilter] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -52,41 +55,6 @@ const FindEvent = () => {
 
   useEffect(() => {
     fetchEvents();
-
-    // Try to get user's current location.
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setMapCenter({ lat: latitude, lng: longitude });
-          setLocationMarker({ lat: latitude, lng: longitude });
-          
-          // Use Google Maps Geocoder to reverse geocode current lat/lng
-          const geocoder = new window.google.maps.Geocoder();
-          geocoder.geocode({ location: { lat: latitude, lng: longitude } }, (results, status) => {
-            if (status === 'OK' && results[0]) {
-              const addressComponents = results[0].address_components;
-              // Look for a "locality" or city identifier.
-              const cityComponent = addressComponents.find(component =>
-                component.types.includes("locality") || component.types.includes("administrative_area_level_2")
-              );
-              if (cityComponent) {
-                setCurrentLocation(cityComponent.long_name);
-                setTempLocation(cityComponent.long_name);
-              } else {
-                setCurrentLocation(results[0].formatted_address);
-                setTempLocation(results[0].formatted_address);
-              }
-            } else {
-              console.error('Geocoder failed due to: ' + status);
-            }
-          });
-        },
-        (error) => {
-          console.error('Error getting geolocation:', error);
-        }
-      );
-    }
   }, []);
 
   const fetchEvents = async () => {
@@ -97,91 +65,89 @@ const FindEvent = () => {
       if (error) throw error;
       console.log('Fetched events:', data);
       
-      // If no events found, use sample events
-      if (!data || data.length === 0) {
-        const sampleEvents = [
-          {
-            id: 1,
-            title: "Baking Workshop",
-            date: new Date().toISOString(),
-            location: "Santa Clarita Community Center",
-            price: 25,
-            latitude: 34.3917,
-            longitude: -118.5426,
-            image: bakingImg
-          },
-          {
-            id: 2,
-            title: "Brazilian Dance Class",
-            date: new Date().toISOString(),
-            location: "Dance Studio",
-            price: 30,
-            latitude: 34.3917,
-            longitude: -118.5426,
-            image: brazilianDanceImg
-          },
-          {
-            id: 3,
-            title: "Graduation Ceremony 2024",
-            date: new Date().toISOString(),
-            location: "City Hall",
-            price: 0,
-            latitude: 34.3917,
-            longitude: -118.5426,
-            image: graduationImg
-          },
-          {
-            id: 4,
-            title: "Countdown Party",
-            date: new Date().toISOString(),
-            location: "Event Center",
-            price: 45,
-            latitude: 34.3917,
-            longitude: -118.5426,
-            image: countDownImg
-          },
-          {
-            id: 5,
-            title: "Community Fundraiser",
-            date: new Date().toISOString(),
-            location: "Community Park",
-            price: 15,
-            latitude: 34.3917,
-            longitude: -118.5426,
-            image: fundraiserImg
-          },
-          {
-            id: 6,
-            title: "Rhythm & Blues Night",
-            date: new Date().toISOString(),
-            location: "Music Hall",
-            price: 35,
-            latitude: 34.3917,
-            longitude: -118.5426,
-            image: rhythmImg
-          },
-          {
-            id: 7,
-            title: "Sing Along Event",
-            date: new Date().toISOString(),
-            location: "Auditorium",
-            price: 20,
-            latitude: 34.3917,
-            longitude: -118.5426,
-            image: singImg
-          }
-        ];
-        setEvents(sampleEvents);
-      } else {
-        // For real events from database, keep using defaultImg as fallback
-        const eventsWithDefaultImage = data.map(event => ({
-          ...event,
-          image: defaultImg
-        }));
-        setEvents(eventsWithDefaultImage);
-      }
+      // Process the events to include proper image URLs
+      const processedEvents = data.map(event => ({
+        ...event,
+        image: event.image_url ? `${bucketBaseUrl}${event.image_url}` : getEventImage(event.event_title)
+      }));
+      
+      setEvents(processedEvents);
     } catch (error) {
       console.error('Error fetching events:', error);
+      // If error occurs, use sample events
+      const sampleEvents = [
+        {
+          id: 1,
+          title: "Baking Workshop",
+          date: new Date().toISOString(),
+          location: "Santa Clarita Community Center",
+          price: 25,
+          latitude: 34.3917,
+          longitude: -118.5426,
+          image: bakingImg
+        },
+        {
+          id: 2,
+          title: "Brazilian Dance Class",
+          date: new Date().toISOString(),
+          location: "Dance Studio",
+          price: 30,
+          latitude: 34.3917,
+          longitude: -118.5426,
+          image: brazilianDanceImg
+        },
+        {
+          id: 3,
+          title: "Graduation Ceremony 2024",
+          date: new Date().toISOString(),
+          location: "City Hall",
+          price: 0,
+          latitude: 34.3917,
+          longitude: -118.5426,
+          image: graduationImg
+        },
+        {
+          id: 4,
+          title: "Countdown Party",
+          date: new Date().toISOString(),
+          location: "Event Center",
+          price: 45,
+          latitude: 34.3917,
+          longitude: -118.5426,
+          image: countDownImg
+        },
+        {
+          id: 5,
+          title: "Community Fundraiser",
+          date: new Date().toISOString(),
+          location: "Community Park",
+          price: 15,
+          latitude: 34.3917,
+          longitude: -118.5426,
+          image: fundraiserImg
+        },
+        {
+          id: 6,
+          title: "Rhythm & Blues Night",
+          date: new Date().toISOString(),
+          location: "Music Hall",
+          price: 35,
+          latitude: 34.3917,
+          longitude: -118.5426,
+          image: rhythmImg
+        },
+        {
+          id: 7,
+          title: "Sing Along Event",
+          date: new Date().toISOString(),
+          location: "Auditorium",
+          price: 20,
+          latitude: 34.3917,
+          longitude: -118.5426,
+          image: singImg
+        }
+      ];
+      setEvents(sampleEvents);
     }
   };
 
@@ -246,7 +212,7 @@ const FindEvent = () => {
     console.log('Looking for image for title:', titleLower); // Debug log
     
     // Check for exact matches first
-    if (titleLower.includes('baking')) {
+    if (titleLower.includes('bake')) {
         console.log('Found baking image, path:', bakingImg);
         return bakingImg;
     }
@@ -287,13 +253,9 @@ const FindEvent = () => {
   };
 
   const handleEventClick = (event) => {
-    setSelectedEvent(event);
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedEvent(null);
+    // Use event_id if it exists (from database), otherwise use id (from sample events)
+    const eventId = event.event_id || event.id;
+    navigate(`/Event/${eventId}`);
   };
 
   // Load cart from localStorage or initialize empty cart
@@ -336,7 +298,111 @@ const FindEvent = () => {
     alert('Event added to cart successfully!');
     
     // Close the modal
-    closeModal();
+    setShowDatePicker(false);
+  };
+
+  // Update getFilteredEvents function
+  const getFilteredEvents = () => {
+    return events.filter(event => {
+      // Search filter
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        const title = (event.event_title || event.title || '').toLowerCase();
+        const location = (event.location || '').toLowerCase();
+        const description = (event.description || '').toLowerCase();
+        
+        if (!title.includes(query) && !location.includes(query) && !description.includes(query)) {
+          return false;
+        }
+      }
+
+      // Price filter
+      if (priceFilter === 'free' && event.price > 0) return false;
+      if (priceFilter === 'paid' && event.price === 0) return false;
+      
+      // Category filter
+      if (selectedCategory !== 'All' && event.category !== selectedCategory) return false;
+
+      // Date filter
+      if (dateFilter === 'today') {
+        const today = new Date();
+        const eventDate = new Date(event.date);
+        return eventDate.getFullYear() === today.getFullYear() &&
+               eventDate.getMonth() === today.getMonth() &&
+               eventDate.getDate() === today.getDate();
+      }
+      if (dateFilter === 'tomorrow') {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const eventDate = new Date(event.date);
+        return eventDate.getFullYear() === tomorrow.getFullYear() &&
+               eventDate.getMonth() === tomorrow.getMonth() &&
+               eventDate.getDate() === tomorrow.getDate();
+      }
+      if (dateFilter === 'this-weekend') {
+        const today = new Date();
+        const eventDate = new Date(event.date);
+        
+        // Get the current day of the week (0 = Sunday, 6 = Saturday)
+        const currentDay = today.getDay();
+        
+        // Calculate the start of the weekend (Saturday)
+        const weekendStart = new Date(today);
+        weekendStart.setDate(today.getDate() + (6 - currentDay));
+        weekendStart.setHours(0, 0, 0, 0);
+        
+        // Calculate the end of the weekend (Sunday)
+        const weekendEnd = new Date(weekendStart);
+        weekendEnd.setDate(weekendStart.getDate() + 1);
+        weekendEnd.setHours(23, 59, 59, 999);
+        
+        // Check if the event date falls within this weekend
+        return eventDate >= weekendStart && eventDate <= weekendEnd;
+      }
+      if (dateFilter === 'this-week') {
+        const today = new Date();
+        const eventDate = new Date(event.date);
+        const diffTime = Math.abs(eventDate - today);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays <= 7;
+      }
+      if (selectedDate) {
+        const eventDate = new Date(event.date);
+        const selectedDateObj = new Date(selectedDate);
+        return eventDate.getFullYear() === selectedDateObj.getFullYear() &&
+               eventDate.getMonth() === selectedDateObj.getMonth() &&
+               eventDate.getDate() === selectedDateObj.getDate();
+      }
+      
+      return true;
+    });
+  };
+
+  // Update handleDateSelect function
+  const handleDateSelect = (date) => {
+    setSelectedDate(date);
+    setDateFilter('custom');
+    setShowDatePicker(false);
+  };
+
+  // Update handleDateFilterChange function
+  const handleDateFilterChange = (filter) => {
+    // If clicking the same filter that's already selected, clear it
+    if (dateFilter === filter) {
+      setDateFilter(null);
+      setSelectedDate(null);
+    } else {
+      setDateFilter(filter);
+      if (filter !== 'custom') {
+        setSelectedDate(null);
+      }
+    }
+  };
+
+  // Add this function to handle search
+  const handleSearch = (e) => {
+    e.preventDefault();
+    // The filtering will happen automatically through getFilteredEvents
   };
 
   return (
@@ -363,7 +429,7 @@ const FindEvent = () => {
                 <span>All</span>
               </div>
               {categories.map(category => (
-                <div className="filter-option" key={category.id}>
+                <div className="filter-option">
                   <input
                     type="radio"
                     name="category"
@@ -388,24 +454,69 @@ const FindEvent = () => {
           {expandedSections.date && (
             <div className="filter-options">
               <div className="filter-option">
-                <input type="radio" name="date" value="today" />
+                <input 
+                  type="checkbox" 
+                  name="date" 
+                  value="today" 
+                  checked={dateFilter === 'today'}
+                  onChange={() => handleDateFilterChange('today')}
+                />
                 <span>Today</span>
               </div>
               <div className="filter-option">
-                <input type="radio" name="date" value="tomorrow" />
+                <input 
+                  type="checkbox" 
+                  name="date" 
+                  value="tomorrow" 
+                  checked={dateFilter === 'tomorrow'}
+                  onChange={() => handleDateFilterChange('tomorrow')}
+                />
                 <span>Tomorrow</span>
               </div>
               <div className="filter-option">
-                <input type="radio" name="date" value="this-weekend" />
+                <input 
+                  type="checkbox" 
+                  name="date" 
+                  value="this-weekend" 
+                  checked={dateFilter === 'this-weekend'}
+                  onChange={() => handleDateFilterChange('this-weekend')}
+                />
                 <span>This weekend</span>
               </div>
               <div className="filter-option">
-                <input type="radio" name="date" value="this-week" />
+                <input 
+                  type="checkbox" 
+                  name="date" 
+                  value="this-week" 
+                  checked={dateFilter === 'this-week'}
+                  onChange={() => handleDateFilterChange('this-week')}
+                />
                 <span>This week</span>
               </div>
               <div className="filter-option">
-                <input type="radio" name="date" value="custom" />
-                <span>Pick a date...</span>
+                <input 
+                  type="checkbox" 
+                  name="date" 
+                  value="custom" 
+                  checked={dateFilter === 'custom'}
+                  onChange={() => {
+                    if (dateFilter === 'custom') {
+                      setDateFilter(null);
+                      setSelectedDate(null);
+                    } else {
+                      setShowDatePicker(true);
+                    }
+                  }}
+                />
+                <span>
+                  {selectedDate 
+                    ? new Date(selectedDate).toLocaleDateString('en-US', { 
+                        month: 'long', 
+                        day: 'numeric', 
+                        year: 'numeric' 
+                      })
+                    : 'Pick a date...'}
+                </span>
               </div>
             </div>
           )}
@@ -421,11 +532,23 @@ const FindEvent = () => {
           {expandedSections.price && (
             <div className="filter-options">
               <div className="filter-option">
-                <input type="checkbox" name="price" value="free" />
+                <input 
+                  type="checkbox" 
+                  name="price" 
+                  value="free" 
+                  checked={priceFilter === 'free'}
+                  onChange={() => setPriceFilter(priceFilter === 'free' ? null : 'free')}
+                />
                 <span>Free</span>
               </div>
               <div className="filter-option">
-                <input type="checkbox" name="price" value="paid" />
+                <input 
+                  type="checkbox" 
+                  name="price" 
+                  value="paid" 
+                  checked={priceFilter === 'paid'}
+                  onChange={() => setPriceFilter(priceFilter === 'paid' ? null : 'paid')}
+                />
                 <span>Paid</span>
               </div>
             </div>
@@ -462,32 +585,36 @@ const FindEvent = () => {
             )}
           </div>
           <div className="search-bar">
-            <input 
-              type="text" 
-              placeholder="Search for events..."
-              className="search-input"
-            />
+            <form onSubmit={handleSearch}>
+              <input 
+                type="text" 
+                placeholder="Search for events..."
+                className="search-input"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </form>
           </div>
         </div>
         
         <div className="events-scroll">
-          {events.map((event) => (
+          {getFilteredEvents().map((event) => (
             <div 
-              key={event.id} 
-              className={`event-card ${selectedEvent?.id === event.id ? 'selected' : ''}`}
+              key={event.event_id || event.id} 
+              className={`event-card`}
               onClick={() => handleEventClick(event)}
             >
               <img 
                 src={event.image}
-                alt={event.title} 
+                alt={event.event_title || event.title} 
                 className="event-image"
                 onError={(e) => {
-                  console.error('Image failed to load for event:', event.title);
+                  console.error('Image failed to load for event:', event.event_title || event.title);
                   e.target.src = defaultImg;
                 }}
               />
               <div className="event-info">
-                <h3>{event.title}</h3>
+                <h3>{event.event_title || event.title}</h3>
                 <p className="event-date">{new Date(event.date).toLocaleDateString()}</p>
                 <p className="event-location">{event.location}</p>
                 <p className="event-price">${event.price}</p>
@@ -499,7 +626,7 @@ const FindEvent = () => {
 
       {/* Right side - Map */}
       <div className="map-container">
-      <GoogleMapsProvider>
+        <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
           <GoogleMap
             mapContainerStyle={mapContainerStyle}
             center={mapCenter}
@@ -509,16 +636,14 @@ const FindEvent = () => {
             {locationMarker && (
               <Marker
                 position={locationMarker}
-                icon={
-                     {
-                        path: window.google.maps.SymbolPath.CIRCLE,
-                        scale: 10,
-                        fillColor: '#FF0000',
-                        fillOpacity: 1,
-                        strokeColor: '#FFFFFF',
-                        strokeWeight: 2
-                      }
-                }
+                icon={{
+                  path: window.google.maps.SymbolPath.CIRCLE,
+                  scale: 10,
+                  fillColor: '#FF0000',
+                  fillOpacity: 1,
+                  strokeColor: '#FFFFFF',
+                  strokeWeight: 2,
+                }}
               />
             )}
             
@@ -534,51 +659,24 @@ const FindEvent = () => {
               />
             ))}
           </GoogleMap>
-        </GoogleMapsProvider>
+        </LoadScript>
       </div>
 
-      {/* Event Details Modal */}
-      {isModalOpen && selectedEvent && (
-        <div className="modal-overlay" onClick={closeModal}>
-          <div className="event-modal" onClick={e => e.stopPropagation()}>
-            <button className="close-modal-btn" onClick={closeModal}>×</button>
-            <div className="modal-content">
-              <div className="modal-image-container">
-                <img 
-                  src={selectedEvent.image} 
-                  alt={selectedEvent.title}
-                  className="modal-image"
-                  onError={(e) => {
-                    e.target.src = defaultImg;
-                  }}
-                />
-              </div>
-              <div className="modal-details">
-                <h2>{selectedEvent.title}</h2>
-                <div className="detail-row">
-                  <span className="detail-icon">📅</span>
-                  <p>{new Date(selectedEvent.date).toLocaleDateString(undefined, {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}</p>
-                </div>
-                <div className="detail-row">
-                  <span className="detail-icon">📍</span>
-                  <p>{selectedEvent.location}</p>
-                </div>
-                <div className="detail-row">
-                  <span className="detail-icon">💰</span>
-                  <p>${selectedEvent.price}</p>
-                </div>
-                <div className="event-actions">
-                  <button className="action-button" onClick={() => handleAddToCart(selectedEvent)}>Add to Cart</button>
-                  <button className="action-button secondary">Share Event</button>
-                </div>
-              </div>
+      {/* Date Picker Modal */}
+      {showDatePicker && (
+        <div className="modal-overlay" onClick={() => setShowDatePicker(false)}>
+          <div className="date-picker-modal" onClick={e => e.stopPropagation()}>
+            <button className="close-modal-btn" onClick={() => setShowDatePicker(false)}>×</button>
+            <div className="date-picker-content">
+              <h2>Select Date</h2>
+              <DatePicker
+                selected={selectedDate}
+                onChange={handleDateSelect}
+                dateFormat="MMMM d, yyyy"
+                inline
+                maxDate={new Date(2025, 11, 31)}
+                minDate={new Date(2024, 0, 1)}
+              />
             </div>
           </div>
         </div>
