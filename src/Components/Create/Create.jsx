@@ -113,8 +113,8 @@
       ])
       .select();
 
-    if (eventError || !data || data.length === 0) {
-      console.error('Error inserting event:', eventError);
+    if (error || !data || data.length === 0) {
+      console.error('Error inserting event:', error);
       alert('Failed to create event.');
       return;
     }

@@ -45,7 +45,7 @@ const EventPage = () => {
   const fetchTicketTypes = async () => {
     const { data, error } = await supabase
       .from('ticket_types')
-      .select("id, price, type")
+      .select("id, price,name")
       .eq("event_id", id);
     if (error) {
       console.error("Error fetching ticket types:", error);
@@ -119,7 +119,7 @@ const EventPage = () => {
 
   const handleBuyTickets = async () => {
     const ticket = {
-      event_id: event.event_id,
+      ticket_type_id: selectedTicketType.id,
       event_title: event.event_title,
       price: event.price,
     };
@@ -129,7 +129,7 @@ const EventPage = () => {
         const { data: existingCartItems, error } = await supabase
           .from("cart")
           .select("*")
-          .eq("event_id", ticket.event_id)
+          .eq("ticket_type_id", ticket.ticket_type_id)
           .eq("user_id", authData.id);
     
         if (error) throw error;
@@ -147,7 +147,7 @@ const EventPage = () => {
             .insert([
               {
                 user_id: authData.id,
-                event_id: ticket.event_id,
+                event_id: ticket.ticket_type_id,
                 quantity: 1,
               },
             ]);
@@ -161,13 +161,13 @@ const EventPage = () => {
     } else {
       let cachedCart = JSON.parse(localStorage.getItem("cart")) || [];
       const index = cachedCart.findIndex(
-        (item) => item.event_id === ticket.event_id
+        (item) => item.ticket_type_id === ticket.ticket_type_id
       );
       if (index !== -1) {
         cachedCart[index].quantity += 1;
       } else {
         cachedCart.push({
-          event_id: ticket.event_id,
+          ticket_type_id: ticket.ticket_type_id,
           name: ticket.event_title,
           price: ticket.price,
           quantity: 1,
@@ -318,9 +318,9 @@ const EventPage = () => {
         </div>
 
         <div className="event-ticket-box">
-          <h3>Price</h3>
+          <h3>Ticket Type</h3>
           <div className="event-underline"></div>
-          <p>${event.price || 0}</p>
+          <p style={{ fontSize: '20px' }}>{selectedTicketType?.name || 'No Ticket Selected'}</p>
           {ticketTypes.length > 0 && (
             <select
               className="ticket-type-dropdown"
@@ -329,7 +329,7 @@ const EventPage = () => {
             >
               {ticketTypes.map(tt => (
                 <option key={tt.id} value={tt.id}>
-                  {tt.type} - ${tt.price}
+                  {tt.name} - ${tt.price}
                 </option>
               ))}
             </select>
