@@ -1,7 +1,9 @@
+// DeveloperDashboard.jsx
 import React, { useState, useEffect } from "react";
 import { Link, Routes, Route, useLocation, useNavigate, useParams } from "react-router-dom";
 import { supabase } from "../../../backend/supabaseClient";
 
+// --- Styles ---
 const sidebarStyle = {
   width: "250px",
   height: "100vh",
@@ -51,6 +53,7 @@ const sectionBoxStyle = {
   animation: "fadeIn 1s ease-in-out",
 };
 
+// --- Main Component ---
 const DeveloperDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -62,19 +65,13 @@ const DeveloperDashboard = () => {
         .from("EventTable")
         .select("event_id, event_title, location, price, seats");
 
-      if (error) {
-        console.error("Error fetching events:", error);
-      } else {
-        setEvents(data);
-      }
+      if (error) console.error("Error fetching events:", error);
+      else setEvents(data);
     };
-
     fetchEvents();
   }, []);
 
-  const handleEditEvent = (eventId) => {
-    navigate(`event-manager/edit/${eventId}`);
-  };
+  const handleEditEvent = (eventId) => navigate(`event-manager/edit/${eventId}`);
 
   const handleSaveEvent = async (updatedEvent) => {
     const { error } = await supabase
@@ -87,9 +84,8 @@ const DeveloperDashboard = () => {
       })
       .eq("event_id", updatedEvent.event_id);
 
-    if (error) {
-      console.error("Error updating event:", error);
-    } else {
+    if (error) console.error("Error updating event:", error);
+    else {
       setEvents((prevEvents) =>
         prevEvents.map((event) =>
           event.event_id === updatedEvent.event_id ? updatedEvent : event
@@ -202,13 +198,101 @@ const DeveloperDashboard = () => {
           />
           <Route
             path="event-manager/edit/:eventId"
-            element={
-              <EventEditForm events={events} onSaveEvent={handleSaveEvent} />
-            }
+            element={<EventEditForm events={events} onSaveEvent={handleSaveEvent} />}
           />
-          <Route path="transactions" element={<div>Transactions Page</div>} />
+          <Route
+            path="transactions"
+            element={<TransactionsInline />}
+          />
         </Routes>
       </main>
+    </div>
+  );
+};
+
+const TransactionsInline = () => {
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      setLoading(true);
+
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+      console.log("User:", user);
+      if (!user) {
+        console.warn("No user found");
+        return;
+      }
+
+      const { data: purchases, error: purchaseError } = await supabase
+        .from("ticket_purchase_history")
+        .select(`
+          id,
+          user_id,
+          quantity,
+          total_price,
+          purchased_at,
+          ticket_types (
+            event_id,
+            EventTable:event_id (
+              event_title
+            )
+          )
+        `);
+
+      if (purchaseError) {
+        console.error("Purchase fetch error:", purchaseError);
+        return;
+      }
+
+      const transactionsWithNames = purchases.map((p) => ({
+        id: p.id,
+        buyer_email: p.user_id,
+        amount: p.total_price,
+        created_at: p.purchased_at,
+        event_title: p.ticket_types?.EventTable?.event_title || "Unknown Event",
+      }));
+
+      setTransactions(transactionsWithNames);
+      setLoading(false);
+    };
+
+    fetchTransactions();
+  }, []);
+
+  if (loading) return <p>Loading transactions...</p>;
+
+  return (
+    <div>
+      <h2 style={sectionTitleStyle}>Transaction History</h2>
+      <div style={{ overflowX: "auto" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", backgroundColor: "#fff", color: "#000", borderRadius: "8px", overflow: "hidden" }}>
+          <thead style={{ backgroundColor: "#1F2937", color: "#fff" }}>
+            <tr>
+              <th style={{ padding: "12px", borderBottom: "1px solid #ccc" }}>Event</th>
+              <th style={{ padding: "12px", borderBottom: "1px solid #ccc" }}>Transaction ID</th>
+              <th style={{ padding: "12px", borderBottom: "1px solid #ccc" }}>Buyer Email</th>
+              <th style={{ padding: "12px", borderBottom: "1px solid #ccc" }}>Amount</th>
+              <th style={{ padding: "12px", borderBottom: "1px solid #ccc" }}>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {transactions.map((tx) => (
+              <tr key={tx.id}>
+                <td style={{ padding: "12px", borderBottom: "1px solid #eee" }}>{tx.event_title}</td>
+                <td style={{ padding: "12px", borderBottom: "1px solid #eee" }}>{tx.id}</td>
+                <td style={{ padding: "12px", borderBottom: "1px solid #eee" }}>{tx.buyer_email}</td>
+                <td style={{ padding: "12px", borderBottom: "1px solid #eee" }}>${tx.amount.toFixed(2)}</td>
+                <td style={{ padding: "12px", borderBottom: "1px solid #eee" }}>{new Date(tx.created_at).toLocaleDateString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
@@ -238,79 +322,18 @@ const EventEditForm = ({ events, onSaveEvent }) => {
       <h2 style={sectionTitleStyle}>Edit Event</h2>
       <form onSubmit={handleSubmit} style={{ maxWidth: "400px", display: "flex", flexDirection: "column", gap: "12px" }}>
         <label style={{ fontWeight: "bold" }}>Event Title:</label>
-        <input
-          type="text"
-          name="event_title"
-          value={editedEvent.event_title}
-          onChange={handleChange}
-          style={{
-            padding: "10px",
-            borderRadius: "6px",
-            border: "1px solid #ccc",
-            fontSize: "1rem"
-          }}
-        />
+        <input type="text" name="event_title" value={editedEvent.event_title} onChange={handleChange} />
 
         <label style={{ fontWeight: "bold" }}>Event Location:</label>
-        <input
-          type="text"
-          name="location"
-          value={editedEvent.location}
-          onChange={handleChange}
-          style={{
-            padding: "10px",
-            borderRadius: "6px",
-            border: "1px solid #ccc",
-            fontSize: "1rem"
-          }}
-        />
+        <input type="text" name="location" value={editedEvent.location} onChange={handleChange} />
 
         <label style={{ fontWeight: "bold" }}>Price:</label>
-        <input
-          type="number"
-          name="price"
-          value={editedEvent.price}
-          onChange={handleChange}
-          style={{
-            padding: "10px",
-            borderRadius: "6px",
-            border: "1px solid #ccc",
-            fontSize: "1rem"
-          }}
-        />
+        <input type="number" name="price" value={editedEvent.price} onChange={handleChange} />
 
         <label style={{ fontWeight: "bold" }}>Seats Available:</label>
-        <input
-          type="number"
-          name="seats"
-          value={editedEvent.seats}
-          onChange={handleChange}
-          style={{
-            padding: "10px",
-            borderRadius: "6px",
-            border: "1px solid #ccc",
-            fontSize: "1rem"
-          }}
-        />
+        <input type="number" name="seats" value={editedEvent.seats} onChange={handleChange} />
 
-        <button
-          type="submit"
-          style={{
-            marginTop: "12px",
-            padding: "12px",
-            borderRadius: "6px",
-            backgroundColor: "#2563EB",
-            color: "white",
-            border: "none",
-            fontSize: "1rem",
-            cursor: "pointer",
-            transition: "background-color 0.3s ease"
-          }}
-          onMouseOver={(e) => (e.target.style.backgroundColor = "#1D4ED8")}
-          onMouseOut={(e) => (e.target.style.backgroundColor = "#2563EB")}
-        >
-          Save Changes
-        </button>
+        <button type="submit" style={{ marginTop: "12px" }}>Save Changes</button>
       </form>
     </div>
   );
