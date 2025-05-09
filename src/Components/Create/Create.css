@@ -39,6 +39,7 @@ h2,
     font-weight: bold;
     margin-bottom: 20px;
     cursor: pointer;
+    margin-right: 1px;
   }
   
   .event-card {
@@ -92,10 +93,22 @@ h2,
   
   .banner-image {
     width: 100%;
-    height: 200px;
+    height: 300px; 
     border-radius: 10px;
     position: relative;
-    margin-bottom: 30px;
+    margin-top: 40px;
+    margin-bottom: 40px; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px; 
+    overflow: visible; 
+  }
+
+  .uploaded-banner {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; /* scale image while preserving aspect ratio */
   }
   
   .image-upload {
@@ -143,7 +156,6 @@ h2,
   .checkbox-inline {
     display: flex;
     align-items: center;
-    margin-bottom: 20px;
     color: white;
   }
   
@@ -211,132 +223,226 @@ h2,
     border: 1px solid rgba(255, 255, 255, 0.15);
   }
 
-  .review-box p {
-    margin-bottom: 12px;
-    line-height: 1.6;
-    font-size: 16px;
-  }
-  
-  
-  .review-box h3 {
-    margin-bottom: 16px;
-    font-size: 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 8px;
-  }
-  
-  .ticket-review {
-    margin-bottom: 16px;
-  }
-  
-  .submit-button-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 40px;
-  }
-  
-  .submit-button {
-    padding: 12px 24px;
-    font-size: 18px;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    border: none;
-    cursor: pointer;
-    backdrop-filter: blur(10px);
-    transition: background 0.2s ease;
-  }
-  
-  .submit-button:hover {
-    background: rgba(255, 255, 255, 0.2);
-  }
-  
-  .remove-image-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: rgba(255, 0, 0, 0.75);
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    font-size: 14px;
-    border-radius: 6px;
-    cursor: pointer;
-    backdrop-filter: blur(8px);
-    z-index: 3;
-  }
-  
-  .remove-image-button:hover {
-    background: rgba(255, 0, 0, 0.9);
-  }
+.review-box p {
+  margin-bottom: 12px;
+  line-height: 1.6;
+  font-size: 16px;
+}
 
+.review-box h3 {
+  margin-bottom: 16px;
+  font-size: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 8px;
+}
 
+.ticket-review {
+  margin-bottom: 16px;
+}
+.remove-image-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 0, 0, 0.75);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  z-index: 3;
+}
 
-  input[type="checkbox"].switch_1{
-    font-size: 30px;
-    -webkit-appearance: none;
-       -moz-appearance: none;
-            appearance: none;
-    width: 3em;
-    height: 1.2em;
-    background: #ddd;
-    border-radius: 3em;
-    position: relative;
-    cursor: pointer;
-    outline: none;
-    -webkit-transition: all .2s ease-in-out;
-    transition: all .2s ease-in-out;
-    }
-    
-    input[type="checkbox"].switch_1:checked{
-    background: #0ebeff;
-    }
-    
-    input[type="checkbox"].switch_1:after{
-    position: absolute;
-    content: "";
-    width: 1.2em;
-    height: 1.2em;
-    border-radius: 50%;
-    background: #fff;
-    -webkit-box-shadow: 0 0 .25em rgba(0,0,0,.3);
-            box-shadow: 0 0 .25em rgba(0,0,0,.3);
-    -webkit-transform: scale(.7);
-            transform: scale(.7);
-    left: 0;
-    -webkit-transition: all .2s ease-in-out;
-    transition: all .2s ease-in-out;
-    }
-    
-    input[type="checkbox"].switch_1:checked:after{
-    left: calc(100% - 1.5em);
-    }
+.remove-image-button:hover {
+  background: rgba(255, 0, 0, 0.9);
+}
 
-    .switch_box {
-      display: flex;
-      align-items: center;
-    }
+.nav-buttons {
+  justify-content: right;
+  padding-top: 20px;
+  display: flex;
+  gap: 20px;
+}
 
+input[type="checkbox"].switch_1 {
+  font-size: 30px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 3em;
+  height: 1.2em;
+  background: #ddd;
+  border-radius: 3em;
+  position: relative;
+  cursor: pointer;
+  outline: none;
+  -webkit-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+}
 
+input[type="checkbox"].switch_1:checked {
+  background: #0ebeff;
+}
 
-    .nav-buttons {
-      justify-content: right;
-      padding-top: 20px;
-      display: flex;
-      gap: 10px;
-    }
-    
-    .nav-btn {
-      padding: 20px 30px;
-      background-color: #4ab904;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    
+input[type="checkbox"].switch_1:after {
+  position: absolute;
+  content: "";
+  width: 1.2em;
+  height: 1.2em;
+  border-radius: 50%;
+  background: #fff;
+  -webkit-box-shadow: 0 0 0.25em rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 0.25em rgba(0, 0, 0, 0.3);
+  -webkit-transform: scale(0.7);
+  transform: scale(0.7);
+  left: 0;
+  -webkit-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+}
 
-    .nav-btn.back-btn {
-      background-color: #dc3545 !important;
-    }
+input[type="checkbox"].switch_1:checked:after {
+  left: calc(100% - 1.5em);
+}
+
+.switch_box {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+/* Base style from Button 89 */
+.button-89 {
+  --b: 3px; /* border thickness */
+  --s: 0.45em; /* size of the corner */
+  padding: calc(0.5em + var(--s)) calc(0.9em + var(--s));
+  color: var(--color);
+  --_p: var(--s);
+  background: conic-gradient(
+      from 90deg at var(--b) var(--b),
+      #0000 90deg,
+      var(--color) 0
+    )
+    var(--_p) var(--_p) / calc(100% - var(--b) - 2 * var(--_p))
+    calc(100% - var(--b) - 2 * var(--_p));
+  transition: 0.3s linear, color 0s, background-color 0s;
+  outline: var(--b) solid #0000;
+  outline-offset: 0.6em;
+  font-size: 16px;
+  border: 0;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.button-89:hover,
+.button-89:focus-visible {
+  --_p: 0px;
+  outline-color: var(--color);
+  outline-offset: 0.05em;
+}
+
+.button-89:active {
+  background: var(--color);
+  color: #fff;
+}
+
+/* Custom color overrides */
+.back-btn {
+  --color: #dc3545; /* red */
+}
+
+.next-btn,
+.create-btn {
+  --color: #4ab904; /* green */
+}
+.dashboard-button {
+  appearance: button;
+  background-color: #1899d6;
+  border: solid transparent;
+  border-radius: 16px;
+  border-width: 0 0 4px;
+  box-sizing: border-box;
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  line-height: 20px;
+  margin: 0;
+  outline: none;
+  overflow: visible;
+  padding: 6px 8px;
+  text-align: center;
+  text-transform: uppercase;
+  touch-action: manipulation;
+  transform: translateZ(0);
+  transition: filter 0.2s;
+  user-select: none;
+  -webkit-user-select: none;
+  vertical-align: middle;
+  white-space: nowrap;
+  margin-left: 4px;
+}
+
+.dashboard-button:after {
+  background-clip: padding-box;
+  background-color: #1cb0f6;
+  border: solid transparent;
+  border-radius: 16px;
+  border-width: 0 0 4px;
+  bottom: -4px;
+  content: "";
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: -1;
+}
+
+.popup-notification {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 16px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  z-index: 1000;
+  animation: slideDown 0.5s ease-out;
+}
+
+.popup-notification.success {
+  background-color: #4ab904;
+  color: white;
+}
+
+.popup-notification.error {
+  background-color: #dc3545;
+  color: white;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.image-placeholder-box {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box; /* include border in element's dimensions */
+  border: 2px dashed #ccc;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #777;
+  cursor: pointer;
+  margin-bottom: 20px;
+}

@@ -7,19 +7,26 @@
 }
 
 .event-header-image-container {
-    position: relative;
     width: 100%;
     max-width: 1000px;
-    height: auto;
-    margin-bottom: 20px;
+    height: 500px;
+    margin: 0 auto;
     overflow: hidden;
+    display: flex;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 16px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .event-header-image {
-    width: 100%;
-    height: auto;
-    border-radius: 8px;
-    object-fit: cover;
+    object-fit: contain;
+    max-width: 100%;
+    max-height: 100%;
 }
 
 .event-content-container {
@@ -38,6 +45,7 @@
 }
 
 .event-ticket-box {
+    font-size:5px;
     width: 25%;
     height: 160px;
     background-color: #ffffff;
@@ -94,13 +102,14 @@
 
 .ticket-type-dropdown {
     padding: 8px;
+    padding-right: 15px;
+    margin-bottom: 10px;
     border: 1px solid #e5e5e5;
     border-radius: 4px;
-    margin-top: 10px; /* Ensure dropdown appears below the button */
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-    background: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8"><path fill="none" stroke="%23007bff" d="M1 2l3 3 3-3"/></svg>') no-repeat right 10px center;
+    background: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="5" height="8" viewBox="0 0 8 8"><path fill="none" stroke="%23007bff" d="M1 2l3 3 3-3"/></svg>') no-repeat right 5px center;
     background-color: #fff;
     background-size: 8px 8px;
 }

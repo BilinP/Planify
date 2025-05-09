@@ -1,22 +1,41 @@
+// DeveloperDashboard.jsx
+import React, { useState, useEffect } from "react";
+import { supabase } from "../../../backend/supabaseClient";
 
-import React, { useState } from "react";
-import { Link, Routes, Route, useLocation, useNavigate, useParams } from "react-router-dom";
+// --- Updated Styles ---
+const containerStyle = {
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  minHeight: "80vh",
+  width: "100%",
+  padding: "20px",
+};
 
+const dashboardStyle = {
+  width: "1300px",
+  height: "800px",
+  display: "flex",
+  backgroundColor: "rgba(0, 0, 0, 0.9)",
+  borderRadius: "8px",
+  overflow: "hidden",
+};
 
-// Basic Styles
 const sidebarStyle = {
   width: "250px",
-  height: "100vh",
   padding: "20px",
-  backgroundColor: "rgba(0, 0, 0, 0.85)",
+  backgroundColor: "rgba(0, 0, 0, 1)",
   color: "white",
-  position: "fixed",
-  top: "50px",
-  left: 0,
   display: "flex",
   flexDirection: "column",
   justifyContent: "space-between",
-  zIndex: 10,
+};
+
+const mainContentStyle = {
+  flexGrow: 1,
+  padding: "40px 20px",
+  color: "white",
+  overflowY: "auto",
 };
 
 const linkStyle = {
@@ -28,21 +47,9 @@ const linkStyle = {
   marginBottom: "8px",
   fontSize: "1.1rem",
   transition: "background 0.3s ease",
+  cursor: "pointer",
 };
 
-const activeLinkStyle = {
-  backgroundColor: "#4B5563",
-};
-
-const mainContentStyle = {
-  marginLeft: "250px",
-  padding: "40px 20px",
-  color: "white",
-  minHeight: "100vh",
-  backgroundColor: "rgba(0, 0, 0, 0.6)",
-};
-
-// Section Styles with Boxed Layout
 const sectionTitleStyle = {
   fontSize: "1.8rem",
   marginBottom: "16px",
@@ -58,117 +65,312 @@ const sectionBoxStyle = {
   animation: "fadeIn 1s ease-in-out",
 };
 
-// Main Dashboard Component
-const DeveloperDashboard = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
+// --- Popup Styles ---
+const popupOverlayStyle = {
+  position: "fixed",
+  top: 0,
+  left: 0,
+  width: "100%",
+  height: "100%",
+  backgroundColor: "rgba(0, 0, 0, 0.5)",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  zIndex: 1000,
+};
 
-  const [events, setEvents] = useState([
-    { id: 1, title: "Brazilian Dance Social: Forró & Samba", venue: "Motivo LA", price: 20, seats: 20 },
-    { id: 2, title: "Graduation Ceremony", venue: "CSUN", price: 5, seats: 5 },
-    { id: 3, title: "Sing! - An 'L.A. Story' Live Music", venue: "West Hollywood", price: 0, seats: 0 },
-    { id: 4, title: "The RHYTHMS", venue: "L.A. Arts Center", price: 15, seats: 30 },
-    { id: 5, title: "New Year Countdown", venue: "L.A. Downtown", price: 30, seats: 50 },
-    { id: 6, title: "Bake Better", venue: "Sweet & Savory Bakery", price: 25, seats: 15 },
-    { id: 7, title: "HOPE - LA 6th Annual FUNdraiser 70s Disco Party", venue: "L.A. Disco Hall", price: 50, seats: 100 },
-  ]);
+const popupContentStyle = {
+  borderRadius: "8px",
+  overflow: "hidden",
+  position: "relative",
+};
 
-  const handleEditEvent = (eventId) => {
-    navigate(`/dev-dashboard/event-manager/edit/${eventId}`);
+// --- Main Component ---
+const DeveloperDashboard = ({ onClose }) => {
+  const [events, setEvents] = useState([]);
+  const [currentView, setCurrentView] = useState("overview"); // "overview", "eventManager", "edit", "transactions"
+  const [editingEvent, setEditingEvent] = useState(null);
+
+  // Disable scrolling on mount and re-enable on unmount
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, []);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      const { data, error } = await supabase
+        .from("EventTable")
+        .select("event_id, event_title, location, price, seats");
+      if (error) console.error("Error fetching events:", error);
+      else setEvents(data);
+    };
+    fetchEvents();
+  }, []);
+
+  const handleEditEvent = (event) => {
+    setEditingEvent(event);
+    setCurrentView("edit");
   };
 
-  const handleSaveEvent = (updatedEvent) => {
-    setEvents((prevEvents) =>
-      prevEvents.map((event) =>
-        event.id === updatedEvent.id ? updatedEvent : event
-      )
-    );
-    navigate("/dev-dashboard/event-manager");
+  const handleSaveEvent = async (updatedEvent) => {
+    const { error } = await supabase
+      .from("EventTable")
+      .update({
+        event_title: updatedEvent.event_title,
+        location: updatedEvent.location,
+        price: updatedEvent.price,
+        seats: updatedEvent.seats,
+      })
+      .eq("event_id", updatedEvent.event_id);
+
+    if (error) console.error("Error updating event:", error);
+    else {
+      setEvents((prevEvents) =>
+        prevEvents.map((event) =>
+          event.event_id === updatedEvent.event_id ? updatedEvent : event
+        )
+      );
+      setCurrentView("overview");
+      setEditingEvent(null);
+    }
   };
 
   return (
-    <div style={{ display: "flex" }}>
-      <aside style={sidebarStyle}>
-        <div>
-          <h2 style={{ fontSize: "1.5rem", marginBottom: "1.5rem" }}>Host Panel</h2>
-          <Link to="/dev-dashboard/overview" style={linkStyle}>
-            Dashboard Overview
-          </Link>
-          <Link to="/dev-dashboard/event-manager" style={linkStyle}>
-            Event Manager
-          </Link>
-          <Link to="/dev-dashboard/transactions" style={linkStyle}>
-            Transactions
-          </Link>
-          <Link to="https://docs.google.com/document/d/1u8i1cayhj8q4j6HUniee2QJw8GGnU1XjTmIFnUfGqvc/edit?usp=sharing" style={linkStyle} target="_blank" rel="noopener noreferrer">
-            Help & Support
-          </Link>
-        </div>
-        <small style={{ color: "#ccc", fontSize: "0.75rem" }}>© 2025 Planify</small>
-      </aside>
+    <div style={popupOverlayStyle} onClick={onClose}>
+      <div style={popupContentStyle} onClick={(e) => e.stopPropagation()}>
+        <div style={containerStyle}>
+          <div style={dashboardStyle}>
+            <aside style={sidebarStyle}>
+              <div>
+                <h2 style={{ fontSize: "1.5rem", marginBottom: "1.5rem" }}>
+                  Host Panel
+                </h2>
+                <div
+                  style={{
+                    ...linkStyle,
+                    backgroundColor: currentView === "overview" ? "#2563EB" : "transparent",
+                    fontWeight: currentView === "overview" ? "bold" : "normal",
+                  }}
+                  onClick={() => { setCurrentView("overview"); setEditingEvent(null); }}
+                >
+                  Dashboard Overview
+                </div>
+                <div
+                  style={{
+                    ...linkStyle,
+                    backgroundColor: currentView === "eventManager" ? "#2563EB" : "transparent",
+                    fontWeight: currentView === "eventManager" ? "bold" : "normal",
+                  }}
+                  onClick={() => { setCurrentView("eventManager"); setEditingEvent(null); }}
+                >
+                  Event Manager
+                </div>
+                <div
+                  style={{
+                    ...linkStyle,
+                    backgroundColor: currentView === "transactions" ? "#2563EB" : "transparent",
+                    fontWeight: currentView === "transactions" ? "bold" : "normal",
+                  }}
+                  onClick={() => { setCurrentView("transactions"); setEditingEvent(null); }}
+                >
+                  Transactions
+                </div>
+                <a
+                  href="https://docs.google.com/document/d/1u8i1cayhj8q4j6HUniee2QJw8GGnU1XjTmIFnUfGqvc/edit?usp=sharing"
+                  style={linkStyle}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Help & Support
+                </a>
+              </div>
+              <small style={{ color: "#ccc", fontSize: "0.75rem" }}>
+                © 2025 Planify
+              </small>
+            </aside>
 
-      <main style={mainContentStyle}>
-        <Routes>
-          <Route
-            path="overview"
-            element={
-              <div>
-                <h2 style={sectionTitleStyle}>Dashboard Overview</h2>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "20px" }}>
-                  {events.map((event) => (
-                    <div
-                      key={event.id}
-                      style={sectionBoxStyle}
-                      onClick={() => handleEditEvent(event.id)}
-                    >
-                      <h3>{event.title}</h3>
-                      <p>{event.venue}</p>
-                      <div><strong>Price:</strong> ${event.price}</div>
-                      <div><strong>Seats Available:</strong> {event.seats}</div>
-                    </div>
-                  ))}
+            <main style={mainContentStyle} className="main-content-custom-scroll">
+              {currentView === "overview" && (
+                <div>
+                  <h2 style={sectionTitleStyle}>Dashboard Overview</h2>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(2, 1fr)",
+                      gap: "20px",
+                    }}
+                  >
+                    {events.map((event) => (
+                      <div
+                        key={event.event_id}
+                        style={sectionBoxStyle}
+                        onClick={() => handleEditEvent(event)}
+                      >
+                        <h3>{event.event_title}</h3>
+                        <p>{event.location}</p>
+                        <div>
+                          <strong>Price:</strong> ${event.price ?? 0}
+                        </div>
+                        <div>
+                          <strong>Seats Available:</strong> {event.seats ?? 0}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            }
-          />
-          <Route
-            path="event-manager"
-            element={
-              <div>
-                <h2 style={sectionTitleStyle}>Manage Events</h2>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "20px" }}>
-                  {events.map((event) => (
-                    <div
-                      key={event.id}
-                      style={sectionBoxStyle}
-                      onClick={() => handleEditEvent(event.id)}
-                    >
-                      <h3>{event.title}</h3>
-                    </div>
-                  ))}
+              )}
+
+              {currentView === "eventManager" && (
+                <div>
+                  <h2 style={sectionTitleStyle}>Manage Events</h2>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr",
+                      gap: "20px",
+                    }}
+                  >
+                    {events.map((event) => (
+                      <div
+                        key={event.event_id}
+                        style={sectionBoxStyle}
+                        onClick={() => handleEditEvent(event)}
+                      >
+                        <h3>{event.event_title}</h3>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            }
-          />
-          <Route
-            path="event-manager/edit/:eventId"
-            element={
-              <EventEditForm events={events} onSaveEvent={handleSaveEvent} />
-            }
-          />
-          <Route path="transactions" element={<div>Transactions Page</div>} />
-        </Routes>
-      </main>
+              )}
+
+              {currentView === "transactions" && (
+                <TransactionsInline />
+              )}
+
+              {currentView === "edit" && editingEvent && (
+                <EventEditForm 
+                  event={editingEvent} 
+                  onSaveEvent={handleSaveEvent} 
+                  onCancel={() => { setCurrentView("overview"); setEditingEvent(null); }}
+                />
+              )}
+            </main>
+          </div>
+        </div>
+      </div>
+      
+      <style>
+        {`
+          .main-content-custom-scroll::-webkit-scrollbar {
+            width: 8px;
+            height: 10px;
+          }
+          .main-content-custom-scroll::-webkit-scrollbar-track {
+            background: inherit;
+          }
+          .main-content-custom-scroll::-webkit-scrollbar-thumb {
+            background: yellow;
+          }
+        `}
+      </style>
     </div>
   );
 };
 
-// Event Edit Form Component
-const EventEditForm = ({ events, onSaveEvent }) => {
-  const { eventId } = useParams();
-  const eventToEdit = events.find((event) => event.id === parseInt(eventId));
+// Inline Transactions component remains unchanged
+const TransactionsInline = () => {
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const [editedEvent, setEditedEvent] = useState({ ...eventToEdit });
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      setLoading(true);
+
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+      console.log("User:", user);
+      if (!user) {
+        console.warn("No user found");
+        return;
+      }
+
+      const { data: purchases, error: purchaseError } = await supabase
+        .from("ticket_purchase_history")
+        .select(`
+          id,
+          user_id,
+          quantity,
+          total_price,
+          purchased_at,
+          ticket_types (
+            event_id,
+            EventTable:event_id (
+              event_title
+            )
+          )
+        `);
+
+      if (purchaseError) {
+        console.error("Purchase fetch error:", purchaseError);
+        return;
+      }
+
+      const transactionsWithNames = purchases.map((p) => ({
+        id: p.id,
+        buyer_email: p.user_id,
+        amount: p.total_price,
+        created_at: p.purchased_at,
+        event_title: p.ticket_types?.EventTable?.event_title || "Unknown Event",
+      }));
+
+      setTransactions(transactionsWithNames);
+      setLoading(false);
+    };
+
+    fetchTransactions();
+  }, []);
+
+  if (loading) return <p>Loading transactions...</p>;
+
+  return (
+    <div>
+      <h2 style={sectionTitleStyle}>Transaction History</h2>
+      <div style={{ overflowX: "auto" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", backgroundColor: "#fff", color: "#000", borderRadius: "8px", overflow: "hidden" }}>
+          <thead style={{ backgroundColor: "#1F2937", color: "#fff" }}>
+            <tr>
+              <th style={{ padding: "12px", borderBottom: "1px solid #ccc" }}>Event</th>
+              <th style={{ padding: "12px", borderBottom: "1px solid #ccc" }}>Transaction ID</th>
+              <th style={{ padding: "12px", borderBottom: "1px solid #ccc" }}>Buyer Email</th>
+              <th style={{ padding: "12px", borderBottom: "1px solid #ccc" }}>Amount</th>
+              <th style={{ padding: "12px", borderBottom: "1px solid #ccc" }}>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {transactions.map((tx) => (
+              <tr key={tx.id}>
+                <td style={{ padding: "12px", borderBottom: "1px solid #eee" }}>{tx.event_title}</td>
+                <td style={{ padding: "12px", borderBottom: "1px solid #eee" }}>{tx.id}</td>
+                <td style={{ padding: "12px", borderBottom: "1px solid #eee" }}>{tx.buyer_email}</td>
+                <td style={{ padding: "12px", borderBottom: "1px solid #eee" }}>${tx.amount.toFixed(2)}</td>
+                <td style={{ padding: "12px", borderBottom: "1px solid #eee" }}>{new Date(tx.created_at).toLocaleDateString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+// EventEditForm receives the event to edit via prop and calls onSaveEvent when done.
+const EventEditForm = ({ event, onSaveEvent, onCancel }) => {
+  const [editedEvent, setEditedEvent] = useState({ ...event });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -183,43 +385,25 @@ const EventEditForm = ({ events, onSaveEvent }) => {
     onSaveEvent(editedEvent);
   };
 
+  if (!editedEvent) return <p>Loading event...</p>;
+
   return (
     <div>
       <h2 style={sectionTitleStyle}>Edit Event</h2>
-      <form onSubmit={handleSubmit}>
-        <label>Event Title:</label>
-        <input
-          type="text"
-          name="title"
-          value={editedEvent.title}
-          onChange={handleChange}
-        />
-        <br />
-        <label>Event Venue:</label>
-        <input
-          type="text"
-          name="venue"
-          value={editedEvent.venue}
-          onChange={handleChange}
-        />
-        <br />
-        <label>Price:</label>
-        <input
-          type="number"
-          name="price"
-          value={editedEvent.price}
-          onChange={handleChange}
-        />
-        <br />
-        <label>Seats Available:</label>
-        <input
-          type="number"
-          name="seats"
-          value={editedEvent.seats}
-          onChange={handleChange}
-        />
-        <br />
-        <button type="submit">Save Changes</button>
+      <form onSubmit={handleSubmit} style={{ maxWidth: "400px", display: "flex", flexDirection: "column", gap: "12px" }}>
+        <label style={{ fontWeight: "bold" }}>Event Title:</label>
+        <input type="text" name="event_title" value={editedEvent.event_title} onChange={handleChange} />
+
+        <label style={{ fontWeight: "bold" }}>Event Location:</label>
+        <input type="text" name="location" value={editedEvent.location} onChange={handleChange} />
+
+        <label style={{ fontWeight: "bold" }}>Price:</label>
+        <input type="number" name="price" value={editedEvent.price} onChange={handleChange} />
+
+        <label style={{ fontWeight: "bold" }}>Seats Available:</label>
+        <input type="number" name="seats" value={editedEvent.seats} onChange={handleChange} />
+
+        <button type="submit" style={{ marginTop: "12px" }}>Save Changes</button>
       </form>
     </div>
   );

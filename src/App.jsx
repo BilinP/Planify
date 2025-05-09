@@ -19,6 +19,7 @@ import About from "./Components/About/About.jsx";
 import Home from "./Components/Home/Home.jsx";
 import EventPage from './Components/Event/EventPage';
 import DeveloperDashboard from "./Components/DeveloperDashboard/DeveloperDashboard";
+import GoogleMapsProvider from './GoogleMapsProvider.jsx';
 
 
 
@@ -93,6 +94,7 @@ function App() {
 
   return (
     <AuthProvider>
+      <GoogleMapsProvider>
       {showNavbarAndFooter && (
         <>
           <Navbar openLoginPopup={openLoginPopup} openCartPopup={openCartPopup} cartItems={cartItems} />
@@ -129,7 +131,9 @@ function App() {
       {isForgotPasswordVisible && <ForgotPasswordPopup closePopup={setIsForgotPasswordVisible} />}
 
       {showNavbarAndFooter && <Footer />}
+      </GoogleMapsProvider>
     </AuthProvider>
+    
   );
 }
 
