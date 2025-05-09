@@ -4,6 +4,7 @@ import { supabase } from '../../../backend/supabaseClient';
 import { useAuth } from '../Login_SignUp/Auth';
 import Placeholder_PFP from '../../assets/Placeholder_PFP.png';
 import './EventPage.css';
+import ReviewItem from './ReviewItem';
 
 const bucketBaseUrl = 'https://gliujspizqdmlzvnkyfb.supabase.co/storage/v1/object/public/Planify/Event/';
 
@@ -11,14 +12,13 @@ const EventPage = () => {
   const { id } = useParams(); 
   const { authData } = useAuth(); 
   const [event, setEvent] = useState(null);
+  const [eventImageUrl, setEventImageUrl] = useState(Placeholder_PFP);
   const [reviews, setReviews] = useState([]);
   const [newReview, setNewReview] = useState('');
   const [reviewRating, setReviewRating] = useState(0); 
   const [showLoginPopup, setShowLoginPopup] = useState(false);
-
   const [ticketTypes, setTicketTypes] = useState([]);
   const [selectedTicketType, setSelectedTicketType] = useState(null);
-
   const [replyTexts, setReplyTexts] = useState({});
   const [openReplyForm, setOpenReplyForm] = useState(null);
 
@@ -27,6 +27,20 @@ const EventPage = () => {
     fetchReviews();
     fetchTicketTypes(); 
   }, [id]);
+
+  useEffect(() => {
+    if (event) {
+      const fetchImage = async () => {
+        const fileName = await getEventImageFileName(event.event_id);
+        if (fileName) {
+          setEventImageUrl(`${bucketBaseUrl}${fileName}?width=1000&height=500&quality=100`);
+        } else {
+          setEventImageUrl(Placeholder_PFP);
+        }
+      };
+      fetchImage();
+    }
+  }, [event]);
 
   const fetchEvent = async () => {
     const { data, error } = await supabase
@@ -42,10 +56,23 @@ const EventPage = () => {
     }
   };
 
+  const getEventImageFileName = async (eventId) => {
+    const { data, error } = await supabase
+      .storage
+      .from('Planify')
+      .list('Event', { limit: 100 });
+    if (error) {
+      console.error('Error listing Event images:', error);
+      return null;
+    }
+    const file = data.find(f => f.name.startsWith(`event_${eventId}.`));
+    return file ? file.name : null;
+  };
+
   const fetchTicketTypes = async () => {
     const { data, error } = await supabase
       .from('ticket_types')
-      .select("id, price,name")
+      .select("id, price, name")
       .eq("event_id", id);
     if (error) {
       console.error("Error fetching ticket types:", error);
@@ -84,14 +111,13 @@ const EventPage = () => {
     }
 
     if (newReview.trim()) {
-      // For top-level reviews, include the star rating.
       const reviewPayload = {
         event_id: id,
         created_at: new Date().toISOString(),
         user_id: authData.id,
         review_txt: newReview,
         parent_review_id: null,
-        rating: reviewRating, // New rating field
+        rating: reviewRating,
       };
 
       const { data, error } = await supabase
@@ -105,7 +131,7 @@ const EventPage = () => {
         console.log('Review saved:', data);
         setReviews([...reviews, ...data]);
         setNewReview('');
-        setReviewRating(0); // Reset star rating
+        setReviewRating(0);
       }
     }
   };
@@ -147,7 +173,7 @@ const EventPage = () => {
             .insert([
               {
                 user_id: authData.id,
-                event_id: ticket.ticket_type_id,
+                ticket_type_id: ticket.ticket_type_id,
                 quantity: 1,
               },
             ]);
@@ -195,18 +221,18 @@ const EventPage = () => {
 
     const replyText = replyTexts[parentReviewId];
     if (replyText && replyText.trim()) {
+      const replyPayload = {
+        event_id: id,
+        created_at: new Date().toISOString(),
+        user_id: authData.id,
+        review_txt: replyText,
+        parent_review_id: parentReviewId,
+        rating: null, 
+      };
+
       const { data, error } = await supabase
         .from('Review')
-        .insert([
-          {
-            event_id: id,
-            created_at: new Date().toISOString(),
-            user_id: authData.id,
-            review_txt: replyText,
-            parent_review_id: parentReviewId,
-            rating: null, 
-          },
-        ])
+        .insert([replyPayload])
         .select();
 
       if (error) {
@@ -220,58 +246,29 @@ const EventPage = () => {
     }
   };
 
-  const renderReviews = (parentId = null, level = 0) => {
+  const renderReviews = (parentId = null, level = 0, visited = new Set()) => {
     return reviews
       .filter(review => review.parent_review_id === parentId)
-      .map(review => (
-        <div key={review.id} className="event-review-item" style={{ marginLeft: level * 20 }}>
-          <div className="event-review-container">
-            <div className="event-review-profile">
-              <img 
-                src="https://via.placeholder.com/50" 
-                alt="Profile" 
-              />
-            </div>
-            <div className="event-review-content">
-              <p>{review.review_txt}</p>
-              {review.rating !== null && (
-                <div className="star-rating-display">
-                  {[1, 2, 3, 4, 5].map(star => (
-                    <span key={star} className={star <= review.rating ? 'star filled' : 'star'}>
-                      ★
-                    </span>
-                  ))}
-                </div>
-              )}
-              <span 
-                className="event-reply-button"
-                onClick={() => setOpenReplyForm(openReplyForm === review.id ? null : review.id)}
-              >
-                Reply
-              </span>
-              {openReplyForm === review.id && (
-                <form onSubmit={(e) => handleReplySubmit(review.id, e)}>
-                  <input 
-                    type="text" 
-                    value={replyTexts[review.id] || ''} 
-                    onChange={(e) => handleReplyChange(review.id, e.target.value)}
-                    placeholder="Write a reply..." 
-                    className="event-reply-input"
-                  />
-                  <button 
-                    type="submit" 
-                    className="event-review-submit-button" 
-                    style={{ marginTop: '5px' }}
-                  >
-                    Submit
-                  </button>
-                </form>
-              )}
-            </div>
-          </div>
-          {renderReviews(review.id, level + 1)}
-        </div>
-      ));
+      .map(review => {
+        if (visited.has(review.id)) return null;
+        const newVisited = new Set(visited);
+        newVisited.add(review.id);
+
+        const nestedReplies = renderReviews(review.id, level + 1, newVisited);
+
+        return (
+          <ReviewItem
+            key={review.id}
+            review={review}
+            level={level}
+            authData={authData}
+            replyText={replyTexts[review.id]}
+            onReplyTextChange={handleReplyChange}
+            onReplySubmit={handleReplySubmit}
+            childrenMarkup={nestedReplies}
+          />
+        );
+      });
   };
 
   if (!event) {
@@ -282,7 +279,7 @@ const EventPage = () => {
     <div className="event-page-container">
       <div className="event-header-image-container">
         <img 
-          src={`${bucketBaseUrl}event_${id}.png?width=1000&height=500&quality=100`}
+          src={eventImageUrl}
           alt="eventBanner" 
           className="event-header-image" 
         />
@@ -307,7 +304,9 @@ const EventPage = () => {
           <div className="event-location-box">
             <h3>Location</h3>
             <div className="event-underline"></div>
-            <p style={{ marginBottom: '20px' }}>{event.location}</p>
+            <p style={{ marginBottom: '20px' }}>
+              {event.location ? event.location : "ONLINE"}
+            </p>
           </div>
 
           <div className="event-about-box">
@@ -320,7 +319,12 @@ const EventPage = () => {
         <div className="event-ticket-box">
           <h3>Ticket Type</h3>
           <div className="event-underline"></div>
-          <p style={{ fontSize: '20px' }}>{selectedTicketType?.name || 'No Ticket Selected'}</p>
+          <p style={{ fontSize: '20px' }}>
+            {selectedTicketType?.name || 'No Ticket Selected'} -{" "}
+            {(selectedTicketType?.price === 0 || selectedTicketType?.price === null)
+              ? "FREE"
+              : `$${selectedTicketType?.price}`}
+          </p>
           {ticketTypes.length > 0 && (
             <select
               className="ticket-type-dropdown"
@@ -329,7 +333,7 @@ const EventPage = () => {
             >
               {ticketTypes.map(tt => (
                 <option key={tt.id} value={tt.id}>
-                  {tt.name} - ${tt.price}
+                  {tt.name} - {(tt.price === 0 || tt.price === null) ? "FREE" : `$${tt.price}`}
                 </option>
               ))}
             </select>
@@ -348,7 +352,7 @@ const EventPage = () => {
           <div className="review-input-container">
             <div className="profile-pic-container">
               <img
-                src={authData?.profile_picture_url || Placeholder_PFP} //placeholder pfp
+                src={authData?.profile_picture_url || Placeholder_PFP}
                 alt="Profile"
                 className="review-input-profile-pic"
               />

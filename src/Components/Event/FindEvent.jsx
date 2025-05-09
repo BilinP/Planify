@@ -6,16 +6,9 @@ import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import './FindEvent.css';
 import GoogleMapsProvider from '../../GoogleMapsProvider.jsx';
-
-// Import images
-import bakingImg from '../../assets/BakingIMG.png';
-import countDownImg from '../../assets/CountDown.png';
-import fundraiserImg from '../../assets/FUNdraiser.png';
-import rhythmImg from '../../assets/Rhythm.png';
-import brazilianDanceImg from '../../assets/braziliandance.png';
-import graduationImg from '../../assets/graduationceremony.png';
-import singImg from '../../assets/sing.png';
 import defaultImg from '../../assets/Placeholder_PFP.png';
+
+const bucketBaseUrl = 'https://gliujspizqdmlzvnkyfb.supabase.co/storage/v1/object/public/Planify/Event/';
 
 const FindEvent = () => {
   const [events, setEvents] = useState([]);
@@ -99,90 +92,34 @@ const FindEvent = () => {
       if (error) throw error;
       console.log('Fetched events:', data);
       
-      // Process the events to include proper image URLs
-      const processedEvents = data.map(event => ({
-        ...event,
-        image: event.image_url ? `${bucketBaseUrl}${event.image_url}` : getEventImage(event.event_title)
+      // For each event, get its image URL dynamically
+      const processedEvents = await Promise.all(data.map(async (event) => {
+        const fileName = await getEventImageFileName(event.event_id);
+        return {
+          ...event,
+          image: fileName 
+            ? `${bucketBaseUrl}${fileName}?width=1000&height=500&quality=100`
+            : defaultImg
+        };
       }));
       
       setEvents(processedEvents);
     } catch (error) {
       console.error('Error fetching events:', error);
-      // If error occurs, use sample events
-      const sampleEvents = [
-        {
-          id: 1,
-          title: "Baking Workshop",
-          date: new Date().toISOString(),
-          location: "Santa Clarita Community Center",
-          price: 25,
-          latitude: 34.3917,
-          longitude: -118.5426,
-          image: bakingImg
-        },
-        {
-          id: 2,
-          title: "Brazilian Dance Class",
-          date: new Date().toISOString(),
-          location: "Dance Studio",
-          price: 30,
-          latitude: 34.3917,
-          longitude: -118.5426,
-          image: brazilianDanceImg
-        },
-        {
-          id: 3,
-          title: "Graduation Ceremony 2024",
-          date: new Date().toISOString(),
-          location: "City Hall",
-          price: 0,
-          latitude: 34.3917,
-          longitude: -118.5426,
-          image: graduationImg
-        },
-        {
-          id: 4,
-          title: "Countdown Party",
-          date: new Date().toISOString(),
-          location: "Event Center",
-          price: 45,
-          latitude: 34.3917,
-          longitude: -118.5426,
-          image: countDownImg
-        },
-        {
-          id: 5,
-          title: "Community Fundraiser",
-          date: new Date().toISOString(),
-          location: "Community Park",
-          price: 15,
-          latitude: 34.3917,
-          longitude: -118.5426,
-          image: fundraiserImg
-        },
-        {
-          id: 6,
-          title: "Rhythm & Blues Night",
-          date: new Date().toISOString(),
-          location: "Music Hall",
-          price: 35,
-          latitude: 34.3917,
-          longitude: -118.5426,
-          image: rhythmImg
-        },
-        {
-          id: 7,
-          title: "Sing Along Event",
-          date: new Date().toISOString(),
-          location: "Auditorium",
-          price: 20,
-          latitude: 34.3917,
-          longitude: -118.5426,
-          image: singImg
-        }
-      ];
-      setEvents(sampleEvents);
     }
+  };
+
+  const getEventImageFileName = async (eventId) => {
+    const { data, error } = await supabase
+      .storage
+      .from('Planify')
+      .list('Event', { limit: 100 });
+    if (error) {
+      console.error('Error listing Event images:', error);
+      return null;
+    }
+    const file = data.find(f => f.name.startsWith(`event_${eventId}.`));
+    return file ? file.name : null;
   };
 
   const handleLocationEdit = () => {
@@ -238,45 +175,6 @@ const FindEvent = () => {
     if (e.key === 'Enter') {
       handleLocationSubmit(e);
     }
-  };
-
-  // Function to get the appropriate image based on event title
-  const getEventImage = (title) => {
-    const titleLower = title?.toLowerCase() || '';
-    console.log('Looking for image for title:', titleLower); // Debug log
-    
-    // Check for exact matches first
-    if (titleLower.includes('bake')) {
-        console.log('Found baking image, path:', bakingImg);
-        return bakingImg;
-    }
-    if (titleLower.includes('brazilian dance') || titleLower.includes('dance class')) {
-        console.log('Found brazilian dance image, path:', brazilianDanceImg);
-        return brazilianDanceImg;
-    }
-    if (titleLower.includes('graduation')) {
-        console.log('Found graduation image, path:', graduationImg);
-        return graduationImg;
-    }
-    if (titleLower.includes('countdown')) {
-        console.log('Found countdown image, path:', countDownImg);
-        return countDownImg;
-    }
-    if (titleLower.includes('fundraiser')) {
-        console.log('Found fundraiser image, path:', fundraiserImg);
-        return fundraiserImg;
-    }
-    if (titleLower.includes('rhythm')) {
-        console.log('Found rhythm image, path:', rhythmImg);
-        return rhythmImg;
-    }
-    if (titleLower.includes('sing')) {
-        console.log('Found sing image, path:', singImg);
-        return singImg;
-    }
-    
-    console.log('No matching image found, using default:', defaultImg);
-    return defaultImg;
   };
 
   const toggleSection = (section) => {
@@ -650,8 +548,8 @@ const FindEvent = () => {
               <div className="event-info">
                 <h3>{event.event_title || event.title}</h3>
                 <p className="event-date">{new Date(event.date).toLocaleDateString()}</p>
-                <p className="event-location">{event.location}</p>
-                <p className="event-price">${event.price}</p>
+                <p className="event-location">{event.location ? event.location : "ONLINE"}</p>
+                <p className="event-price">{(event.price === 0 || event.price === null) ? "FREE" : `$${event.price}`}</p>
               </div>
             </div>
           ))}

@@ -123,9 +123,7 @@ const Create = () => {
       !formData.eventTime ||
       formData.eventTime.trim().toUpperCase() === "N/A" ||
       !formData.eventSummary ||
-      formData.eventSummary.trim().toUpperCase() === "N/A" ||
-      !formData.eventLocation ||
-      formData.eventLocation.trim().toUpperCase() === "N/A"
+      formData.eventSummary.trim().toUpperCase() === "N/A" 
     ) {
       setNotification({ message: "Please provide valid event title, date, time, summary, and location.", type: "error" });
       return;
@@ -167,27 +165,57 @@ const Create = () => {
     console.log('Event created:', data[0].event_id);
     const eventId = data[0].event_id;
 
-    let ticketsData = [];
-    tickets.forEach(ticket => {
-      const quantity = parseInt(ticket.ticketQuantity) || 0;
-      for (let i = 0; i < quantity; i++) {
-        ticketsData.push({
-          name: ticket.ticketName,
-          price: parseFloat(ticket.ticketPrice) || 0,
-          created_at: new Date(),
-          purchased_by: null,
-          status: 'available',
-          event_id: eventId
-        });
+    if (imageFile) {
+      const fileExtension = imageFile.name.split('.').pop(); 
+      const fileName = `Event/event_${eventId}.${fileExtension}`;
+      const { data: uploadData, error: uploadError } = await supabase
+        .storage
+        .from('Planify')
+        .upload(fileName, imageFile, { upsert: true });
+
+      if (uploadError) {
+        console.error('Error uploading image:', uploadError);
+        setNotification({ message: "Event created but failed to upload image.", type: "error" });
+        return;
       }
+    }
+
+    const ticketTypesData = tickets.map(ticket => ({
+      name: ticket.ticketName,
+      price: parseFloat(ticket.ticketPrice) || 0,
+      event_id: eventId,
+      quantity_available: parseInt(ticket.ticketQuantity) || 0,
+      created_at: new Date(),
+      description: formData.eventSummary
+    }));
+
+    const { data: insertedTicketTypes, error: ticketTypesError } = await supabase
+      .from('ticket_types')
+      .insert(ticketTypesData)
+      .select();
+
+    if (ticketTypesError) {
+      console.error('Error inserting ticket types:', ticketTypesError);
+      setNotification({ message: "Event created but failed to add ticket types.", type: "error" });
+      return;
+    }
+
+    const ticketsData = insertedTicketTypes.flatMap(ticketType => {
+      const qty = ticketType.quantity_available;
+      return Array.from({ length: qty }, () => ({
+        ticket_type_id: ticketType.id,
+        status: 'available',
+        issued_at: new Date(),
+        user_id: null  
+      }));
     });
 
-    const { error: ticketError } = await supabase
-      .from('Ticket')
+    const { error: ticketsError } = await supabase
+      .from('tickets')
       .insert(ticketsData);
 
-    if (ticketError) {
-      console.error('Error inserting tickets:', ticketError);
+    if (ticketsError) {
+      console.error('Error inserting tickets:', ticketsError);
       setNotification({ message: "Event created but failed to add tickets.", type: "error" });
       return;
     }
@@ -242,14 +270,23 @@ const Create = () => {
       <main className="form-content">
         {activeStep === 'build' && (
           <>
-            <div className="banner-image">
+            <div className="banner-image" onClick={() => imageInputRef.current && imageInputRef.current.click()}>
               {imagePreview ? (
                 <>
                   <img src={imagePreview} alt="Preview" className="uploaded-banner" />
-                  <button className="remove-image-button" onClick={handleRemoveImage}>✕ Remove Image</button>
+                  <button 
+                    className="remove-image-button" 
+                    onClick={(e) => { 
+                      e.stopPropagation(); 
+                      handleRemoveImage(); 
+                    }}>
+                    ✕ Remove Image
+                  </button>
                 </>
               ) : (
-                <label htmlFor="imageUpload" className="image-upload">📤 Upload photos and video</label>
+                <div className="image-placeholder-box">
+                  📤 Upload photos and video
+                </div>
               )}
               <input
                 type="file"
